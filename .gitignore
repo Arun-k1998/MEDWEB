@@ -1,0 +1,28 @@
+# Logs
+doctor-booking/logs
+doctor-booking/*.log
+doctor-booking/npm-debug.log*
+doctor-booking/yarn-debug.log*
+doctor-booking/yarn-error.log*
+doctor-booking/pnpm-debug.log*
+doctor-booking/lerna-debug.log*
+
+doctor-booking/node_modules
+doctor-booking/dist
+doctor-booking/dist-ssr
+doctor-booking/*.local
+
+# Editor directories and files
+doctor-booking/.vscode/*
+doctor-booking/!.vscode/extensions.json
+doctor-booking/.idea
+doctor-booking/.DS_Store
+doctor-booking/*.suo
+doctor-booking/*.ntvs*
+doctor-booking/*.njsproj
+doctor-booking/*.sln
+doctor-booking/*.sw?
+doctor-booking/.env
+
+Backend/node_modules
+Backend/.env
