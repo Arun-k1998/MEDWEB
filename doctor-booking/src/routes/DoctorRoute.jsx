@@ -4,6 +4,7 @@ import DoctorSignup from '../pages/doctor/DoctorSignup'
 import DoctorLogin from '../pages/doctor/DoctorLogin'
 import DoctorDashboard from '../pages/doctor/DoctorDashboard'
 import DoctorRegiteration from '../pages/doctor/DoctorRegiteration'
+import TimeSchedulingPage from '../pages/doctor/TimeSchedulingPage'
 
 
 function DoctorRoute() {
@@ -14,6 +15,7 @@ function DoctorRoute() {
         <Route element={<DoctorLogin />} path='/login' />
         <Route element={<DoctorDashboard />} path='/dashboard' />
         <Route element={<DoctorRegiteration />} path='/register' />
+        <Route element={<TimeSchedulingPage />} path='/schedule' />
        
       </Routes>
     </div>

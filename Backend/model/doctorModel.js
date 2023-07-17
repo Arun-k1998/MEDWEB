@@ -77,7 +77,12 @@ const doctorSchema = mongoose.Schema({
     is_Blcoked:{
         type:Boolean,
         default:false
-    }
+    },
+    feePerConsultation:{
+        type:Number,
+        
+    },
+   
 
 },{timestamps:true})
 

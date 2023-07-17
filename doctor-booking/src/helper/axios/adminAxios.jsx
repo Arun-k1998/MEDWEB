@@ -8,7 +8,7 @@ export const adminApi = axios.create({
 adminApi.interceptors.request.use(
   function (config) {
     const token = getCookies();
-    config.headers.Authorization = token["userToken"];
+    config.headers.Authorization = token["adminToken"];
     return config;
   },
   function (error) {

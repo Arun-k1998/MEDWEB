@@ -7,18 +7,14 @@ import { Provider } from "react-redux";
 import store from "./redux/store.jsx";
 // import {UserContest} from './helper/contest/UserContest.jsx'
 import "./index.css";
-import  DoctorContext  from "./helper/contest/DoctorContext.jsx";
+import DoctorContext from "./helper/contest/DoctorContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* <UserContest> */}
     <Provider store={store}>
-      <DoctorContext>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </DoctorContext>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>
-    {/* </UserContest> */}
   </React.StrictMode>
 );

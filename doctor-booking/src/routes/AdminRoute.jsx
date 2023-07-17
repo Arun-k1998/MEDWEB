@@ -16,14 +16,14 @@ function AdminRoute() {
     <>
       <Routes>
       <Route element={ <AdminVerification accessBy={'non-Authorized'}><AdminLogin /> </AdminVerification>} path='/login' />
-        <Route element={ <AdminVerification accessBy={'Authorized'}> <AdminDashboard /> </AdminVerification>} path='/dashboard' />
-        <Route element={<Bannerpage />} path='/banner' />
-        <Route element={<SpecializationManagement />} path='specialization' />
-        <Route element={<BannerUpload />} path='/create_banner' />
-        <Route element={<BannerUpdatePage />} path='/banner_u/:id' />
-        <Route element={<SpecializationUpload />} path='/c_specialization' />
-        <Route element={<DoctorApplicatoins />} path='/applications' />
-        <Route element={<DoctorApproval />} path='/dr_approval/:id' />
+        <Route element={ <AdminVerification accessBy={'Authorized'} > <AdminDashboard /> </AdminVerification>} path='/dashboard' />
+        <Route element={ <AdminVerification accessBy={'Authorized'}> <Bannerpage /> </AdminVerification> } path='/banner' />
+        <Route element={<AdminVerification accessBy={'Authorized'}><SpecializationManagement /></AdminVerification>} path='specialization' />
+        <Route element={<AdminVerification accessBy={'Authorized'}><BannerUpload /></AdminVerification>} path='/create_banner' />
+        <Route element={<AdminVerification accessBy={'Authorized'}><BannerUpdatePage /></AdminVerification>} path='/banner_u/:id' />
+        <Route element={<AdminVerification accessBy={'Authorized'}><SpecializationUpload /></AdminVerification>} path='/c_specialization' />
+        <Route element={<AdminVerification accessBy={'Authorized'}><DoctorApplicatoins /></AdminVerification>} path='/applications' />
+        <Route element={<AdminVerification accessBy={'Authorized'}> <DoctorApproval /> </AdminVerification> } path='/dr_approval/:id' />
       </Routes>
     </>
   )

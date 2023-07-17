@@ -7,9 +7,10 @@ import { userLogin } from "../../../redux/userSlice";
 import validation from "../../../helper/formValidation";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { doctorContext } from "../../../helper/contest/DoctorContext";
+import { doctorLogin } from "../../../redux/doctorSlice";
 
 function Login() {
-  const {setDoctor,doctor,setApproved,setId} = useContext(doctorContext)
+  
   const initialValues = { email: "", password: "" };
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
@@ -40,10 +41,8 @@ function Login() {
             ";" +
             expires +
             "; path=/";
-          const { firstName, _id, email,approved } = response.data.doctor;
-          setDoctor(firstName)
-          setApproved(approved)
-          setId(_id)
+         
+          dispatch(doctorLogin(response.data.doctor))
           navigate("/doctor/dashboard");
         } else {
           alert(response.data.message);

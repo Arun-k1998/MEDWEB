@@ -26,7 +26,7 @@ function DrApplicationDetalis() {
       }
     })
   }
-
+  
   useEffect(() => {
     adminApi.get(`/dr_data?id=${id}`).then((response) => {
       if (response.data.status) {

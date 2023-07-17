@@ -4,6 +4,13 @@ const bcrypt = require('bcrypt')
 const banner = require('../model/bannerModel')
 const specialization = require('../model/specializationModel')
 const doctor = require('../model/doctorModel')
+
+const tokenVerification = async(req,res)=>{
+    res.status(200).json({
+        status:true
+    })
+}
+
 const login = async(req,res)=>{
     const {email,password} = req.body
     try {
@@ -182,5 +189,6 @@ module.exports = {
     updateBanner,
     specilizations,
     createSpecialization,
-    doctorDetails
+    doctorDetails,
+    tokenVerification
 }

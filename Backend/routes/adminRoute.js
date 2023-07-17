@@ -30,6 +30,8 @@ const fileFilter = (req,file,cb)=>{
 const upload=multer({storage:storage,fileFilter:fileFilter})
 const adminController = require('../controller/adminController')
 const doctorController = require('../controller/doctorController')
+const adminAuth = require("../middleware/adminAuth")
+
 admin_Route.post('/login',adminController.login)
 admin_Route.post('/banner',upload.single('image'),adminController.bannerUpload)
 admin_Route.get('/banner',adminController.banners)
@@ -41,5 +43,7 @@ admin_Route.post('/c_specialization',upload.single('image'),adminController.crea
 admin_Route.get('/doctors',doctorController.doctorsList)
 admin_Route.get('/dr_data',adminController.doctorDetails)
 admin_Route.post('/dr_register/:id',doctorController.doctorApproval)
+
+admin_Route.get('/token_v',adminAuth,adminController.tokenVerification)
 
 module.exports = admin_Route

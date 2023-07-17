@@ -3,9 +3,11 @@ import Navbar from '../../components/doctor/Navbar/Navbar'
 import Sidebar from '../../components/doctor/Sidebar/Sidebar'
 import { doctorContext } from '../../helper/contest/DoctorContext'
 import BeforeRegister from '../../components/doctor/BeforeRegister/BeforeRegister'
+import { useSelector } from 'react-redux'
 
 function DoctorDashboard() {
-    const {approved} = useContext(doctorContext)
+  const {approved} = useSelector(store => store.doctor)
+
   return (
     <div>
       <Navbar />

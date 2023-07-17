@@ -34,6 +34,7 @@ const home = async(req,res)=>{
 const signup = async (req, res) => {
   const country_code = req.body. country_code
   const phone = req.body.phoneNumber
+  console.log(phone,country_code);
   try {
     const newUser = req.body;
     const userInEmail = await users.findOne({ email: newUser.email });
@@ -49,9 +50,12 @@ const signup = async (req, res) => {
           .verifications.create({
               to:`${country_code}${phone}`,
               channel : 'sms'
-          }).then(verification=>{
+          }).then(verification=>{console.log('success');
               console.log(verification.status);
-          }).catch((err)=> console.log(err.message) )
+          }).catch((err)=>{
+            console.log('err');
+            console.log(err.message)
+          }  )
 
 
           res.json({

@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { doctorContext } from "../../../helper/contest/DoctorContext";
+import { useSelector } from "react-redux";
 
 function DocRegisterationForm() {
   const [doctor, setDoctor] = useState({});
-  const { id } = useContext(doctorContext);
+  const {id} = useSelector(store => store.doctor)
 
   const [experience, setExperience] = useState([{}]);
   const [specialization, setSpecilaization] = useState([{}]);
