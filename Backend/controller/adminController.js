@@ -7,7 +7,8 @@ const doctor = require('../model/doctorModel')
 
 const tokenVerification = async(req,res)=>{
     res.status(200).json({
-        status:true
+        status:true,
+        admin: req.admin
     })
 }
 
@@ -20,7 +21,7 @@ const login = async(req,res)=>{
             console.log(comparedPassword);
             if(comparedPassword){
                 const token = jwt.sign({id:adminData._id},'adminSecrectKey123',{expiresIn:"2d"})
-                res.status(200).json({status:true,token,message:'Successfully Login'})
+                res.status(200).json({status:true,token,message:'Successfully Login',admin:adminData})
             }else{
                 res.status(400).json({status:false,message:'Incorrect Password'})
             }

@@ -28,11 +28,15 @@ const fileFilter = (req,file,cb)=>{
 const upload=multer({storage:storage,fileFilter:fileFilter})
 
 const doctor_Route = express.Router()
-const doctorController = require('../controller/doctorController')
+const doctorController = require('../controller/doctorController');
+const doctorAuth = require('../middleware/doctorAuth');
 doctor_Route.post('/signup',doctorController.signup)
 doctor_Route.post('/verify_otp',doctorController.otpVerification)
 doctor_Route.post('/login',doctorController.login)
 doctor_Route.get('/register',doctorController.doctorDetails)
 doctor_Route.post('/register',upload.single('image'),doctorController.updateDoctorDetails)
+doctor_Route.post('/timeSchedule',doctorController.doctorTimeScheduling)
+doctor_Route.get('/timeSlotes',doctorController.timeSlotes )
+doctor_Route.get('/token_v',doctorAuth,doctorController.tokenVerification)
 
 module.exports = doctor_Route

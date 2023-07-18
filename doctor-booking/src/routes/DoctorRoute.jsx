@@ -5,17 +5,18 @@ import DoctorLogin from '../pages/doctor/DoctorLogin'
 import DoctorDashboard from '../pages/doctor/DoctorDashboard'
 import DoctorRegiteration from '../pages/doctor/DoctorRegiteration'
 import TimeSchedulingPage from '../pages/doctor/TimeSchedulingPage'
+import DoctorAuthentication from '../Authentication/doctor/DoctorAuthentication'
 
 
 function DoctorRoute() {
   return (
     <div>
       <Routes>
-        <Route element={<DoctorSignup />} path='/signup'  />
-        <Route element={<DoctorLogin />} path='/login' />
-        <Route element={<DoctorDashboard />} path='/dashboard' />
-        <Route element={<DoctorRegiteration />} path='/register' />
-        <Route element={<TimeSchedulingPage />} path='/schedule' />
+        <Route element={<DoctorAuthentication accessBy={'non-Authorized'}> <DoctorSignup /></DoctorAuthentication>} path='/signup'  />
+        <Route element={<DoctorAuthentication accessBy={'non-Authorized'} ><DoctorLogin /></DoctorAuthentication>} path='/login' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorDashboard /></DoctorAuthentication>} path='/dashboard' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorRegiteration /></DoctorAuthentication>} path='/register' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><TimeSchedulingPage /></DoctorAuthentication>} path='/schedule' />
        
       </Routes>
     </div>

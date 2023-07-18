@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import api from "../../../helper/axios/userAxios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { adminLogin } from "../../../redux/adminSlice";
 
 function AdminLogin() {
   const initialValues = { email: "", password: "" };
   const [formValues, setFormValues] = useState(initialValues);
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +22,7 @@ function AdminLogin() {
           date.setTime(date.getTime()+1*24*60*60*1000)
           let expires = 'expires='+date.toUTCString()
           document.cookie = "adminToken=Bearer "+response.data.token+';'+expires+'; path=/admin'
-          // Cookies.set('admin',response.data.token,{expires:1})
+          dispatch(adminLogin(response.data.admin))
           navigate('/admin/dashboard')
         }
        

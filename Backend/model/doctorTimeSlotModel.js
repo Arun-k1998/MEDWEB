@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 
 const timeSlotSchema = mongoose.Schema({
     doctorId:{
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"doctor"
     },
     date:{
         type:Date,
@@ -10,10 +11,10 @@ const timeSlotSchema = mongoose.Schema({
     },
     slotes:[{
         startingTime:{
-            type:Date
+            type:String
         },
         endingTime:{
-            type:Date
+            type:String
         },
         tokens:{
             type:Number
@@ -21,4 +22,4 @@ const timeSlotSchema = mongoose.Schema({
     }]
 },{timestamps:true})
 
-module.exports = timeSlotSchema
+module.exports = mongoose.model("scheduledTime",timeSlotSchema)

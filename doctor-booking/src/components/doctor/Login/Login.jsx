@@ -40,7 +40,7 @@ function Login() {
             response.data.token +
             ";" +
             expires +
-            "; path=/";
+            "; path=/doctor";
          
           dispatch(doctorLogin(response.data.doctor))
           navigate("/doctor/dashboard");

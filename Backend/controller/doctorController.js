@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken')
 const specialization = require('../model/specializationModel');
 const { response } = require("express");
+const timeModle = require("../model/doctorTimeSlotModel")
+const mongoose = require("mongoose")
 
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SERVICE_SID } = process.env;
@@ -13,6 +15,20 @@ const client = require("twilio")(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, {
 async function hash(value) {
     const hashData = await bcrypt.hash(value, 10);
     return hashData;
+  }
+
+  const tokenVerification = (req,res)=>{
+    try {
+      if(req.doctor){
+        res.json({
+          status:true,
+          doctor:req.doctor
+        })
+      }
+      
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
  const signup= async (req, res) => {
@@ -258,6 +274,44 @@ const doctorApproval = async(req,res)=>{
   }
 }
 
+const doctorTimeScheduling = async(req,res)=>{
+  try {
+    const {_id,schedule} = req.body
+    console.log(_id);
+    console.log(schedule);
+    const time = new timeModle({
+      doctorId:_id,
+      date:schedule.date,
+      slotes:schedule.slotes
+
+    })
+    await time.save().then((response)=>{
+      res.json({status:true})
+    })
+
+    
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const timeSlotes  = async(req,res)=>{
+  try {
+    const {id,date }= req.query
+    console.log("id ",id);
+    const datee = new Date(date);
+const formattedDate = datee.toISOString();
+console.log(formattedDate);
+    const dateSlotes = await timeModle.findOne({$and:[{doctorId:id},{date:formattedDate}]})
+    console.log(dateSlotes);
+   console.log('finish');
+    
+    
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
   module.exports = {
     signup,
     otpVerification,
@@ -265,6 +319,9 @@ const doctorApproval = async(req,res)=>{
     doctorDetails,
     updateDoctorDetails,
     doctorsList,
-    doctorApproval
+    doctorApproval,
+    tokenVerification,
+    doctorTimeScheduling,
+    timeSlotes 
   }
 
