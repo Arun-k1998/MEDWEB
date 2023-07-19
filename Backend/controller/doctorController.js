@@ -276,17 +276,98 @@ const doctorApproval = async(req,res)=>{
 
 const doctorTimeScheduling = async(req,res)=>{
   try {
-    const {_id,schedule} = req.body
+    const {_id,schedule,duration} = req.body
     console.log(_id);
+    console.log('duration ',duration);
     console.log(schedule);
+
+  let obj1 = schedule.slotes.map((obj)=>{
+    // console.log(new Date(obj.startingTime).toISOString());
+    // console.log(new Date(obj.endingTime).toISOString());
+    return {
+      start:new Date(obj.startingTime).getTime(),
+      end:new Date(obj.endingTime).getTime()
+    }
+  })
+  console.log(obj1); 
+  let array 
+    let starting = obj1[0].start
+  let count 
+  let eachSlot
+  for(let j = 0;j < obj1.length;j++){
+    array= []
+    count = 0
+    eachSlot ={}
+    for(let i = obj1[j].start ; i < obj1[j].end; i=starting){
+      starting =i+ 10*60*1000
+      let newStart = new Date(i).toLocaleString()
+      let newend = new Date(starting).toLocaleString()
+      eachSlot = {tokenNo:count+1,start:newStart,end:newend}
+      array[count] = eachSlot
+      count++
+      
+    }
+    // console.log(array);
+    schedule.slotes[j].SloteVise = array
+  }
+
+// if( obj1[0].start+10*60*1000<obj1[0].end ) console.log('hello');
+// console.log(obj1[0].end , );
+// console.log(obj1[0].start+10*60*1000);
+// console.log(array);
+console.log('slotesssss');
+console.log(schedule.slotes);
+
+
     const time = new timeModle({
       doctorId:_id,
       date:schedule.date,
-      slotes:schedule.slotes
+      slotes:schedule.slotes,
+      duration:schedule.duration
 
     })
     await time.save().then((response)=>{
+      console.log('response');
+      let arr = []
+      const obj = response.slotes.map((obj)=>{
+        // console.log(new Date(obj.startingTime).toISOString());
+        // console.log(new Date(obj.endingTime).toISOString());
+        return {
+          start:new Date(obj.startingTime).getTime(),
+          end:new Date(obj.endingTime).getTime()
+        }
+      })
+    //   if(obj[0].end > obj[0].start) console.log('true');
+    //   else console.log('false');
+    //  console.log(obj);
+    //  console.log(response.duration);
+    //  let diff = Math.floor((obj[0].end - obj[0].start)/response.duration*60*1000)
+    //  console.log(diff.toLocal);
+    //  console.log(response.duration*60*1000);
+    // let array = []
+    // let starting = obj[0].start
+    // console.log(new Date(obj[0].start)).toISOString();
+    // console.log(new Date(obj[0].end)).toISOString();
+    console.log('bbbbbbb ',starting);
+    //   let count = 0
+    //   let eachSlot ={}
+    // for(let i = obj[0].start ; i < obj[0].end; i=starting){
+    //   starting =i+ 10*60*1000
+    //   let newStart = new Date(i).toLocaleString()
+    //   let newend = new Date(starting).toLocaleString()
+    //   eachSlot = {start:newStart,end:newend}
+    //   array[count] = eachSlot
+    //   count++
+      
+    // }
+    // if( obj[0].start+10*60*1000<obj[0].end ) console.log('hello');
+    // console.log(obj[0].end , );
+    // console.log(obj[0].start+10*60*1000);
+    // console.log(array);
+
       res.json({status:true})
+    }).catch((err)=>{
+      console.log(err.message);
     })
 
     
@@ -297,15 +378,27 @@ const doctorTimeScheduling = async(req,res)=>{
 
 const timeSlotes  = async(req,res)=>{
   try {
-    const {id,date }= req.query
-    console.log("id ",id);
-    const datee = new Date(date);
-const formattedDate = datee.toISOString();
-console.log(formattedDate);
-    const dateSlotes = await timeModle.findOne({$and:[{doctorId:id},{date:formattedDate}]})
-    console.log(dateSlotes);
-   console.log('finish');
-    
+    // const {id,date }= req.query
+    // console.log("id ",id);
+    // const datee = new Date(date);
+    // const formattedDate = datee.toISOString();
+    // console.log(formattedDate);
+    // const dateSlotes = await timeModle.findOne({$and:[{doctorId:id},{date:formattedDate}]})
+    // console.log(dateSlotes);
+    // console.log('finish');
+    const {id} = req.query
+    const timeSchedules = await timeModle.find({doctorId:id},{date:1,duration:1,slotes:1,_id:0})
+    if(timeSchedules){
+
+      res.json({
+        status:true,
+        slotes:timeSchedules
+      })
+    }else{
+      res.json({
+        status:false
+      })
+    }
     
   } catch (error) {
     console.log(error.message);

@@ -81,7 +81,7 @@ const doctorSchema = mongoose.Schema({
     feePerConsultation:{
         type:Number,
         
-    },
+    }
    
 
 },{timestamps:true})

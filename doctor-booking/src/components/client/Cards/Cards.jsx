@@ -14,16 +14,16 @@ function Cards({ specialization }) {
           {specialization.map((data) => {
             return (
               <div className=" rounded-lg bg-white overflow-hidden text-center">
-                <div>
+                <div className="h-2/3 w-full">
                   <img
                     src={server_url + "images/" + data.image}
                     alt=" "
-                    className=" "
+                    className="h-full w-full object-fill "
                   />
                 </div>
                 <div className="px-2 py-4">
                   <p className="mt-3">{data.name}</p>
-                  <button className="update_button mt-2">Consult Now</button>
+                  <button className="update_button mt-2"  >Consult Now</button>
                 </div>
               </div>
             );
