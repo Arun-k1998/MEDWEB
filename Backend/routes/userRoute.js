@@ -12,7 +12,7 @@ user_Route.post('/login',userController.login)
 user_Route.post('/verify_otp',userController.otpVerification)
 user_Route.post('/resendotp',userController.resendOTP)
 user_Route.get('/token_v',userAuth,userController.tokenVerification)
-
+user_Route.get('/spec_drs')
 
  
 module.exports = user_Route

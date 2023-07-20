@@ -14,29 +14,58 @@ const timeSlotSchema = mongoose.Schema({
         type:Date,
         required:true
     },
-    slotes:[{
+    // slotes:[{
+    //     startingTime:{
+    //         type:Date
+    //     },
+    //     endingTime:{
+    //         type:Date
+    //     },
+    //     tokens:{
+    //         type:Number
+    //     },slot:{
+    //         type:Number
+    //     },token:{
+    //         type:Number
+    //     },
+    //     SloteVise:[{
+    //         tokenNo:{
+    //             type:Number
+    //         },
+    //         start:{
+    //             type:String
+    //         },
+    //         end:{
+    //             type:String
+    //         }
+    //     }]
+    // }]
+    sessions:[{
         startingTime:{
             type:Date
         },
         endingTime:{
             type:Date
         },
-        tokens:{
-            type:Number
-        },slot:{
-            type:Number
-        },token:{
+        totalTokens:{
             type:Number
         },
-        SloteVise:[{
+        session:{
+            type:Number
+        },
+        slotes:[{
             tokenNo:{
                 type:Number
             },
             start:{
-                type:String
+                type:Date
             },
             end:{
-                type:String
+                type:Date
+            },
+            is_Booked:{
+                type:Boolean,
+                default:false
             }
         }]
     }]

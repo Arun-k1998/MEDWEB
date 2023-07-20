@@ -32,7 +32,7 @@ function Card({ data, updatePath,deleteClick }) {
           </button>
           <button
             className="bg-sky-500 p-2 rounded-lg mt-3 hidden sm:block"
-            onClick={() => navigate(`${updatePath}${data._id}`)}
+            onClick={() => navigate(`${updatePath}/${data.name}`)}
           >
             Update
           </button>

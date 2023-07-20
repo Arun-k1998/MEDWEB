@@ -1,5 +1,5 @@
 import moment from "moment/moment";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { useSelector } from "react-redux";
 import { GrClose } from "react-icons/gr";
@@ -21,9 +21,9 @@ function TimeScheduling() {
     label: moment().format("dddd"),
   });
   const [datee, setDatee] = useState({
-    date: "",
+    date: " ",
     duration: 0,
-    slotes: [{ startingTime: null, endingTime: null, slot: 1 ,token:0}],
+    sessions: [{ startingTime: null, endingTime: null, session: 1 ,totalTokens:0}],
   });
   const [date, setDate] = useState("");
   const [existingTime, setExistingTime] = useState({});
@@ -52,12 +52,13 @@ function TimeScheduling() {
       return formatedDate === moment(obj.date).format("ll");
     });
     if (previous.length > 0) {
+      
       console.log(previous[0]);
 
       setDatee({
         ...previous[0],
         [name]: previous[0].date.slice(0, 10),
-        ["slotes"]: previous[0].slotes.map((obj) => {
+        ["sessions"]: previous[0].sessions.map((obj) => {
           return {
             ...obj,
             ["startingTime"]: moment(
@@ -72,11 +73,11 @@ function TimeScheduling() {
         }),
       });
     } else {
-      setDatee({
+      setDatee(prev=> ({
+        ...prev,
         date: value,
-        duration: 0,
-        slotes: [{ startingTime: null, endingTime: null, slot: 1 }],
-      });
+        sessions: [{ startingTime: null, endingTime: null, session: 1 }],
+      }));
     }
     setSchedulePopup(true);
     // doctorApi.get(`/timeSlotes?id=${id}&date=${value}`).then((response) => {
@@ -98,18 +99,20 @@ function TimeScheduling() {
 
     const selectedTime = moment(value).format("LT");
     const convert = moment(combinedDate, "YYYY-MM-DD HH:mm").toDate();
+    console.log( convert );
     // console.log(convert)
     const convertedDate = moment(convert).format("LT"); // Modify the format as per your needs
 
     // console.log("new "+convertedDate)
+    console.log('times');
     console.log(convert);
     // console.log(selectedTime)
 
     const timeChange = { ...datee };
     // console.log(timeChange);
-    let newarray = timeChange.slotes;
-    console.log("index " + index);
-    timeChange.slotes[index][name] = convert;
+    let newarray = timeChange.sessions;
+    // console.log("index " + index);
+    timeChange.sessions[index][name] = convert;
     if (name === "startingTime") {
       for (let i = 0; i < index; i++) {
         if (
@@ -117,10 +120,10 @@ function TimeScheduling() {
           convert <= newarray[i].endingTime
         ) {
           alert("already selected");
-          timeChange.slotes[index][name] = null;
+          timeChange.sessions[index][name] = null;
         } else {
           console.log("hereeeeee");
-          timeChange.slotes[index][name] = convert;
+          timeChange.sessions[index][name] = convert;
 
           setDatee({ ...timeChange });
         }
@@ -132,31 +135,31 @@ function TimeScheduling() {
           convert <= newarray[i].endingTime
         ) {
           alert("already selected");
-          timeChange.slotes[index][name] = null;
+          timeChange.sessions[index][name] = null;
         } else {
           console.log("here");
-          timeChange.slotes[index][name] = convert;
+          timeChange.sessions[index][name] = convert;
           setDatee({ ...timeChange });
         }
       }
     }
 
-    if(datee.slotes[index].startingTime && datee.slotes[index].endingTime ){
+    if(datee.sessions[index].startingTime && datee.sessions[index].endingTime ){
       
       let count = 0
-      let starter = new Date(datee.slotes[index].startingTime).getTime()
-      let ender = new Date(datee.slotes[index].endingTime).getTime()
+      let starter = new Date(datee.sessions[index].startingTime).getTime()
+      let ender = new Date(datee.sessions[index].endingTime).getTime()
       for(let i =starter ; i < ender; i=starter){
         starter += 10*60*1000
         count++
         
       }
-      // datee.slotes[index].token = count
+      // datee.sessions[index].token = count
       setDatee(pre=>{
         return {
-          ...pre, ['slotes']: pre['slotes'].map((ele,num)=>{
+          ...pre, ['sessions']: pre['sessions'].map((ele,num)=>{
             if(num === index){
-              return {...ele,['token'] : count}
+              return {...ele,['totalTokens'] : count}
             }
             else return {...ele}
           })
@@ -199,14 +202,14 @@ function TimeScheduling() {
     return time.slice(0, 5);
   };
   const addmore = () => {
-    let slotes = datee.slotes;
-    let sloteLength = slotes.length + 1;
+    let sessions = datee.sessions;
+    let sloteLength = sessions.length + 1;
     console.log("sloteLength " + sloteLength);
     setDatee((prev) => ({
       ...prev,
-      ["slotes"]: [
-        ...slotes,
-        { startingTime: null, endingTime: null, slot: sloteLength },
+      ["sessions"]: [
+        ...sessions,
+        { startingTime: null, endingTime: null, session: sloteLength },
       ],
     }));
   };
@@ -215,7 +218,7 @@ function TimeScheduling() {
     alert("Delete")
     setDatee(prev =>{
       return {
-        ...prev, ['slotes']:prev.slotes.filter((ele,num)=> num!= index)
+        ...prev, ['sessions']:prev.sessions.filter((ele,num)=> num!= index)
       }
     })
   }
@@ -351,10 +354,10 @@ function TimeScheduling() {
             <hr />
           </div>
 
-          {datee.slotes.map((slot, index) => (
-            <>
+          {datee.sessions.map((slot, index) => (
+            <Fragment key={index}>
               <div className="w-full bg-emerald-400 flex justify-between text-white">
-                <p> Slote NO:{slot.slot}</p>
+                <p> Slote NO:{slot.session}</p>
               </div>
 
               <div key={index} className="mb-2 flex justify-evenly w-full gap-4 ">
@@ -382,7 +385,7 @@ function TimeScheduling() {
                   <p>No of Tokens</p>
                   <input
                     type="text"
-                    value={slot?.token}
+                    value={slot?.totalTokens}
                     className="p-1 text-center  bg-slate-200 w-full"
                     disabled
                   />
@@ -392,7 +395,7 @@ function TimeScheduling() {
                   <DeleteButton clicking={deleteSlot} index={index} />
                 </div>
               </div>
-            </>
+            </ Fragment>
           ))}
           <div className="w-full flex justify-start">
             <button
