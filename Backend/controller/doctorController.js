@@ -5,6 +5,7 @@ const specialization = require("../model/specializationModel");
 const { response } = require("express");
 const timeModle = require("../model/doctorTimeSlotModel");
 const mongoose = require("mongoose");
+const timeSloteModel = require('../model/doctorTimeSlotModel')
 
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SERVICE_SID } =
   process.env;
@@ -390,11 +391,14 @@ const doctorList = async (req, res) => {
         ],
       })
       .populate("specialization", "name");
-    console.log(doctorList);
+      // const timeSlotes = await timeSloteModel.find({doctorId:'64aec98ff79d0a03023e88a5'}).sort({date:1})
+      console.log(doctorList);
+      // console.log(timeSlotes);
     if (doctorList) {
       res.json({
         status: true,
         doctors: doctorList,
+        // timeSlotes:timeSlotes
       });
     }
     
@@ -405,6 +409,30 @@ const doctorList = async (req, res) => {
     });
   }
 };
+
+
+const sss = async(req,res)=>{
+  try {
+      const {id} = req.params
+      console.log(id);
+      const timeSlotes = await timeSloteModel.find({doctorId:id}).sort({date:1})
+      console.log(timeSlotes);
+      if(timeSlotes){
+        console.log('successfull');
+          res.status(200).json({
+            status:true,
+              message:'sucess',
+              timeSlotes:timeSlotes
+          })
+      }
+  } catch (error) {
+      console.log(error.message);
+      res.status(404).json({
+          message:error.message
+      })
+  }
+}
+
 
 module.exports = {
   signup,
@@ -418,4 +446,5 @@ module.exports = {
   doctorTimeScheduling,
   timeSlotes,
   doctorList,
+  sss
 };

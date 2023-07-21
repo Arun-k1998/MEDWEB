@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const timeSlotSchema = mongoose.Schema({
     doctorId:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:"doctor"
+        ref:"doctor",
     },
     duration:{
         type:Number,
