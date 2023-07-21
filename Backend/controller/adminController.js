@@ -39,8 +39,8 @@ const login = async(req,res)=>{
 
 const bannerUpload = async(req,res)=>{
     try {
-        const {title,description} = req.body
-        console.log(title,description);
+        const {name,description} = req.body
+        console.log(name,description);
         const newBanner = new banner({
             title,
             description,

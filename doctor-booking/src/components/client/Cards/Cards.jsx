@@ -34,7 +34,7 @@ function Cards({ specialization }) {
                 </div>
                 <div className="px-2 py-4">
                   <p className="mt-3">{data.name}</p>
-                  <button className="update_button mt-2" onClick={()=> navigate(`/consult/${data.name}`)}  >Consult Now</button>
+                  <button className="update_button mt-2" onClick={()=> navigate(`/consult/${data._id}`)}  >Consult Now</button>
                 </div>
               </div>
             );

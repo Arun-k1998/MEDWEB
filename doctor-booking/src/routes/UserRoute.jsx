@@ -5,6 +5,7 @@ import UserLogin from '../pages/client/Login'
 import Home from '../pages/client/Home'
 import { HomeVerification } from '../Authentication/user/HomeAuthentication'
 import { Authorization } from '../Authentication/user/userAuthentication'
+import DoctorList from '../pages/client/DoctorList'
 
 
 function user() {
@@ -15,7 +16,7 @@ function user() {
         <Route element={ <HomeVerification > <Home /> </ HomeVerification>} path='/' />
         <Route element={<Authorization accessBy={'non-Authorized'}> <UserLogin /> </ Authorization>} path='/login' />
         <Route element={<Authorization accessBy={'non-Authorized'}> <Register /> </ Authorization>} path='/signup' />
-
+        <Route element={<DoctorList />} path='/consult/:name' />
       </Routes>
       </div>
   )

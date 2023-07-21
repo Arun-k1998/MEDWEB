@@ -297,7 +297,7 @@ const doctorTimeScheduling = async (req, res) => {
     // console.log(schedule);
     console.log(schedule);
     let obj1 = schedule.sessions.map((obj) => {
-      console.log('object');
+      console.log("object");
       console.log(obj.startingTime);
       return {
         start: new Date(obj.startingTime).getTime(),
@@ -313,13 +313,13 @@ const doctorTimeScheduling = async (req, res) => {
       array = [];
       count = 0;
       eachSlot = {};
-      console.log('start');
+      console.log("start");
       for (let i = obj1[j].start; i < obj1[j].end; i = starting) {
         starting = i + parseInt(schedule.duration) * 60 * 1000;
         console.log(new Date(i));
-        let newStart = new Date(i)
+        let newStart = new Date(i);
         console.log(new Date(i).toLocaleString());
-        let newend = new Date(starting)
+        let newend = new Date(starting);
         eachSlot = { tokenNo: count + 1, start: newStart, end: newend };
         array[count] = eachSlot;
         count++;
@@ -377,15 +377,45 @@ const timeSlotes = async (req, res) => {
   }
 };
 
+const doctorList = async (req, res) => {
+  try {
+    const { name } = req.params;
+    console.log(name, "dsfsf");
+    const doctorList = await doctor
+      .find({
+        $and: [
+          { specialization: name },
+          { approved: "approved" },
+          { is_Blcoked: false },
+        ],
+      })
+      .populate("specialization", "name");
+    console.log(doctorList);
+    if (doctorList) {
+      res.json({
+        status: true,
+        doctors: doctorList,
+      });
+    }
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   signup,
   otpVerification,
   login,
   doctorDetails,
-  updateDoctorDetails,      
+  updateDoctorDetails,
   doctorsList,
   doctorApproval,
   tokenVerification,
   doctorTimeScheduling,
   timeSlotes,
+  doctorList,
 };
