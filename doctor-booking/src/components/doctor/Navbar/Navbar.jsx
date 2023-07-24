@@ -8,11 +8,12 @@ function
 Navbar() {
     const navigate = useNavigate()
     function logOut(){
+       
        const expires = "expires=" + 'Thu, 01 Jan 1970 00:00:01 GMT';
        // Thu, 01 Jan 1970 00:00:01 GMT
        document.cookie =
-       "adminToken=Bearer"+";" + expires + "; path=/admin";;
-           navigate('/admin/login')
+       "doctorToken=Bearer "+";" + expires + "; path=/doctor";;
+        navigate('/doctor/login')
         
      }
      return (

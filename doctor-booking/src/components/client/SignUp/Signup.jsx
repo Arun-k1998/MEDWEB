@@ -14,6 +14,7 @@ function Signup() {
     password: "",
     confirmPassword: "",
     otp: "",
+    
   };
   const [formValues, setFormValues] = useState(initialValues);
   const [formError, setformError] = useState({});
@@ -21,7 +22,7 @@ function Signup() {
   const [otp, setOtp] = useState(false);
   const [timer, setTimer] = useState(60);
   const navigate = useNavigate();
-
+  const [id,setId] = useState('')
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -34,7 +35,7 @@ function Signup() {
   };
 
   const otpSubmit = () => {
-    api.post("/verify_otp", { ...formValues }).then((response) => {
+    api.post("/verify_otp", { ...formValues,['id']:id }).then((response) => {
       if (response.data.status) {
         navigate("/");
       }
@@ -49,7 +50,7 @@ function Signup() {
       })
       .then((response) => {
         if (response.data.status) {
-          log(response.data.message);
+          setId(response.data.id)
           setTimer(60);
         }
       });
@@ -66,6 +67,7 @@ function Signup() {
         .then((response) => {
           if (response.data.status) {
             setOtp(!otp);
+            setId(response.data.id)
             interValId = setInterval(() => {
               setTimer((preTime) => preTime - 1);
             }, 1000);
@@ -191,7 +193,7 @@ function Signup() {
                     onChange={handleChange}
                   >
                     <option value="">Code</option>
-                    <option value="+91">India +91</option>
+                    <option value="91">India +91</option>
                     <option value="+1">Canada +1</option>
                   </select>
 

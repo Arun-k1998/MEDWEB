@@ -35,7 +35,7 @@ function DrApplicationDetalis() {
         setExperience([...response.data.doctor.experience])
       }
     });
-  }, []);
+  },[]);
 
   return (
     <div className="w-10/12 h-5/6 shadow-lg bg-white rounded-2xl">

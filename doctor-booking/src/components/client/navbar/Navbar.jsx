@@ -1,6 +1,6 @@
 import icon from '/images/medweblogo.png'
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate} from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
 import GetCookie from "../../../helper/getCookie";
@@ -9,7 +9,7 @@ import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import {CgProfile} from 'react-icons/cg'
-
+import { userLogout } from "../../../redux/userSlice";
 
 
 
@@ -23,8 +23,19 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 function Navbar() {
+
   const navigate  = useNavigate()
   const { name } = useSelector((state) => state.user);
+  const dispatch = useDispatch()
+
+  const handleSignout = ()=>{
+    const expires = "expires=" + 'Thu, 01 Jan 1970 00:00:01 GMT';
+    // Thu, 01 Jan 1970 00:00:01 GMT
+    document.cookie =
+        "userToken=Bearer "+";" + expires + "; path=/";
+   dispatch(userLogout());
+    navigate("/login");
+  }
   return (
     <Disclosure as="nav" className="bg-white shadow-lg sticky top-0 z-10 ">
       {({ open }) => (
@@ -131,6 +142,7 @@ function Navbar() {
                           <a
                             href="#"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            onClick={handleSignout}
                           >
                             Sign out
                           </a>

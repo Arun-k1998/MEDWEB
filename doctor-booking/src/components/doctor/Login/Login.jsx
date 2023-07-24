@@ -16,6 +16,7 @@ function Login() {
   const [formErrors, setFormErrors] = useState({});
   const [submit, setSubmit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [id,setId] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -97,7 +98,7 @@ function Login() {
       </button>
       <div className="flex mt-4 w-full justify-center" >
         <p className="text-blue-600">Don't have a account? </p>
-        <p className="ml-2 cursor-pointer" onClick={()=> navigate('/signup')}> SignUp</p>
+        <p className="ml-2 cursor-pointer" onClick={()=> navigate('/doctor/signup')}> SignUp</p>
       </div>
     </div>
   </div>

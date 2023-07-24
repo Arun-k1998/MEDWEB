@@ -54,13 +54,14 @@ function AdminVerification({ children, accessBy }) {
   }, []);
 
   if( accessBy === 'Authorized' && loading ) {
-   
+   console.log('1');
     return null; // or a loading indicator if desired
   }
   else if( accessBy === 'non-Authorized' && !loading ){
     return navigate('/admin/dashboard')
   }
-
+console.log('2');
   return children;
 }
+
 export default AdminVerification

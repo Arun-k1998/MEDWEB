@@ -1,6 +1,9 @@
 import React from 'react'
 
 function ResendOTp() {
+  const resendOTP = ()=>{
+    
+  }
   return (
 <div className="md:w-[50%] lg:w-[25%] h-max-h-fit bg-cyan-100 p-4 flex flex-col justify-center items-center rounded-2xl shadow-2xl text-center ">
           <div>

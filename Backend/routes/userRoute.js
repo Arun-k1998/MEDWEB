@@ -14,6 +14,7 @@ user_Route.post('/resendotp',userController.resendOTP)
 user_Route.get('/token_v',userAuth,userController.tokenVerification)
 user_Route.get('/consult/:name',doctorController.doctorList)
 user_Route.get('/timeSlotes/:id',doctorController.sss)
+user_Route.get('/doctorSearch/:search',userController.searchDoctor)
 
  
 module.exports = user_Route

@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { adminApi } from '../../../helper/axios/adminAxios';
 import bannerPreview from '../../../assets/bannerPreview.jpg'
+import { ToastifyContest } from '../../../helper/contest/ToastifyContest';
 function SpecializationCreation() {
     const [name, setname] = useState("");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState("");
     const [banner,setBanner] = React.useState(false)
-    
+    const {show} = useContext(ToastifyContest)
     const bannerSetting = (e)=>{
       setImage(e.target.files[0])
       setBanner(true)
@@ -28,8 +29,13 @@ function SpecializationCreation() {
           if (response.data.status) {
             alert(response.data.message)
           }
+          else if(!response.data.status){
+            show(response.data.message)
+          }
         });
     };
+
+    
     return (
       <div className="w-3/4 bg-white p-11 rounded-3xl h-3/4 shadow-lg grid grid-cols-2 md:grid-cols-3 gap-4 ">
         <div className="flex flex-col h-full">
@@ -39,6 +45,7 @@ function SpecializationCreation() {
             className="p-4 mt-4 shadow-lg rounded-lg "
             onChange={(e) => setname(e.target.value)}
             value={name}
+            required
           />
           <input
             type="file"
@@ -52,6 +59,7 @@ function SpecializationCreation() {
             className="p-2 mt-4 shadow-lg h-1/3 rounded-lg"
             onChange={(e) => setDescription(e.target.value)}
             value={description}
+            required
           />
           <button
             className="p-2 mt-4 bg-sky-400 w-2/4 rounded-3xl mx-auto"

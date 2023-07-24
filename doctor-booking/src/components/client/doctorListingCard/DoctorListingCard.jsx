@@ -71,23 +71,23 @@ function DoctorListingCard({ doctors }) {
       : console.log("nothing");
   }, [nu]);
   return (
-    <div className="mt-10 flex flex-col items-center justify-center">
-      {doctors.map((doctor, index) => {
+    <div className="mt-10 flex flex-col items-center justify-center ">
+     {doctors.length? (doctors.map((doctor, index) => {
         return (
           <div
             key={index}
-            className="w-5/6 h-60  p-5 bg-slate-100 flex justify-center"
+            className="w-5/6 h-60  p-5 bg-[#D5F2F2] flex justify-center rounded-lg"
           >
             <div className="flex justify-start w-full">
               <div className="w-44 flex  h-full rounded-full overflow-hidden  ">
                 <img
-                  src={`${VITE_SERVER_URL}/images/${doctor.image}`}
+                  src={`${VITE_SERVER_URL}/images/${doctor?.image}`}
                   className="object-cover h-full w-full rounded-full "
                 />
               </div>
               <div className="ml-4 flex flex-col justify-evenly ">
-                <p>{`${doctor.firstName} ${doctor.lastName}`}</p>
-                <p>{doctor.specialization.name}</p>
+                <p>{`${doctor?.firstName} ${doctor?.lastName}`}</p>
+                <p>{doctor?.specialization?.name}</p>
                 <p>Experience : 6years</p>
                 <strong>Consultation Fee: 100</strong>
               </div>
@@ -96,21 +96,21 @@ function DoctorListingCard({ doctors }) {
             <div className=" flex flex-col justify-center">
               <div className="w-32 mb-4">
                 <button
-                  className="bg-white p-2 rounded-xl w-full "
+                  className="bg-[#165C34] hover:bg-[#09381d] text-white p-2 rounded-xl w-full "
                   onClick={() => handleclick(doctor._id)}
                 >
                   Book Slot
                 </button>
               </div>
               <div className="w-32">
-                <button className="bg-white p-2 rounded-xl w-full ">
+                <button className="bg-[#165C34] text-white p-2 rounded-xl w-full ">
                   View Profile
                 </button>
               </div>
             </div>
           </div>
         );
-      })}
+      })):"Sorry. No doctors availabl in this name"}
       <div
         className={`${timeSlotes.length ? " block w-5/6 mt-5 " : " hidden "} `}
       >

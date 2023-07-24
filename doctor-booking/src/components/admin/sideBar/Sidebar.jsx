@@ -8,12 +8,14 @@ import { PiFlagBannerFill } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 function Sidebar() {
   const navigate = useNavigate();
-  console.log('sidebar');
+  const sidebar = {
+    
+  }
   return (
     <div className="h-[88vh] w-full bg-[#189AB4] py-4 pt-16  font-serif sticky top-[12v] ">
-      <div className="h-14 bg-slate-400 flex items-center justify-center pl-4 md:justify-start text-sm lg:text-lg hover:bg-sky-800">
+      <div className="h-14 focus:bg-slate-400 flex items-center justify-center pl-4 md:justify-start text-sm lg:text-lg hover:bg-sky-800">
         <MdSpaceDashboard className="mr-1" />
-        <p className="hidden md:block">Dashboard</p>
+        <p className="hidden md:block ">Dashboard</p>
       </div>
       <div className="h-14 flex items-center justify-center pl-4 md:justify-start text-sm lg:text-lg hover:bg-sky-800">
         <FaUserDoctor className="mr-1" />

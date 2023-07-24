@@ -37,6 +37,7 @@ doctor_Route.get('/register',doctorController.doctorDetails)
 doctor_Route.post('/register',upload.single('image'),doctorController.updateDoctorDetails)
 doctor_Route.post('/timeSchedule',doctorController.doctorTimeScheduling)
 doctor_Route.get('/timeSlotes',doctorController.timeSlotes )
+doctor_Route.post('/deleteSession',doctorController.deleteTimeSlote)
 doctor_Route.get('/token_v',doctorAuth,doctorController.tokenVerification)
 
 module.exports = doctor_Route

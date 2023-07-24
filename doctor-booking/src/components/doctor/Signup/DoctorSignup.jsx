@@ -19,6 +19,7 @@ function DoctorSignup() {
   const [submit, setSubmit] = useState(false);
   const [otp, setOtp] = useState(false);
   const [timer, setTimer] = useState(60);
+  const [otpId,setOtpId] = useState('')
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -33,7 +34,7 @@ function DoctorSignup() {
   };
 
   const otpSubmit = () => {
-    doctorApi.post("verify_otp", { ...formValues }).then((response) => {
+    doctorApi.post("verify_otp", { ...formValues,['otpId']:otpId }).then((response) => {
       if (response.data.status) {
         navigate("/");
       }
@@ -48,7 +49,7 @@ function DoctorSignup() {
       })
       .then((response) => {
         if (response.data.status) {
-          log(response.data.message);
+          setOtpId(response.data.id)
           setTimer(60);
         }
       });
@@ -65,6 +66,7 @@ function DoctorSignup() {
         .then((response) => {
           if (response.data.status) {
             setOtp(!otp);
+            setOtpId(response.data.id)
             interValId = setInterval(() => {
               setTimer((preTime) => preTime - 1);
             }, 1000);

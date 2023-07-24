@@ -30,7 +30,7 @@ const doctorSchema = mongoose.Schema({
         type:String,
     },
     yearOfRegisteration:{
-        type:Number
+        type:Date
     },
     image:{
         type:String

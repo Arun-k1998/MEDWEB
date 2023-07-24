@@ -6,7 +6,11 @@ const { response } = require("express");
 const timeModle = require("../model/doctorTimeSlotModel");
 const mongoose = require("mongoose");
 const timeSloteModel = require('../model/doctorTimeSlotModel')
-
+const { Vonage } = require("@vonage/server-sdk");
+const vonage = new Vonage({
+  apiKey: "a3a8bec7",
+  apiSecret: "GXxHHP0Ql17HlP2p",
+});
 const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SERVICE_SID } =
   process.env;
 const client = require("twilio")(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, {
@@ -33,6 +37,7 @@ const tokenVerification = (req, res) => {
 
 const signup = async (req, res) => {
   const { country_code, phoneNumber, email } = req.body;
+  console.log('doctorSignup');
   console.log(country_code, phoneNumber);
   const doctorEmail = await doctor.findOne({ email: email });
   if (!doctorEmail) {
@@ -56,19 +61,21 @@ const signup = async (req, res) => {
       //   .catch((err) =>{
       //     console.log('err');
       //     console.log(err.message)});
-      await client.verify.v2
-        .services(TWILIO_SERVICE_SID)
-        .verifications.create({
-          to: `${country_code}${phoneNumber}`,
-          channel: "sms",
+      vonage.verify
+        .start({
+          number: `917907051954`,
+          brand: "Vonage",
         })
-        .then((verification) => {
-          console.log(verification.status);
+        .then((resp) => {
+          console.log(resp.request_id);
+
           res.json({
             status: true,
+            message: "successfully created account",
+            id: resp.request_id,
           });
         })
-        .catch((err) => console.log(err.message));
+        .catch((err) => console.error(err));
     } else {
       res.json({
         status: false,
@@ -96,42 +103,45 @@ const otpVerification = async (req, res) => {
       email,
       password,
       otp,
+      id
     } = req.body;
 
-    const verifiedMessage = await client.verify.v2
-      .services(TWILIO_SERVICE_SID)
-      .verificationChecks.create({
-        to: `+${country_code}${phoneNumber}`,
-        code: otp,
-      });
+    // const verifiedMessage = await client.verify.v2
+    //   .services(TWILIO_SERVICE_SID)
+    //   .verificationChecks.create({
+    //     to: `+${country_code}${phoneNumber}`,
+    //     code: otp,
+    //   });
 
-    if (verifiedMessage.status === "approved") {
-      const spassword = await hash(password);
-      const newDoctor = new doctor({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phoneNumber: phoneNumber,
-        password: spassword,
-        countryCode: country_code,
-      });
-      newDoctor
-        .save()
-        .then((doctor) => {
-          console.log("Saved");
-          res.json({
-            status: true,
-            message: "Successfully Created the User",
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          res.json({
-            status: false,
-            message: "server error",
-          });
+    vonage.verify
+      .check(id, otp).then(async(response)=>{
+        const spassword = await hash(password);
+        const newDoctor = new doctor({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phoneNumber: phoneNumber,
+          password: spassword,
+          countryCode: country_code,
         });
-    }
+        newDoctor
+          .save()
+          .then((doctor) => {
+            console.log("Saved");
+            res.json({
+              status: true,
+              message: "Successfully Created the User",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            res.json({
+              status: false,
+              message: "server error",
+            });
+          });
+      })
+   
   } catch (error) {
     console.log(error.message);
   }
@@ -148,10 +158,11 @@ const login = async (req, res) => {
       if (!doctorEmailCheck.is_Blocked) {
         console.log(1);
 
-        const comparedPassword = bcrypt.compare(
+        const comparedPassword = await bcrypt.compare(
           password,
           doctorEmailCheck.password
         );
+        console.log(comparedPassword);
         if (comparedPassword) {
           console.log(1);
 
@@ -167,13 +178,14 @@ const login = async (req, res) => {
             doctor: doctorEmailCheck,
           });
         } else {
-          res.json({ message: "Password didn't match" });
+          res.json({status:false, message: "Password didn't match" });
         }
       } else {
-        res.json({ message: "Account get blocked" });
+        res.json({status:false, message: "Account get blocked" });
       }
     } else {
       res.json({
+        status:false,
         message: "email not exit",
       });
     }
@@ -225,7 +237,8 @@ const updateDoctorDetails = async (req, res) => {
           specialization: newFormValues.specialization,
           approved: "processing",
           experience: newExperience,
-          image: req.file.filename,
+          image: req?.file?.filename,
+          feePerConsultation: newFormValues.consultationFee
         },
       }
     );
@@ -233,7 +246,7 @@ const updateDoctorDetails = async (req, res) => {
       console.log("true");
       res.json({
         status: true,
-        message: "successfully updated",
+        message: "successfully updated.Please wait for admin approval!",
       });
     }
   } catch (error) {
@@ -361,7 +374,7 @@ const timeSlotes = async (req, res) => {
     const { id } = req.query;
     const timeSchedules = await timeModle.find(
       { doctorId: id },
-      { date: 1, duration: 1, sessions: 1, _id: 0 }
+      { date: 1, duration: 1, sessions: 1 }
     );
     if (timeSchedules) {
       res.json({
@@ -377,6 +390,35 @@ const timeSlotes = async (req, res) => {
     console.log(error.message);
   }
 };
+
+const deleteTimeSlote = async(req,res)=>{
+  
+  const {id,slotId} = req.body
+  
+  console.log(id);
+  console.log(slotId);
+  const scheduledDate = await timeSloteModel.findById(id)
+  const sessions = scheduledDate.sessions.filter((obj,index)=> obj._id !=  slotId)
+  console.log(sessions);
+  if(!sessions.length){
+    console.log('deleted entirelly');
+    await timeSloteModel.deleteOne({ _id: id }).then((response)=>{
+      res.json({
+        status:true,
+        message: "Sucessfully Deleted"
+      })
+    })
+  }
+  else{
+    console.log('lor ');
+    await timeSloteModel.findOneAndUpdate({ _id: id }, { sessions: sessions }).then((response)=>{
+      res.json({
+        status:true,
+        message: "Sucessfully Deleted"
+      })
+    })
+  }
+}
 
 const doctorList = async (req, res) => {
   try {
@@ -446,5 +488,6 @@ module.exports = {
   doctorTimeScheduling,
   timeSlotes,
   doctorList,
-  sss
+  sss,
+  deleteTimeSlote
 };

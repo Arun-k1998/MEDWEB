@@ -1,9 +1,10 @@
 import moment from "moment/moment";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { useSelector } from "react-redux";
 import { GrClose } from "react-icons/gr";
 import DeleteButton from "../../../container/deleteButton/DeleteButton";
+import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 function TimeScheduling() {
   const { id } = useSelector((store) => store.doctor);
   const duration = [10, 15, 20];
@@ -26,9 +27,10 @@ function TimeScheduling() {
     sessions: [{ startingTime: null, endingTime: null, session: 1 ,totalTokens:0}],
   });
   const [date, setDate] = useState("");
-  const [existingTime, setExistingTime] = useState({});
-  const [timeSlotes, setTimeSlots] = useState([]);
+  const [existingTime, setExistingTime] = useState(false);
+  const [timeSlotes,setTimeSlots] = useState([]);
   const [schedulePopup, setSchedulePopup] = useState(false);
+  const {show} = useContext(ToastifyContest)
 
   const timeConvertion = (time) => {
     const convertedDate = moment(time, "HH:mm").format("LT");
@@ -41,18 +43,25 @@ function TimeScheduling() {
     console.log(id);
     let today = moment();
     let currentDate = moment(value);
+    
     if (currentDate.isBefore(today)) {
       return alert("Select a Valid day");
     }
+    
     if (currentDate.isAfter(today)) console.log("after today");
+    
     let formatedDate = currentDate.format("ll");
+   
     console.log("current ", currentDate);
+   
     let previous = timeSlotes.filter((obj) => {
       console.log(moment(obj.date).format("ll"));
       return formatedDate === moment(obj.date).format("ll");
     });
+    
     if (previous.length > 0) {
       
+      setExistingTime(prev=>!prev)
       console.log(previous[0]);
 
       setDatee({
@@ -214,13 +223,23 @@ function TimeScheduling() {
     }));
   };
 
-  const deleteSlot = (index)=>{
-    alert("Delete")
-    setDatee(prev =>{
-      return {
-        ...prev, ['sessions']:prev.sessions.filter((ele,num)=> num!= index)
-      }
-    })
+  const deleteSlot = (index,id,slotId)=>{
+    if(existingTime){
+      doctorApi.post(`/deleteSession/`,{id:id,slotId:slotId}).then((response)=>{
+        if(response.data.status){
+          show(response.data.message)
+          setSchedulePopup(false)
+          setExistingTime(false)
+        }
+      })
+    }else{
+      setDatee(prev =>{
+        return {
+          ...prev, ['sessions']:prev.sessions.filter((ele,num)=> num!= index)
+        }
+      })
+    }
+   
   }
 
   const durationChange = (e) => {
@@ -241,6 +260,8 @@ function TimeScheduling() {
       }
     });
   }, []);
+
+
   return (
     <div className="flex flex-col items-center w-full bg-sky-50 pt-20  relative ">
       <div className=" w-4/5 bg-white px-10 rounded-2xl shadow-xl  ">
@@ -338,7 +359,7 @@ function TimeScheduling() {
         {/* <button className="bg-slate-500 p-2 rounded-lg" onClick={handleSubmit}>
           Submit
         </button> */}
-        {existingTime?.doctorId && <p>hello</p>}
+        
       </div>
 
       {schedulePopup && (
@@ -392,7 +413,7 @@ function TimeScheduling() {
                 </div>
                 <div className="flex flex-col  w-1/6 my-3 pt-4 justify-center items-center" >
                   
-                  <DeleteButton clicking={deleteSlot} index={index} />
+                  <DeleteButton sessionId={slot._id} id={datee._id} clicking={deleteSlot} index={index} />
                 </div>
               </div>
             </ Fragment>
