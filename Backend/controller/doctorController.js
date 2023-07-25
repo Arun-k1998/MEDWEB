@@ -7,6 +7,9 @@ const timeModle = require("../model/doctorTimeSlotModel");
 const mongoose = require("mongoose");
 const timeSloteModel = require('../model/doctorTimeSlotModel')
 const { Vonage } = require("@vonage/server-sdk");
+const fs = require('fs')
+const path = require('path')
+
 const vonage = new Vonage({
   apiKey: "a3a8bec7",
   apiSecret: "GXxHHP0Ql17HlP2p",
@@ -475,6 +478,43 @@ const sss = async(req,res)=>{
   }
 }
 
+const getProfile = async(req,res)=>{
+  try {
+    const {id} = req.params
+    console.log(id);
+    const doctorData = await doctor.findById({_id:id})
+    if(doctorData){
+      res.json({
+        status:true,
+        doctor:doctorData
+      })
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const updateProfile = async(req,res)=>{
+  try {
+    const {id} = req.body
+    const doctorDta = await doctor.findById({_id:id})
+    if(doctorDta){
+      const oldImage = doctorDta.image
+      const newPath = path.join('C:\\Users\\arunk\\doctorconsultation\\Backend\\public\\images\\',oldImage)
+      await doctor.findByIdAndUpdate({_id:id},{
+        image:req.file.filename
+      })
+      fs.unlinkSync(newPath)
+      res.json({
+        status:true,
+        message:"Success"
+      })
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 
 module.exports = {
   signup,
@@ -489,5 +529,7 @@ module.exports = {
   timeSlotes,
   doctorList,
   sss,
-  deleteTimeSlote
+  deleteTimeSlote,
+  getProfile,
+  updateProfile
 };
