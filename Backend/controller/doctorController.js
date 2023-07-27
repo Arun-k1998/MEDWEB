@@ -461,14 +461,16 @@ const sss = async(req,res)=>{
       const {id} = req.params
       console.log(id);
       const timeSlotes = await timeSloteModel.find({doctorId:id}).sort({date:1})
-      console.log(timeSlotes);
+      const doctorData = await doctor.findById(id)
+      console.log(timeSlotes); 
       if(timeSlotes){
         console.log('successfull');
           res.status(200).json({
             status:true,
               message:'sucess',
-              timeSlotes:timeSlotes
-          })
+              timeSlotes:timeSlotes,
+              doctorData:doctorData
+          })  
       }
   } catch (error) {
       console.log(error.message);

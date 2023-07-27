@@ -15,6 +15,7 @@ user_Route.get('/token_v',userAuth,userController.tokenVerification)
 user_Route.get('/consult/:name',doctorController.doctorList)
 user_Route.get('/timeSlotes/:id',doctorController.sss)
 user_Route.get('/doctorSearch/:search',userController.searchDoctor)
-
+user_Route.post('/booking',userController.slotBooking)
+user_Route.post('/create-checkout-session',userController.checkoutSession)
  
 module.exports = user_Route
