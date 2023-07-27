@@ -38,7 +38,7 @@ function DocRegisterationForm() {
 
   const imageChange = (e) => {
     const { name } = e.target;
-    const image = e.target.files[0];
+    const image = e.target.files[0] ;
     setFormValues({ ...formValues, [name]: image });
     console.log(formValues);
   };

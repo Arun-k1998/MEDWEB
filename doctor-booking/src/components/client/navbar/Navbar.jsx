@@ -1,5 +1,5 @@
 import icon from '/images/medweblogo.png'
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate} from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
@@ -25,7 +25,7 @@ function classNames(...classes) {
 function Navbar() {
 
   const navigate  = useNavigate()
-  const { name } = useSelector((state) => state.user);
+  const { name,id } = useSelector((state) => state.user);
   const dispatch = useDispatch()
 
   const handleSignout = ()=>{
@@ -36,8 +36,9 @@ function Navbar() {
    dispatch(userLogout());
     navigate("/login");
   }
+  
   return (
-    <Disclosure as="nav" className="bg-white shadow-lg sticky top-0 z-10 ">
+    <Disclosure as="nav" className="bg-white shadow-lg sticky top-0 z-10 h-full ">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 ">
@@ -120,7 +121,7 @@ function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="#"
+                            onClick={()=>navigate(`/profile/${id}`)}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Your Profile

@@ -4,6 +4,7 @@ import api from "../../helper/axios/userAxios";
 import { useParams } from "react-router-dom";
 import DoctorListingCard from "../../components/client/doctorListingCard/DoctorListingCard";
 import SearchBar from "../../components/client/SearchBar/SearchBar";
+import UserSidbar from "../../components/client/SideBar/UserSidbar";
 
 function DoctorList() {
   const { name } = useParams();
@@ -44,9 +45,20 @@ function DoctorList() {
 
   return (
     <div>
+      <div className="h-[10vh] bg-black">
       <Navbar />
-      <SearchBar value={value} search={searchByName} />
+      </div>
+    
+      <div className="w-full border-b-2 border-b-[#189AB4] h-[10vh] flex justify-center items-center">
+      {/* <SearchBar value={value} search={searchByName} /> */}
+      <h1 className="text-xl">Cosnsult With Our specialist</h1>
+      </div>
+    
+      <div className="grid md:grid-cols-[2fr_7.5fr] h-[80vh]">
+      <UserSidbar />
       <DoctorListingCard doctors={docotrsList} />
+      </div>
+      
     </div>
   );
 }

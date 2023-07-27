@@ -13,7 +13,7 @@ export const Authorization = ({children,accessBy})=>{
     const dispatch = useDispatch()
     const cookie = getCookies()
     const navigate = useNavigate()
-    console.log(user);
+    ;
     if(accessBy == 'non-Authorized'){
         if( !cookie['userToken'] ){
             return children
@@ -21,7 +21,8 @@ export const Authorization = ({children,accessBy})=>{
             api.get('/token_v').then((response)=>{
                 if(response.data.user){
                    dispatch(userLogin(response.data.user))
-                    navigate('/')
+                   return children
+                    // navigate('/')
                 }
             })          
             // window.location.href = '/'

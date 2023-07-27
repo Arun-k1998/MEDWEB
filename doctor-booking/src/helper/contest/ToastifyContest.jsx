@@ -2,30 +2,27 @@ import { createContext, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export const ToastifyContest = createContext(null)
+export const ToastifyContest = createContext(null);
 
- function toastityFucn({children}){
+function toastityFucn({ children }) {
+  const show = (message) => {
+    toast.success(` ${message} `, {
+      position: "top-center",
+      autoClose: 3001,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
 
-    const show = (message)=>{
-        toast.success(` ${message} `, {
-            position: "top-center",
-            autoClose: 3001,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            
-            });
-    }
+  return (
+    <ToastifyContest.Provider value={{ show: show }}>
+      {children}
 
-    return (
-        <ToastifyContest.Provider value={{show:show}} >
-            {
-                children
-            }
-            <ToastContainer
+      <ToastContainer
         position="top-left"
         autoClose={3001}
         hideProgressBar={false}
@@ -37,8 +34,7 @@ export const ToastifyContest = createContext(null)
         pauseOnHover
         theme="light"
       />
-        </ToastifyContest.Provider>
-    )
-
+    </ToastifyContest.Provider>
+  );
 }
-export default toastityFucn
+export default toastityFucn;

@@ -64,18 +64,7 @@ function SpecializationUpdation() {
     });
   };
 
-  const notification = (message) => {
-    toast.success(`🦄 ${message} `, {
-        position: "top-left",
-        autoClose: 3001,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        });
-  };
+ 
 
   useEffect(() => {
     adminApi.get(`/specialization_u?name=${name}`).then((response) => {

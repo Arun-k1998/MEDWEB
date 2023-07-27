@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { GrClose } from "react-icons/gr";
 import DeleteButton from "../../../container/deleteButton/DeleteButton";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
+import { data } from "autoprefixer";
 function TimeScheduling() {
   const { id } = useSelector((store) => store.doctor);
   const duration = [10, 15, 20];
@@ -41,17 +42,14 @@ function TimeScheduling() {
     const { name, value } = e.target;
     console.log(name, value);
     console.log(id);
-    let today = moment();
-    let currentDate = moment(value);
-    
-    if (currentDate.isBefore(today)) {
-      return alert("Select a Valid day");
-    }
-    
+    let today = moment().format("ll");
+    let currentDate = moment(value);    
     if (currentDate.isAfter(today)) console.log("after today");
     
     let formatedDate = currentDate.format("ll");
-   
+    if (currentDate.isBefore(today)) {
+      return alert("Select a Valid day");
+    }
     console.log("current ", currentDate);
    
     let previous = timeSlotes.filter((obj) => {
@@ -60,7 +58,7 @@ function TimeScheduling() {
     });
     
     if (previous.length > 0) {
-      
+
       setExistingTime(prev=>!prev)
       console.log(previous[0]);
 
@@ -117,7 +115,7 @@ function TimeScheduling() {
     console.log(convert);
     // console.log(selectedTime)
 
-    const timeChange = { ...datee };
+    const timeChange = { ...datee }
     // console.log(timeChange);
     let newarray = timeChange.sessions;
     // console.log("index " + index);
@@ -137,7 +135,7 @@ function TimeScheduling() {
           setDatee({ ...timeChange });
         }
       }
-    } else if (name === "endingTime") {
+    }else if(name === "endingTime") {
       for (let i = 0; i < index; i++) {
         if (
           convert >= newarray[i].startingTime &&
@@ -152,6 +150,16 @@ function TimeScheduling() {
         }
       }
     }
+    const starting = datee.sessions[index].startingTime
+    const ending = datee.sessions[index].endingTime
+    ;
+    // if((starting || ending) && (||ending.isBefore(starting) )) alert('select a valid time')
+    if(ending && moment(starting).isAfter(ending) ){
+      return  alert('hell')
+    } 
+    if(starting && moment(ending).isBefore(starting)){
+      return  alert('hi')
+    } 
 
     if(datee.sessions[index].startingTime && datee.sessions[index].endingTime ){
       
