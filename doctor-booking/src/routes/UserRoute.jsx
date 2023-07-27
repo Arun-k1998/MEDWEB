@@ -7,6 +7,7 @@ import { HomeVerification } from '../Authentication/user/HomeAuthentication'
 import { Authorization } from '../Authentication/user/userAuthentication'
 import DoctorList from '../pages/client/DoctorList'
 import UserProfilePage from '../pages/client/UserProfilePage'
+import DoctorSinglePage from '../pages/client/DoctorSinglePage'
 
 
 function user() {
@@ -19,6 +20,7 @@ function user() {
         <Route element={<Authorization accessBy={'non-Authorized'}> <Register /> </ Authorization>} path='/signup' />
         <Route element={ <HomeVerification >  <DoctorList /> </ HomeVerification>} path='/consult/:name' />
         <Route element={<UserProfilePage />} path='/profile/:id' />
+        <Route element={ <HomeVerification ><DoctorSinglePage /></HomeVerification> } path='/consult/detail/:doctorId' />
       </Routes>
       </div>
   )

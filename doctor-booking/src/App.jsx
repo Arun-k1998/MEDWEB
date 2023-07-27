@@ -16,6 +16,7 @@ function App() {
        <Route element={<User />} path='/*' />
        <Route element={<Admin />} path='/admin/*' />
        <Route element={<DoctorRoute />} path='/doctor/*' />
+      
       </Routes>
     </div>
   )
