@@ -49,7 +49,7 @@ function DoctorDetails() {
       ["doctorId"]: doctorId,
       ["slot"]: timeSlot,
       ["date"]: date,
-      ["session"]: session,
+      ["sessions"]: session,
       ["userId"]: userId,
     });
   };
@@ -89,18 +89,24 @@ function DoctorDetails() {
     //     userId: userId,
     //     session: session,
     //   })
-// -----------------------------------------------booking below---------
+    // -----------------------------------------------booking below---------
     // console.log(consultaionDetails);
     // api.post("/booking", consultaionDetails).then((res) => {
     //   if (res.data.status) {
     //     alert("Hello");
     //   }
     // });
+    console.log(consultaionDetails);
+    alert(doctorId);
+    // const requestData = { doctorId: doctorId };
 
-    api.post('/create-checkout-session').then((response)=>{
-        console.log(response.data);
-        window.location.href = response.data.url
-    })
+
+    api.post("/create-checkout-session", consultaionDetails).then((response) => {
+      console.log(response.data);
+      console.log(response.data.token)
+      localStorage.setItem('myToken', response.data.token)
+      window.location.href = response.data.url;
+    });
   };
   useEffect(() => {
     if (doctorId) {
@@ -141,113 +147,123 @@ function DoctorDetails() {
           />
         </div>
       </div>
-      <div className="w-[60%] bg-slate-200">
-        <div
-          className={`${
-            timeSlotes.length ? "block w-full md:w-5/6 mt-5" : "hidden"
-          } mx-3 flex flex-col  `}
-        >
-          {/* absolute top-0 left-4 md:left-24 shadow-2xl bg-slate-300 py-10 flex flex-col md:grid md:grid-cols-1 lg:grid-cols-[3fr,7fr] gap-4 px-5 */}
+      <div className="w-[60%] flex flex-col items-center bg-slate-200">
+        {!confirmPopup && (
+          <div
+            className={`${
+              timeSlotes.length ? "block w-full md:w-5/6 mt-5" : "hidden"
+            } mx-3 flex flex-col  `}
+          >
+            {/* absolute top-0 left-4 md:left-24 shadow-2xl bg-slate-300 py-10 flex flex-col md:grid md:grid-cols-1 lg:grid-cols-[3fr,7fr] gap-4 px-5 */}
 
-          <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600">
-            <div className="w-full gap-4 items-center flex flex-row justify-evenly">
-              <div
-                className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center"
-                onMouseEnter={handleScrollLeft}
-              >
-                <AiOutlineArrowLeft className="" />
-              </div>
-              <div
-                className="flex-1 flex flex-row gap-4 overflow-x-auto"
-                ref={scrollableContainerRef}
-              >
-                {timeSlotes?.map((timeSlote, index) => {
-                  return (
-                    <div
-                      className="p-1 bg-[#509393] text-white min-w-max cursor-pointer"
-                      key={index}
-                      onClick={() => getSlotes(timeSlote)}
-                    >
-                      <p className="w-full">{formateDate(timeSlote.date)}</p>
-                    </div>
-                  );
-                })}
-              </div>
-              <div
-                className="cursor-pointer w-10 hover:bg-black hover:text-white p-2 flex justify-center"
-                onMouseEnter={handleScrollRight}
-              >
-                <AiOutlineArrowRight className="" />
+            <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600">
+              <div className="w-full gap-4 items-center flex flex-row justify-evenly">
+                <div
+                  className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center"
+                  onMouseEnter={handleScrollLeft}
+                >
+                  <AiOutlineArrowLeft className="" />
+                </div>
+                <div
+                  className="flex-1 flex flex-row gap-4 overflow-x-auto"
+                  ref={scrollableContainerRef}
+                >
+                  {timeSlotes?.map((timeSlote, index) => {
+                    return (
+                      <div
+                        className="p-1 bg-[#509393] text-white min-w-max cursor-pointer"
+                        key={index}
+                        onClick={() => getSlotes(timeSlote)}
+                      >
+                        <p className="w-full">{formateDate(timeSlote.date)}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div
+                  className="cursor-pointer w-10 hover:bg-black hover:text-white p-2 flex justify-center"
+                  onMouseEnter={handleScrollRight}
+                >
+                  <AiOutlineArrowRight className="" />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* ------------------- */}
-          <div className="w-full flex flex-col ">
-            {sessions.length
-              ? sessions.map((session, index) => {
-                  return (
-                    <div key={index} className=" mb-1 flex flex-col  w-full ">
-                      <div className="flex gap-2">
-                        <p>Session</p>
+            {/* ------------------- */}
+            <div className="w-full flex flex-col ">
+              {sessions.length
+                ? sessions.map((session, index) => {
+                    return (
+                      <div key={index} className=" mb-1 flex flex-col  w-full ">
+                        <div className="flex gap-2">
+                          <p>Session</p>
 
-                        <p>{session.session}</p>
+                          <p>{session.session}</p>
+                        </div>
+                        <div className="grid grid-cols-5 gap-3">
+                          {session.slots.map((obj, index) => {
+                            return (
+                              <div
+                                key={index}
+                                className={`${
+                                  obj.is_Booked ? "pointer-events-none" : ""
+                                } cursor-pointer  w-30`}
+                                // onClick={() =>{
+                                //   setConfirmPopup(pre => !pre)
+                                //   // hadleSlotBooking(obj, session)
+                                // } }
+                                onClick={() => handlePopup(obj, session)}
+                              >
+                                <p className=" flex justify-center bg-stone-300 hover:bg-stone-500 hover:text-white border-solid border-teal-500 p-2">
+                                  <span className="ml-1">
+                                    {formatTime(obj.start)}
+                                  </span>
+                                  <span className="ml-1">-</span>
+                                  <span>{formatTime(obj.end)}</span>
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <hr className="my-3" />
                       </div>
-                      <div className="grid grid-cols-5 gap-3">
-                        {session.slots.map((obj, index) => {
-                          return (
-                            <div
-                              key={index}
-                              className={`${
-                                obj.is_Booked ? "pointer-events-none" : ""
-                              } cursor-pointer  w-30`}
-                              // onClick={() =>{
-                              //   setConfirmPopup(pre => !pre)
-                              //   // hadleSlotBooking(obj, session)
-                              // } }
-                              onClick={() => handlePopup(obj, session)}
-                            >
-                              <p className=" flex justify-center bg-stone-300 hover:bg-stone-500 hover:text-white border-solid border-teal-500 p-2">
-                                <span className="ml-1">
-                                  {formatTime(obj.start)}
-                                </span>
-                                <span className="ml-1">-</span>
-                                <span>{formatTime(obj.end)}</span>
-                              </p>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      <hr className="my-3" />
-                    </div>
-                  );
-                })
-              : ""}
+                    );
+                  })
+                : ""}
+            </div>
           </div>
-        </div>
+        )}
         {confirmPopup && (
-          <div className=" absolute top-10 w-5/6 bg-slate-300 px-5 py-8 flex flex-col items-center ">
-            <div>
-              <h2>Booking Details</h2>
-            </div>
-            <div className="absolute top-5 right-10 cursor-pointer w-[2em] h-[1em]">
-              {/* <span className="w-[.1em] bg-[#fff] rotate-[45deg] h-7"></span>
+          <div className=" relative top-0 left-0   w-5/6 bg-slate-300 px-5 py-8 mt-10 ">
+            <div className="w-full h-full flex flex-col items-center ">
+              <div>
+                <h2>Booking Details</h2>
+              </div>
+              <div className="absolute top-5 right-10 cursor-pointer w-[2em] h-[1em]">
+                {/* <span className="w-[.1em] bg-[#fff] rotate-[45deg] h-7"></span>
             <span className=" w-[.1em] bg-[#fff] rotate-[-45deg] h-7" ></span>
             <div className="w-full h-full bg-red-600 "></div> */}
-              <p onClick={() => setConfirmPopup(false)}>close</p>
-            </div>
-            <div>
-              <p>{consultaionDetails?.session?.session}</p>
-            </div>
+                <p onClick={() => setConfirmPopup(false)}>close</p>
+              </div>
+              <div>
+                <p>session {consultaionDetails?.session?.session}</p>
+              </div>
+              <div>
+                <h1 className="underline underline-offset-4" >Consultation Time</h1>
 
-            <div>
-              <button
-                className="p-2 bg-orange-300 text-gray-50"
-                onClick={hadleSlotBooking}
-              >
-                Confirm Appointment
-              </button>
+                <p>starting Time : <span>{formatTime(consultaionDetails?.slot?.start)}</span></p>
+                <p>Ending Time : <span>{formatTime(consultaionDetails?.slot?.end)}</span></p>
+              </div>
+
+              <div>
+                <button
+                  className="p-2 bg-orange-300 text-gray-50"
+                  onClick={hadleSlotBooking}
+                >
+                  Confirm Appointment
+                </button>
+              </div>
             </div>
           </div>
         )}

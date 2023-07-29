@@ -8,6 +8,7 @@ import { Authorization } from '../Authentication/user/userAuthentication'
 import DoctorList from '../pages/client/DoctorList'
 import UserProfilePage from '../pages/client/UserProfilePage'
 import DoctorSinglePage from '../pages/client/DoctorSinglePage'
+import PaymentSuccessPage from '../pages/client/PaymentSuccessPage'
 
 
 function user() {
@@ -21,6 +22,7 @@ function user() {
         <Route element={ <HomeVerification >  <DoctorList /> </ HomeVerification>} path='/consult/:name' />
         <Route element={<UserProfilePage />} path='/profile/:id' />
         <Route element={ <HomeVerification ><DoctorSinglePage /></HomeVerification> } path='/consult/detail/:doctorId' />
+        <Route element={<PaymentSuccessPage />} path='/payment/success' />
       </Routes>
       </div>
   )

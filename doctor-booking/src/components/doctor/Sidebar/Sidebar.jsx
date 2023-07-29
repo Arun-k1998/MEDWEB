@@ -59,7 +59,7 @@ function Sidebar() {
         ? sideBar.map((content,index) => {
             return (
               
-                <div key={index}  className="h-14  flex items-center justify-center pl-4 md:justify-start text-sm lg:text-lg hover:bg-sky-800">
+                <div key={index}  className="text-slate-300 h-14  flex items-center justify-center pl-4 md:justify-start text-sm lg:text-lg hover:bg-sky-800">
                   {content.symbol}
                   <p
                     className="hidden md:block"

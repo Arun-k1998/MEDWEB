@@ -10,7 +10,7 @@ import "./index.css";
 import DoctorContext from "./helper/contest/DoctorContext.jsx";
 import ToastifyFunc from './helper/contest/ToastifyContest.jsx'
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
       <ToastifyFunc>
       <BrowserRouter>
@@ -18,5 +18,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       </BrowserRouter>
       </ToastifyFunc>
     </Provider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

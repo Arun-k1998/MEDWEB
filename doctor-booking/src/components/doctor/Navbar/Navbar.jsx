@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import {MdOutlineNotifications} from 'react-icons/md'
 import { useSelector } from 'react-redux';
 
-function 
 
-Navbar() {
+
+function  Navbar() {
     const {id} = useSelector(store=>store.doctor)
     const navigate = useNavigate()
     function logOut(){
-       
+       alert('logout')
        const expires = "expires=" + 'Thu, 01 Jan 1970 00:00:01 GMT';
        // Thu, 01 Jan 1970 00:00:01 GMT
        document.cookie =
@@ -19,7 +19,7 @@ Navbar() {
         
      }
      return (
-       <div className='grid grid-cols-[1fr_7fr] md:grid-cols-[1.5fr_8.5fr]  items-center h-[12vh] sticky top-0 z-10 '>
+       <div className='grid grid-cols-[1fr_7fr] sm:grid-cols-[1.5fr_8.5fr]  items-center h-[12vh] sticky top-0 z-10 '>
            <div className='w-full h-full py-4 bg-[#189AB4] px-2 md:px-9 '>
                <img src={icon} alt="" />
            </div>
