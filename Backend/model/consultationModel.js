@@ -3,10 +3,12 @@ const mongoose = require('mongoose')
 const consultaionSchema = mongoose.Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
         required:[true,'User Id required']
     },
     doctorId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:'doctor',
         required:[true,"DoctorId required"]
     }
     ,

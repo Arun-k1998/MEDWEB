@@ -4,6 +4,9 @@ const cors    = require('cors')
 const mongoose = require('mongoose')
 const path = require('path')
 const app = express()
+const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
+
 mongoose.connect(process.env.MONGOCONNECT, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -17,12 +20,23 @@ mongoose.connect(process.env.MONGOCONNECT, {
  
   
 app.use(express.json())
+app.use(bodyParser.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf; // Save the raw body data
+  }
+}));
+app.use(cookieParser())
+app.use(express.urlencoded({ extended: true }))
 
 app.use(express.static(path.join(__dirname,'public')))
-app.use(cors())
+app.use(cors({origin:"http://localhost:5173" ,credentials: true}))
+
+
+
 const userRoute = require('./routes/userRoute')
 const adminRoute = require('./routes/adminRoute')
 const docotRoute = require('./routes/doctorRoute')
+
 app.use('/',userRoute)
 app.use('/admin',adminRoute)
 app.use('/doctor',docotRoute)

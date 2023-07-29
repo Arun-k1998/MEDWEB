@@ -41,5 +41,6 @@ doctor_Route.post('/deleteSession',doctorController.deleteTimeSlote)
 doctor_Route.get('/token_v',doctorAuth,doctorController.tokenVerification)
 doctor_Route.get('/profile/:id',doctorController.getProfile)
 doctor_Route.post('/profile',upload.single('image'),doctorController.updateProfile)
+doctor_Route.get('/appointments/:id',doctorController.getAppointments)
 
 module.exports = doctor_Route
