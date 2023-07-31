@@ -9,6 +9,8 @@ import DoctorList from '../pages/client/DoctorList'
 import UserProfilePage from '../pages/client/UserProfilePage'
 import DoctorSinglePage from '../pages/client/DoctorSinglePage'
 import PaymentSuccessPage from '../pages/client/PaymentSuccessPage'
+import AppointmentsPage from '../pages/client/AppointmentsPage'
+import VideoMeetPage from '../pages/client/VideoMeetPage'
 
 
 function user() {
@@ -22,7 +24,9 @@ function user() {
         <Route element={ <HomeVerification >  <DoctorList /> </ HomeVerification>} path='/consult/:name' />
         <Route element={<UserProfilePage />} path='/profile/:id' />
         <Route element={ <HomeVerification ><DoctorSinglePage /></HomeVerification> } path='/consult/detail/:doctorId' />
+        <Route element={<Authorization accessBy={'Authorized'} ><AppointmentsPage /></Authorization>} path='/appointments' />
         <Route element={<PaymentSuccessPage />} path='/payment/success' />
+        <Route element={<VideoMeetPage />} path='/meet/:id' />
       </Routes>
       </div>
   )

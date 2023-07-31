@@ -12,7 +12,7 @@ function PaymentSuccessPage() {
 
       
      
-      console.log(session_id)
+    
 
       api.post ('/payment-succes',{booking:jwt,paymentId:session_id}).then((res)=>{
             alert("success")
@@ -21,8 +21,8 @@ function PaymentSuccessPage() {
 
     },[session_id])
   return (
-    <div>
-        <h1>Success</h1>
+    <div className='w-full h-[100vh] flex flex-col justify-center items-center'>
+        <h1 className='text-xl'> Success</h1>
     </div>
   )
 }

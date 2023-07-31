@@ -55,7 +55,10 @@ function DoctorList() {
       </div>
     
       <div className="grid md:grid-cols-[2fr_7.5fr] h-[80vh]">
-      <UserSidbar />
+      <div className='hidden w-[20vw] md:block border-r-2 border-r-[#189AB4]'>
+        <SearchBar value={value} search={searchByName}  />
+      
+    </div>
       <DoctorListingCard doctors={docotrsList} />
       </div>
       

@@ -100,13 +100,14 @@ function DoctorDetails() {
     alert(doctorId);
     // const requestData = { doctorId: doctorId };
 
-
-    api.post("/create-checkout-session", consultaionDetails).then((response) => {
-      console.log(response.data);
-      console.log(response.data.token)
-      localStorage.setItem('myToken', response.data.token)
-      window.location.href = response.data.url;
-    });
+    api
+      .post("/create-checkout-session", consultaionDetails)
+      .then((response) => {
+        console.log(response.data);
+        console.log(response.data.token);
+        localStorage.setItem("myToken", response.data.token);
+        window.location.href = response.data.url;
+      });
   };
   useEffect(() => {
     if (doctorId) {
@@ -115,12 +116,12 @@ function DoctorDetails() {
           // console.log(response.data.timeSlotes);
           setTimeSlotes([
             ...response.data.timeSlotes.filter((date) => {
-              if (moment(date?.date).format("ll") >= moment().format("ll")) {
+              if (moment(date?.date).isSameOrAfter(moment(), 'day')) {
+                // console.log(date);
                 date.sessions = date.sessions.map((session) => {
                   session.slotes = session.slotes.filter((slot) => {
                     return (
-                      moment(slot.start).format() >=
-                      moment().add(20, "minutes").format()
+                      moment(slot.start).isSameOrAfter(moment().add(20, 'minutes'))
                     );
                   });
                   return session;
@@ -250,10 +251,18 @@ function DoctorDetails() {
                 <p>session {consultaionDetails?.session?.session}</p>
               </div>
               <div>
-                <h1 className="underline underline-offset-4" >Consultation Time</h1>
+                <h1 className="underline underline-offset-4">
+                  Consultation Time
+                </h1>
 
-                <p>starting Time : <span>{formatTime(consultaionDetails?.slot?.start)}</span></p>
-                <p>Ending Time : <span>{formatTime(consultaionDetails?.slot?.end)}</span></p>
+                <p>
+                  starting Time :{" "}
+                  <span>{formatTime(consultaionDetails?.slot?.start)}</span>
+                </p>
+                <p>
+                  Ending Time :{" "}
+                  <span>{formatTime(consultaionDetails?.slot?.end)}</span>
+                </p>
               </div>
 
               <div>

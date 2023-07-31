@@ -47,13 +47,13 @@ function UserLogin() {
         }
       });
     }
-  }, [formErrors,submit]);
+  }, [formErrors, submit]);
 
   return (
     <div className="flex justify-center items-center h-screen bg-login-signup ">
       <div className="flex flex-col justify-center text-center backdrop-blur-sm bg-white/30 rounded-2xl sm:w-2/5 shadow-lg py-5  px-16 ">
         <h2 className="text-3xl font-serif ">Login</h2>
-        <div >
+        <div>
           <input
             type="text"
             name="email"
@@ -93,9 +93,15 @@ function UserLogin() {
         >
           Login
         </button>
-        <div className="flex mt-4 w-full justify-center" >
+        <div className="flex mt-4 w-full justify-center">
           <p className="text-blue-600">Don't have a account? </p>
-          <p className="ml-2 cursor-pointer" onClick={()=> navigate('/signup')}> SignUp</p>
+          <p
+            className="ml-2 cursor-pointer"
+            onClick={() => navigate("/signup")}
+          >
+            {" "}
+            SignUp
+          </p>
         </div>
       </div>
     </div>

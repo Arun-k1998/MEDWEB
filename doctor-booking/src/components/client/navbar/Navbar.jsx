@@ -16,7 +16,7 @@ import { userLogout } from "../../../redux/userSlice";
 const navigation = [
   { name: ' Doctors', href: '#', current: true },
   { name: 'Specilizations', href: '#', current: false },
-  { name: 'Appointments', href: '#', current: false },
+  { name: 'Appointments', href: '/appointments', current: false },
 ]
 
 function classNames(...classes) {
@@ -38,7 +38,7 @@ function Navbar() {
   }
   
   return (
-    <Disclosure as="nav" className="bg-white shadow-lg sticky top-0 z-10 h-full ">
+    <Disclosure as="nav" className= " bg-white shadow-lg sticky top-0 z-10 h-full ">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 ">

@@ -2,25 +2,36 @@ import React, { useEffect, useState } from "react";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 function ConsultationListing() {
   const [consultationList, setConsultationList] = useState([]);
-
+  const navigate = useNavigate();
   const doctorId = useSelector((store) => store.doctor.id);
- 
+
   const formatTime = (timee) => {
     let time = moment(timee).format("LT");
     return time;
   };
 
-  const formateDay = (date)=>{
-    let day = moment(date).format('dddd')
-    return day
-  }
+  const formateDay = (date) => {
+    let day = moment(date).format("dddd");
+    return day;
+  };
 
   const formateDate = (date) => {
     let result = moment(date).format("LL");
     return result;
   };
+
+  // const handleStartMeeting = (starting, ending, id) => {
+  //   const timeNow = moment();
+  //   if (timeNow.isBefore(moment(starting)))
+  //     alert("You can join only at the given time");
+  //   else if (timeNow.isAfter(moment(ending))) alert("Your time ended");
+  //   else navigate(`/meet/${id}`);
+  // };
+
+  
   useEffect(() => {
     doctorApi.get(`/appointments/${doctorId}`).then((response) => {
       if (response.data.status) {
@@ -29,40 +40,46 @@ function ConsultationListing() {
     });
   }, []);
   return (
-    <div className="w-full bg-slate-400 h-full ">
-      <div className=" my-10 mx-auto w-[90%] px-[10%] h-[100%] bg-black ">
-        <div className="w-full h-full overflow-y-scroll">
-          {consultationList.length ? (
-            consultationList.map((obj) => {
+    <div className="w-full bg-slate-400 h-[88vh] ">
+      <div className="w-full flex justify-center ">
+    <p className="underline underline-offset-4">Appointments</p>
+      </div>
+      <div className=" my-10 mx-auto w-[90%] px-[10%] h-[90%] overflow-y-scroll bg-black ">
+        <div className="w-full h-full ">
+          {consultationList?.length ? (
+            consultationList?.map((obj) => {
               return (
                 <div className="w-full my-6 h-40 flex  bg-slate-400 shadow-2xl">
                   <div className="w-[33.66%] h-full bg-orange-400">
                     <div className="w-full h-full flex flex-col justify-center items-center">
                       <p className="underline underline-offset-4 ">Patient </p>
-                      <p>{`${obj.userId.firstName} ${obj.userId.lastName} `}</p>
+                      <p>{`${obj.userId?.firstName} ${obj?.userId?.lastName} `}</p>
                     </div>
                   </div>
                   <div className="w-[33.66%]  h-full bg-red-500 ">
                     <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
                       <div className="flex gap-3">
-                        <p>{formateDate(obj.date)}</p>
-                        <p>{formateDay(obj.date)}</p>
+                        <p>{formateDate(obj?.date)}</p>
+                        <p>{formateDay(obj?.date)}</p>
                       </div>
                       <div>
                         <p>
                           Staring Time :{" "}
-                          <span>{formatTime(obj.startingTime)}</span>
+                          <span>{formatTime(obj?.startingTime)}</span>
                         </p>
                         <p>
                           Ending Time :{" "}
-                          <span>{formatTime(obj.endingTime)}</span>
+                          <span>{formatTime(obj?.endingTime)}</span>
                         </p>
                       </div>
                     </div>
                   </div>
                   <div className="w-[33.6%] h-full bg-lime-600 ">
                     <div className="w-full h-full flex gap-3 justify-center items-center ">
-                      <button className="bg-white p-2 rounded-s-2xl hover:bg-slate-600 hover:text-white">
+                      <button
+                        className="bg-white p-2 rounded-s-2xl hover:bg-slate-600 hover:text-white"
+                        onClick={() => navigate(`/doctor/meet/${obj._id}`)}
+                      >
                         Start
                       </button>
                       <button className="bg-white p-2 rounded-e-2xl">

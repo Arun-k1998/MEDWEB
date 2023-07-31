@@ -18,7 +18,7 @@ function Banner() {
     adminApi.delete('/banner',{data:{id:bannerId}}).then((response)=>{
       if(response.data.status){
         setFetch(!fetch)
-        navigate('/admin/banner')
+        // navigate('/admin/banner')
         
       }
     })
