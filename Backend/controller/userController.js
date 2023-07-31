@@ -1,8 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const buffer = require("buffer");
-
+const { v4 } = require("uuid");
 //Schema
 const users = require("../model/useModel");
 const banners = require("../model/bannerModel");
@@ -422,17 +422,19 @@ const slotBookingWithJwt = async (req, res) => {
     console.log(paymentChecking);
     console.log(paymentChecking.payment_status);
     if (paymentChecking.payment_status === "paid") {
-      const consultationDetails =  jwt.verify(
+      const consultationDetails = jwt.verify(
         req.body.booking,
         process.env.JSON_SECRET_KEY
       );
       console.log(consultationDetails);
       const { doctorId, slot, date, userId, sessions } = consultationDetails;
       console.log(doctorId);
-        // const DoctorData = await doctorModel.findOne({_id:doctorId})
+      // const DoctorData = await doctorModel.findOne({_id:doctorId})
       // const userData = await users.findOne({_id:userId})
       ("------------------------");
       // if(!userData) throw new Error('JWT token is mismatching')
+      const videoCallId = v4();
+      console.log("--------uuid----", videoCallId);
       const consultation = new consultationModel({
         userId: userId,
         doctorId: doctorId,
@@ -443,11 +445,12 @@ const slotBookingWithJwt = async (req, res) => {
         dateId: sessions.dateId,
         startingTime: new Date(slot.start),
         endingTime: new Date(slot.end),
+        videoCallId: videoCallId,
       });
       const bookedConsultaion = await consultation.save();
-      console.log(new Date(bookedConsultaion.startingTime).toLocaleString());
-      console.log(new Date(bookedConsultaion.endingTime).toLocaleString());
-
+      // console.log(new Date(bookedConsultaion.startingTime).toLocaleString());
+      // console.log(new Date(bookedConsultaion.endingTime).toLocaleString());
+      console.log(bookedConsultaion);
       if (bookedConsultaion) {
         const newDate = await timeSloteModel.findOne({ _id: sessions.dateId });
         console.log("---------------newData-----", newDate);
@@ -474,6 +477,48 @@ const slotBookingWithJwt = async (req, res) => {
   }
 };
 
+const getAppointments = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentTimeIST = moment().tz("Asia/Kolkata");
+    console.log(currentTimeIST.toDate());
+    const appointmentsList = await consultationModel.find({
+      $and: [
+        { userId: userId },
+        {
+          startingTime: { $gt: currentTimeIST.toDate() },
+        },
+      ],
+    }).populate('doctorId').populate('userId').sort({date:1});
+    if (appointmentsList) {
+      // console.log(app);
+      res.status(202).json({
+        status: true,
+        appointments: appointmentsList,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const meetingId = async(req,res)=>{
+  const {id} = req.params
+  console.log('----meetingId======',id);
+  try {
+    const consultaion = await consultationModel.findById(id).populate('userId').populate('doctorId') 
+    console.log(consultaion);
+    if(consultaion){
+      res.json({status:true,
+        meetingId:consultaion
+      })
+    }   
+  } catch (error) {
+    console.log(error.message);
+  }
+ 
+}
+
 module.exports = {
   signup,
   login,
@@ -486,4 +531,6 @@ module.exports = {
   checkoutSession,
   testHook,
   slotBookingWithJwt,
+  getAppointments,
+  meetingId,
 };

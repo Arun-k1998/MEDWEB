@@ -29,7 +29,7 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(express.static(path.join(__dirname,'public')))
-app.use(cors({origin:"http://localhost:5173" ,credentials: true}))
+app.use(cors({origin:process.env.CLIENT_URL ,credentials: true}))
 
 
 

@@ -50,7 +50,7 @@ const bannerUpload = async (req, res) => {
     const { name, description } = req.body;
     console.log(name, description);
     const newBanner = new banner({
-      title,
+      name,
       description,
       image: req.file.filename,
     });
@@ -59,7 +59,7 @@ const bannerUpload = async (req, res) => {
       res.status(201).json({ status: true, message: "successfully created" });
   } catch (error) {
     console.log(error.message);
-  }
+  } 
 };
 
 const banners = async (req, res) => {

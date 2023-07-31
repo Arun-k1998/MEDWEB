@@ -540,7 +540,7 @@ const getAppointments = async (req, res) => {
     console.log(currentTimeIST.toDate());
     const consultationList = await consultationModel
       .find({ $and: [{ doctorId: id }, { status: "pending" },{
-        startingTime: { $gt: currentTimeIST.toDate() }
+        startingTime: { $gte: currentTimeIST.toDate() }
       }]})
       .populate("doctorId")
       .populate("userId")

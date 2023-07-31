@@ -39,6 +39,10 @@ const consultaionSchema = mongoose.Schema({
         type:Date,
         required:true
     },
+    videoCallId:{
+        type:String,
+        required:[true,'videoCallId is required']
+    }
 
 })
 
