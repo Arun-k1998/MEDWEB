@@ -46,6 +46,10 @@ const userSchema = mongoose.Schema({
     is_Blocked:{
         type:Boolean,
         default:false
+    },
+    wallet:{
+        type:Number,
+        default:0
     }
 
 })

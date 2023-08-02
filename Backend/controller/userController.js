@@ -318,54 +318,108 @@ const slotBooking = async (req, res) => {
 const checkoutSession = async (req, res) => {
   console.log("iiiiiiiii");
 
-  const { doctorId, slot, date, userId, sessions } = req.body;
+  const { doctorId, slot, date, userId, sessions, paymentMethod } = req.body;
 
   try {
     const doctorData = await doctorModel.findOne({ _id: doctorId });
-
-    if (doctorData) {
-      const token = await jwt.sign(
-        {
-          doctorId: doctorId,
-          slot: slot,
-          date: date,
+    const consultationFee = doctorData.feePerConsultation;
+    console.log("-----paymentMethod-----", paymentMethod);
+    if (paymentMethod === "wallet") {
+      const userData = await users.findById(userId);
+      console.log(userData.wallet);
+      console.log(consultationFee);
+      if (userData.wallet < consultationFee) {
+        console.log("fail");
+        res.json({
+          status: false,
+          message: "Your Account doesn't have enough balance",
+        });
+        console.log("kkkk");
+      } else {
+        const videoCallId = v4();
+        console.log("--------uuid----", videoCallId);
+        const consultation = new consultationModel({
           userId: userId,
-          sessions: sessions,
-        },
-        process.env.JSON_SECRET_KEY,
-        { expiresIn: "1d" }
-      );
-
-      // console.log('----------------------token----------------',token);
-      const consultationFee = doctorData.feePerConsultation;
-
-      const session = await stripe.checkout.sessions.create({
-        line_items: [
-          {
-            price_data: {
-              currency: "INR",
-              product_data: {
-                name: `${doctorData.firstName} ${doctorData.lastName} Appointment`,
-              },
-              unit_amount: consultationFee,
-            },
-            quantity: 1,
+          doctorId: doctorId,
+          status: "pending",
+          date: new Date(date),
+          sessionNo: sessions.session,
+          tokenNo: slot.tokenNo,
+          dateId: sessions.dateId,
+          startingTime: new Date(slot.start),
+          endingTime: new Date(slot.end),
+          videoCallId: videoCallId,
+        });
+        const bookedConsultaion = await consultation.save();
+        await users.findByIdAndUpdate(userId, {
+          $set: {
+            wallet: userData.wallet - consultationFee,
           },
-        ],
-        mode: "payment",
-        success_url: `${CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url:
-          "http://localhost:5173/consult/detail/64aec98ff79d0a03023e88a5",
-      });
+        });
+        // console.log(new Date(bookedConsultaion.startingTime).toLocaleString());
+        // console.log(new Date(bookedConsultaion.endingTime).toLocaleString());
+        console.log(bookedConsultaion);
+        if (bookedConsultaion) {
+          const newDate = await timeSloteModel.findOne({
+            _id: sessions.dateId,
+          });
+          console.log("---------------newData-----", newDate);
+          newDate.sessions.forEach((session) => {
+            if (session.session === sessions.session) {
+              session.slotes.forEach((updateSlot) => {
+                if (updateSlot.tokenNo === slot.tokenNo) {
+                  updateSlot.is_Booked = true;
+                }
+              });
+            }
+          });
+          const updatedSlot = await newDate.save();
+          if (updatedSlot) {
+            console.log("successfull");
+            res.json({
+              status: true,
+              type: "wallet",
+            });
+          }
+        }
+      }
+    } else {
+      if (doctorData) {
+        const token = await jwt.sign(
+          {
+            doctorId: doctorId,
+            slot: slot,
+            date: date,
+            userId: userId,
+            sessions: sessions,
+          },
+          process.env.JSON_SECRET_KEY,
+          { expiresIn: "1d" }
+        );
 
-      // res.cookie('booking',token , {
+        // console.log('----------------------token----------------',token);
 
-      //   path:`/${session.url}`,
-      //   httpOnly: true, // This makes the cookie accessible only by the server, not by JavaScript in the frontend
-      //   maxAge: 24 * 60 * 60 * 1000, // Optional: cookie expiration time (milliseconds), e.g., 1 day
-      //   secure: true, // Optional: set this to true if the website uses HTTPS
-      // })
-      res.json({ url: session.url, token: token });
+        const session = await stripe.checkout.sessions.create({
+          line_items: [
+            {
+              price_data: {
+                currency: "INR",
+                product_data: {
+                  name: `${doctorData.firstName} ${doctorData.lastName} Appointment`,
+                },
+                unit_amount: consultationFee,
+              },
+              quantity: 1,
+            },
+          ],
+          mode: "payment",
+          success_url: `${CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url:
+            "http://localhost:5173/consult/detail/64aec98ff79d0a03023e88a5",
+        });
+
+        res.json({ url: session.url, token: token });
+      }
     }
   } catch (error) {
     console.log(error.message);
@@ -482,14 +536,18 @@ const getAppointments = async (req, res) => {
     const { userId } = req.params;
     const currentTimeIST = moment().tz("Asia/Kolkata");
     console.log(currentTimeIST.toDate());
-    const appointmentsList = await consultationModel.find({
-      $and: [
-        { userId: userId },
-        {
-          startingTime: { $gt: currentTimeIST.toDate() },
-        },
-      ],
-    }).populate('doctorId').populate('userId').sort({date:1});
+    const appointmentsList = await consultationModel
+      .find({
+        $and: [
+          { userId: userId },
+          {
+            startingTime: { $gt: currentTimeIST.toDate() },
+          },
+        ],
+      })
+      .populate("doctorId")
+      .populate("userId")
+      .sort({ date: 1 });
     if (appointmentsList) {
       // console.log(app);
       res.status(202).json({
@@ -502,22 +560,70 @@ const getAppointments = async (req, res) => {
   }
 };
 
-const meetingId = async(req,res)=>{
-  const {id} = req.params
-  console.log('----meetingId======',id);
+const meetingId = async (req, res) => {
+  const { id } = req.params;
+  console.log("----meetingId======", id);
   try {
-    const consultaion = await consultationModel.findById(id).populate('userId').populate('doctorId') 
+    const consultaion = await consultationModel
+      .findById(id)
+      .populate("userId")
+      .populate("doctorId");
     console.log(consultaion);
-    if(consultaion){
-      res.json({status:true,
-        meetingId:consultaion
-      })
-    }   
+    if (consultaion) {
+      res.json({ status: true, meetingId: consultaion });
+    }
   } catch (error) {
     console.log(error.message);
   }
- 
-}
+};
+
+const cancelConsultation = async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const consultationData = await consultationModel.findOne({
+      _id: appointmentId,
+    });
+    console.log("----------consultationDetails--------", consultationData);
+    const { sessionNo, tokenNo, doctorId, userId, dateId } = consultationData;
+    await consultationModel.deleteOne({ _id: appointmentId });
+    const timeScheduleData = await timeSloteModel.findById(dateId);
+    timeScheduleData.sessions.forEach((session, index) => {
+      if (sessionNo - 1 === index) {
+        session.slotes.forEach((slot) => {
+          if (slot.tokenNo === tokenNo) slot.is_Booked = false;
+        });
+      }
+    });
+    const updatedSlot = await timeScheduleData.save();
+    const updatedConsultationDatas = await consultationModel.find({
+      userId: userId,
+    });
+    const doctorData = await doctorModel.findById(doctorId);
+    const { feePerConsultation } = doctorData;
+    console.log(feePerConsultation);
+    console.log(userId);
+    const walletAmount = await users.findOneAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          wallet: feePerConsultation,
+        },
+      },
+      { new: true }
+    );
+    console.log(walletAmount);
+
+    if (updatedSlot) {
+      res.json({
+        status: true,
+        message: "Consultation Cancelled.",
+        consultations: updatedConsultationDatas,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 module.exports = {
   signup,
@@ -533,4 +639,5 @@ module.exports = {
   slotBookingWithJwt,
   getAppointments,
   meetingId,
+  cancelConsultation,
 };

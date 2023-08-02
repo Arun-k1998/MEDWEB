@@ -44,6 +44,6 @@ const consultaionSchema = mongoose.Schema({
         required:[true,'videoCallId is required']
     }
 
-})
+},{timestamps:true})
 
 module.exports = mongoose.model("consultation",consultaionSchema)

@@ -4,6 +4,7 @@ async function userAuth(req, res, next) {
   try {
     
     const authorization = req.headers['authorization'];
+   
     if(!authorization){ console.log("Authorization header required")}
     const token = authorization.replace('Bearer ',"")
     const verify = jwt.verify(token,process.env.JSON_SECRET_KEY)
