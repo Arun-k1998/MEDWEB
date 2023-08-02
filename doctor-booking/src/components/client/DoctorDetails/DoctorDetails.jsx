@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../helper/axios/userAxios";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import moment from "moment";
@@ -15,6 +15,8 @@ function DoctorDetails() {
   const [confirmPopup, setConfirmPopup] = useState(false);
   const [consultaionDetails, setConsultationDetails] = useState({});
   const userId = useSelector((store) => store.user.id);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const navigate = useNavigate()
 
   const handleScrollRight = () => {
     if (scrollableContainerRef.current) {
@@ -74,6 +76,13 @@ function DoctorDetails() {
     setSessions([...sessions]);
   };
 
+  const handlePaymentChange = (e)=>{
+    setPaymentMethod(e.target.value)
+    setConsultationDetails(prev =>{
+      return {...prev,['paymentMethod'] : e.target.value}
+    })
+  }
+
   const hadleSlotBooking = () => {
     // console.log(timeSlot);
     // console.log("slot booking");
@@ -96,8 +105,12 @@ function DoctorDetails() {
     //     alert("Hello");
     //   }
     // });
+    // setConsultationDetails(prev =>{
+    //   return {...prev,['paymentMethod'] : paymentMethod}
+    // })
     console.log(consultaionDetails);
-    alert(doctorId);
+    // alert(paymentMethod)
+    // alert(paymentMethod);
     // const requestData = { doctorId: doctorId };
 
     api
@@ -105,23 +118,32 @@ function DoctorDetails() {
       .then((response) => {
         console.log(response.data);
         console.log(response.data.token);
-        localStorage.setItem("myToken", response.data.token);
-        window.location.href = response.data.url;
+        if(response.data.status && response.data.type === "wallet") navigate('/payment/success')
+        else if(response.data.type === 'online'){
+          alert("in")
+          localStorage.setItem("myToken", response.data.token);
+          window.location.href = response.data.url;
+        }else{
+          alert(response.data.message)
+        }
+       
       });
   };
   useEffect(() => {
     if (doctorId) {
       api.get(`/timeSlotes/${doctorId}`).then((response) => {
+        
         if (response.data.status) {
+         
           // console.log(response.data.timeSlotes);
           setTimeSlotes([
             ...response.data.timeSlotes.filter((date) => {
-              if (moment(date?.date).isSameOrAfter(moment(), 'day')) {
+              if (moment(date?.date).isSameOrAfter(moment(), "day")) {
                 // console.log(date);
                 date.sessions = date.sessions.map((session) => {
                   session.slotes = session.slotes.filter((slot) => {
-                    return (
-                      moment(slot.start).isSameOrAfter(moment().add(20, 'minutes'))
+                    return moment(slot.start).isSameOrAfter(
+                      moment().add(20, "minutes")
                     );
                   });
                   return session;
@@ -140,12 +162,18 @@ function DoctorDetails() {
 
   return (
     <div className="w-full h-full flex justify-center gap-8  my-6">
-      <div className="w-[40%] bg-slate-200">
-        <div className="bg-slate-300 mx-10 mt-10">
+      <div className="w-[40%] flex flex-col items-start bg-slate-200">
+        <div className=" flex justify-center  mt-10 w-full">
           <img
             src={`${VITE_SERVER_URL}/images/${doctorDetails.image}`}
             alt=""
           />
+        </div>
+        <div className="w-full flex justify-start px-10 mt-11">
+          <div>
+            <p className="text-2xl">Dr . {doctorDetails.firstName}</p>
+          </div>
+          <div>{/* <p>{doctorDetails.}</p> */}</div>
         </div>
       </div>
       <div className="w-[60%] flex flex-col items-center bg-slate-200">
@@ -264,7 +292,28 @@ function DoctorDetails() {
                   <span>{formatTime(consultaionDetails?.slot?.end)}</span>
                 </p>
               </div>
-
+              <div className="flex gap-3">
+                <div>
+                  <label htmlFor="">Wallet</label>
+                  <input
+                    type="radio"
+                    name="pay_method"
+                    value="wallet"
+                    checked={paymentMethod === 'wallet'}
+                    onChange={handlePaymentChange}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="">Online</label>
+                  <input
+                    type="radio"
+                    name="pay_method"
+                    value="online"
+                    checked={paymentMethod === 'online'}
+                    onChange={handlePaymentChange}
+                  />
+                </div>
+              </div>
               <div>
                 <button
                   className="p-2 bg-orange-300 text-gray-50"

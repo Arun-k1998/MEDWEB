@@ -1,12 +1,13 @@
+import moment from "moment";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
+import api from "../../../helper/axios/userAxios";
 
-function Appointments({ appointments }) {
+function UserPayments({ appointments }) {
   const navigate = useNavigate();
 
-  const {show} = useContext(ToastifyContest) 
+  const { show } = useContext(ToastifyContest);
 
   const formatTime = (timee) => {
     let time = moment(timee).format("LT");
@@ -27,11 +28,14 @@ function Appointments({ appointments }) {
     if (str) return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  const handleStartMeeting = (starting, ending, id) => {
-    const timeNow = moment();
-    if (timeNow.isBefore(moment(starting))) show("You can join only at the given time",303);
-    else if (timeNow.isAfter(moment(ending))) ToastifyContest("Your time ended",303);
-    else navigate(`/meet/${id}`);
+  const handleCancellation = (id) => {
+    alert('hi')
+    api.post(`/cancel_appointment/${id}`).then((res) => {
+      if (res.data.status) {
+        show(res.data.message);
+        
+      }
+    });
   };
 
   return (
@@ -56,7 +60,7 @@ function Appointments({ appointments }) {
                     alt=""
                   />
                 </div>
-                <div className="w-[50%] ml-2 flex items-center h-full">
+                <div className="w-[50%] ml-2 flex flex-col justify-center items-center h-full">
                   <p>
                     Dr .
                     {firstLetterUpperCase(appointment?.doctorId?.firstName) +
@@ -65,8 +69,21 @@ function Appointments({ appointments }) {
                   </p>
                 </div>
               </div>
-              <div>
-                <p>{formateDate(appointment.date)}</p>
+              <div className=" w-[30%] flex flex-col justify-center items-center">
+                <div className="flex gap-2">
+                  <p>Booked Date</p>
+                  <p>
+                    {" "}
+                    <p>
+                      {appointment?.createdAt &&
+                        formateDate(appointment?.createdAt)}
+                    </p>
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <p>Consultation date</p>
+                  <p>{formateDate(appointment.date)}</p>
+                </div>
               </div>
               {/* <div>
                 <p>
@@ -75,7 +92,7 @@ function Appointments({ appointments }) {
                     firstLetterUpperCase(appointment?.doctorId?.lastName)}
                 </p>
               </div> */}
-              <div>
+              <div className="w-[20%]">
                 <div className="flex ">
                   <p>Starting Time :</p>
                   <p>{formatTime(appointment?.startingTime)}</p>
@@ -85,21 +102,13 @@ function Appointments({ appointments }) {
                   <p>{formatTime(appointment?.endingTime)}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className=" w-[20%] flex flex-col gap-2">
                 <button
                   className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
-                  onClick={() =>
-                    handleStartMeeting(
-                      appointment?.startingTime,
-                      appointment?.doctorId?.lastName,
-                      appointment._id
-                    )
-                  }
-                  // navigate(`/meet/${appointment._id}`)}}>
+                  onClick={() => handleCancellation(appointment._id)}
                 >
-                  Join Room
+                  Cancel
                 </button>
-               
               </div>
             </div>
           );
@@ -109,4 +118,4 @@ function Appointments({ appointments }) {
   );
 }
 
-export default Appointments;
+export default UserPayments;
