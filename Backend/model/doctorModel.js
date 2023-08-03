@@ -74,7 +74,7 @@ const doctorSchema = mongoose.Schema({
         enum:['pending','processing','approved'],
         default:'pending'
     },
-    is_Blcoked:{
+    is_Blocked:{
         type:Boolean,
         default:false
     },

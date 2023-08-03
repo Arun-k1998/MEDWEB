@@ -48,6 +48,12 @@ admin_Route.get('/doctors',doctorController.doctorsList)
 admin_Route.get('/dr_data',adminController.doctorDetails)
 admin_Route.post('/dr_register/:id',doctorController.doctorApproval)
 
+admin_Route.get("/user_list",adminController.getAllUser)
+admin_Route.post('/user_b/:action/:userId',adminController.userBlockAndUnblock)
+
+admin_Route.get('/doctor_list',adminController.getAllDoctors)
+admin_Route.post('/doctor_b/:action/:doctorId',adminController.doctorBlockAndUnBlock)
+
 admin_Route.get('/token_v',adminAuth,adminController.tokenVerification)
 
 module.exports = admin_Route

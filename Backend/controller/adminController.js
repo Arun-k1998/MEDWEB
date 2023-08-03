@@ -4,6 +4,9 @@ const bcrypt = require("bcrypt");
 const banner = require("../model/bannerModel");
 const specialization = require("../model/specializationModel");
 const doctor = require("../model/doctorModel");
+const userModel = require('../model/useModel');
+const doctorModel = require("../model/doctorModel");
+const { doctorList } = require("./doctorController");
 
 const tokenVerification = async (req, res) => {
   res.status(200).json({
@@ -231,6 +234,90 @@ const doctorDetails = async (req, res) => {
   }
 };
 
+const getAllUser = async(req,res)=>{
+  try {
+    
+    const userList = await userModel.find({})
+    console.log(userList);
+    res.json({
+      status:true,
+      userList :userList
+    })
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const userBlockAndUnblock = async(req,res)=>{
+  try {
+    const {action,userId} = req.params
+    console.log(action,userId);
+    let actionBoolean;
+    if(action === 'block') actionBoolean = true
+    else if(action === 'unBlock') actionBoolean = false
+    console.log(actionBoolean);
+    const userData = await userModel.findByIdAndUpdate({_id:userId},{
+      $set:{
+        is_Blocked: actionBoolean
+      }
+    })
+    
+    
+    if(userData){
+      res.json({
+        status:true,
+        message:`User ${actionBoolean? 'Block': "UnBlock" } Successfully`
+      })
+    }
+
+  } catch (error) {
+    res.status(404).json({status:false,message:error.message})
+    console.log(error.message);
+  }
+}
+
+const getAllDoctors = async(req,res)=>{
+  try {
+    const docotrList = await doctorModel.find({approved:'approved'})
+    if(doctorList){
+      res.json({
+        status:true,
+        doctorList:docotrList
+      })
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const doctorBlockAndUnBlock = async(req,res)=>{
+  try{
+  const {action,doctorId} = req.params
+  console.log(action,doctorId);
+  let actionBoolean;
+  if(action === 'block') actionBoolean = true
+  else if(action === 'unBlock') actionBoolean = false
+  console.log(actionBoolean);
+  const userData = await doctorModel.findByIdAndUpdate({_id:doctorId},{
+    $set:{
+      is_Blocked: actionBoolean
+    }
+  })
+  
+  
+  if(userData){
+    res.json({
+      status:true,
+      message:`User ${actionBoolean? 'Block': "UnBlock" } Successfully`
+    })
+  }
+
+} catch (error) {
+  res.status(404).json({status:false,message:error.message})
+  console.log(error.message);
+}
+}
+
 module.exports = {
   login,
   bannerUpload,
@@ -242,4 +329,7 @@ module.exports = {
   createSpecialization,
   doctorDetails,
   tokenVerification,
+  getAllUser,userBlockAndUnblock,
+  getAllDoctors,
+  doctorBlockAndUnBlock
 };

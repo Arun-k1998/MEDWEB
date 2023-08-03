@@ -462,7 +462,7 @@ const sss = async (req, res) => {
     const timeSlotes = await timeSloteModel
       .find({ doctorId: id })
       .sort({ date: 1 });
-    const doctorData = await doctor.findById(id);
+    const doctorData = await doctor.findById(id).populate('specialization');
     console.log(timeSlotes);
     if (timeSlotes) {
       console.log("successfull");
