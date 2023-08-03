@@ -12,6 +12,10 @@ import DoctorApplicatoins from '../pages/admin/DoctorApplicatoins'
 import DoctorApproval from '../pages/admin/DoctorApproval'
 import SpecializationUpdation from '../pages/admin/SpecializationUpdation'
 
+import UserManagementPage from '../pages/admin/UserManagementPage'
+import DoctorConsultaionPage from '../pages/doctor/DoctorConsultaionPage'
+import DoctorMangementPage from '../pages/admin/DoctorMangementPage'
+
 function AdminRoute() {
   return (
     <>
@@ -26,6 +30,8 @@ function AdminRoute() {
         <Route element={<AdminVerification accessBy={'Authorized'}><DoctorApplicatoins /></AdminVerification>} path='/applications' />
         <Route element={<AdminVerification accessBy={'Authorized'}> <DoctorApproval /> </AdminVerification> } path='/dr_approval/:id' />
         <Route element={<AdminVerification accessBy={'Authorized'}> <SpecializationUpdation /></AdminVerification>} path='/specialization_u/:name' />
+        <Route element={<AdminVerification accessBy={'Authorized'}><UserManagementPage /></AdminVerification>} path='/users' />
+        <Route element={<DoctorMangementPage /> } path='/doctors' />
       </Routes>
     </>
   )

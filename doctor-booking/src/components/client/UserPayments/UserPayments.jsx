@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 import api from "../../../helper/axios/userAxios";
+import { BsCurrencyRupee } from "react-icons/bs";
 
 function UserPayments({ appointments }) {
   const navigate = useNavigate();
@@ -67,6 +68,16 @@ function UserPayments({ appointments }) {
                       " " +
                       firstLetterUpperCase(appointment?.doctorId?.lastName)}
                   </p>
+                  <div className="flex flex-col justify-between">
+                    <span>Consultation Fee
+                      <div className="flex justify-center items-center">
+                    <p>{appointment?.doctorId?.feePerConsultation}</p>
+
+                      <span><BsCurrencyRupee /></span>
+                      </div>
+
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className=" w-[30%] flex flex-col justify-center items-center">

@@ -13,7 +13,7 @@ button {
     transition-property: color;
   }
   
-  button:focus,
+  .update_button:focus,
   .update_button:hover {
     color: #0b9235;
   }

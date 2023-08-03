@@ -4,6 +4,7 @@ import api from "../../../helper/axios/userAxios";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import {BsCurrencyRupee} from 'react-icons/bs'
 function DoctorDetails() {
   const { VITE_SERVER_URL } = import.meta.env;
   const { doctorId } = useParams();
@@ -16,7 +17,7 @@ function DoctorDetails() {
   const [consultaionDetails, setConsultationDetails] = useState({});
   const userId = useSelector((store) => store.user.id);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleScrollRight = () => {
     if (scrollableContainerRef.current) {
@@ -76,12 +77,12 @@ function DoctorDetails() {
     setSessions([...sessions]);
   };
 
-  const handlePaymentChange = (e)=>{
-    setPaymentMethod(e.target.value)
-    setConsultationDetails(prev =>{
-      return {...prev,['paymentMethod'] : e.target.value}
-    })
-  }
+  const handlePaymentChange = (e) => {
+    setPaymentMethod(e.target.value);
+    setConsultationDetails((prev) => {
+      return { ...prev, ["paymentMethod"]: e.target.value };
+    });
+  };
 
   const hadleSlotBooking = () => {
     // console.log(timeSlot);
@@ -118,23 +119,21 @@ function DoctorDetails() {
       .then((response) => {
         console.log(response.data);
         console.log(response.data.token);
-        if(response.data.status && response.data.type === "wallet") navigate('/payment/success')
-        else if(response.data.type === 'online'){
-          alert("in")
+        if (response.data.status && response.data.type === "wallet")
+          navigate("/payment/success");
+        else if (response.data.type === "online") {
+          alert("in");
           localStorage.setItem("myToken", response.data.token);
           window.location.href = response.data.url;
-        }else{
-          alert(response.data.message)
+        } else {
+          alert(response.data.message);
         }
-       
       });
   };
   useEffect(() => {
     if (doctorId) {
       api.get(`/timeSlotes/${doctorId}`).then((response) => {
-        
         if (response.data.status) {
-         
           // console.log(response.data.timeSlotes);
           setTimeSlotes([
             ...response.data.timeSlotes.filter((date) => {
@@ -169,11 +168,27 @@ function DoctorDetails() {
             alt=""
           />
         </div>
-        <div className="w-full flex justify-start px-10 mt-11">
-          <div>
-            <p className="text-2xl">Dr . {doctorDetails.firstName}</p>
+        <div className="w-full grid grid-cols-3 px-10 mt-11">
+          <div className="">
+            <p className="mb-4">Name </p>
+            <p className="mb-4">Specialization </p>
+            <p className="mb-4">consultaion Fee </p>
           </div>
-          <div>{/* <p>{doctorDetails.}</p> */}</div>
+          <div className="flex flex-col">
+            <span className="mb-4">:</span>
+            <span className="mb-4">:</span>
+            <span className="mb-4">:</span>
+          </div>
+          <div>
+            <div>
+              <p className="text-xl mb-4">Dr . {doctorDetails.firstName}</p>
+            </div>
+            <p className="mb-4">{doctorDetails?.specialization?.name}</p>
+            <div className="mb-4 flex items-center gap-1">
+              <p>{doctorDetails.feePerConsultation}</p>
+              <span><BsCurrencyRupee /></span>
+            </div>
+          </div>
         </div>
       </div>
       <div className="w-[60%] flex flex-col items-center bg-slate-200">
@@ -184,6 +199,7 @@ function DoctorDetails() {
             } mx-3 flex flex-col  `}
           >
             {/* absolute top-0 left-4 md:left-24 shadow-2xl bg-slate-300 py-10 flex flex-col md:grid md:grid-cols-1 lg:grid-cols-[3fr,7fr] gap-4 px-5 */}
+            <p>Available Slotes</p>
 
             <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600">
               <div className="w-full gap-4 items-center flex flex-row justify-evenly">
@@ -299,7 +315,7 @@ function DoctorDetails() {
                     type="radio"
                     name="pay_method"
                     value="wallet"
-                    checked={paymentMethod === 'wallet'}
+                    checked={paymentMethod === "wallet"}
                     onChange={handlePaymentChange}
                   />
                 </div>
@@ -309,7 +325,7 @@ function DoctorDetails() {
                     type="radio"
                     name="pay_method"
                     value="online"
-                    checked={paymentMethod === 'online'}
+                    checked={paymentMethod === "online"}
                     onChange={handlePaymentChange}
                   />
                 </div>
