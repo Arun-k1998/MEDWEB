@@ -121,8 +121,7 @@ function DoctorDetails() {
         console.log(response.data.token);
         if (response.data.status && response.data.type === "wallet")
           navigate("/payment/success");
-        else if (response.data.type === "online") {
-          alert("in");
+        else if ( response.data.status && response.data.type === "online" ) {
           localStorage.setItem("myToken", response.data.token);
           window.location.href = response.data.url;
         } else {

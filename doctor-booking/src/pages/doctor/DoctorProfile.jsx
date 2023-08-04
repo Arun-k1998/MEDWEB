@@ -1,44 +1,75 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { doctorApi } from '../../helper/axios/doctorAxios'
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { doctorApi } from "../../helper/axios/doctorAxios";
+import Navbar from "../../components/doctor/Navbar/Navbar";
+import Sidebar from "../../components/doctor/Sidebar/Sidebar";
+import DoctorProfileComponent from "../../components/doctor/DoctorProfile/DoctorProfile";
 
 function DoctorProfile() {
-    const {id} = useParams()
-    const [doctor,setDoctor] = useState({})
-    const {VITE_SERVER_URL} = import.meta.env
-    const [image,setImage] = useState('')
-    const onImageChange = (e)=>{
-        setImage(e.target.files[0])
-    }
+  const { id } = useParams();
+  const initialValues = {
+    firstName:'',
+    lastName:'',
+    email:'',
+    phoneNumber:''
+  } 
+  const [doctor, setDoctor] = useState({});
+  const [doctorNew,setDoctorNew] = useState(initialValues)
+  
+  const [image, setImage] = useState("");
 
-    const handleSubmit = ()=>{
-        const form = new FormData()
+  const onImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  
+  const handleChange = (e) => {
     
-        form.append('image',image)
-        form.append('id',doctor._id)
-        doctorApi.post('/profile',form,{
-            headers: {
-              "content-type": "multipart/form-data",
-            },
-          })
-    }
-    useEffect(()=>{
-        if(id){
-            doctorApi.get(`/profile/${id}`).then((response)=>{
-                if(response.data.status){
-                    setDoctor({...response.data.doctor})
-                }
-            })
+    const { name, value } = e.target;
+    setDoctorNew(prev => {
+      return {
+        ...prev,[name] : value
+      }
+    })
+  };
+
+  const handleSubmit = () => {
+    const form = new FormData();
+
+    form.append("image", image);
+    form.append("id", doctor._id);
+    doctorApi.post("/profile", form, {
+      headers: {
+        "content-type": "multipart/form-data",
+      },
+    });
+  };
+  useEffect(() => {
+    if (id) {
+      doctorApi.get(`/profile/${id}`).then((response) => {
+        if (response.data.status) {
+          setDoctor({ ...response.data.doctor });
         }
-        
-    },[id])
+      });
+    }
+  }, [id]);
   return (
     <div>
-      <img  src={`${VITE_SERVER_URL}/images/${doctor.image}`} alt="" />
-      <input type="file" name='image' onChange={onImageChange} />
-    <button onClick={handleSubmit}>update</button>
+      <Navbar />
+      <div className="grid grid-cols-[1fr_7fr] sm:grid-cols-[1.5fr_8.5fr] w-full h-full">
+        <Sidebar />
+        <div className="w-full h-full">
+          <DoctorProfileComponent
+            doctorData={doctor}
+            onImageChange={onImageChange}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+            doctorNew={doctorNew}
+          />
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
-export default DoctorProfile
+export default DoctorProfile;

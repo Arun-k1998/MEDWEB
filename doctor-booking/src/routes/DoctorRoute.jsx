@@ -21,7 +21,7 @@ function DoctorRoute() {
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorRegiteration /></DoctorAuthentication>} path='/register' />
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><TimeSchedulingPage /></DoctorAuthentication>} path='/schedule' />
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorConsultaionPage /></DoctorAuthentication>} path='/consultation' />
-       <Route element={<DoctorProfile />} path='/profile/:id' />
+       <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorProfile /></DoctorAuthentication>} path='/profile/:id' />
        <Route element={<DoctorVideoMeetPage />} path='/meet/:id' />
       </Routes>
     </div>
