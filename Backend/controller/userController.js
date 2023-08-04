@@ -384,6 +384,7 @@ const checkoutSession = async (req, res) => {
         }
       }
     } else {
+      console.log('----------online--------');
       if (doctorData) {
         const token = await jwt.sign(
           {
@@ -418,7 +419,7 @@ const checkoutSession = async (req, res) => {
             "http://localhost:5173/consult/detail/64aec98ff79d0a03023e88a5",
         });
 
-        res.json({ url: session.url, token: token });
+        res.json({ status:true, url: session.url, token: token ,type: "online"});
       }
     }
   } catch (error) {

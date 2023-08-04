@@ -290,7 +290,7 @@ const getAllDoctors = async(req,res)=>{
   }
 }
 
-const doctorBlockAndUnBlock = async(req,res)=>{
+const doctorBlockAndUnBlock = async(req,res)=>{ 
   try{
   const {action,doctorId} = req.params
   console.log(action,doctorId);

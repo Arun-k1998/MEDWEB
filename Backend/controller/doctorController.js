@@ -433,7 +433,7 @@ const doctorList = async (req, res) => {
         $and: [
           { specialization: name },
           { approved: "approved" },
-          { is_Blcoked: false },
+          { is_Blocked: false },
         ],
       })
       .populate("specialization", "name");

@@ -34,9 +34,9 @@ const adminAuth = require("../middleware/adminAuth");
 const specializationController = require('../controller/specializationController');
 
 admin_Route.post('/login',adminController.login)
-admin_Route.post('/banner',upload.single('image'),adminController.bannerUpload)
-admin_Route.get('/banner',adminController.banners)
-admin_Route.delete('/banner',adminController.deleteBanner)
+admin_Route.post('/banner',adminAuth,upload.single('image'),adminController.bannerUpload)
+admin_Route.get('/banner',adminAuth,adminController.banners)
+admin_Route.delete('/banner',adminAuth,adminController.deleteBanner)
 admin_Route.get('/banner_u/:id',adminController.getBanner)
 admin_Route.post('/banner_u',upload.single('image'),adminController.updateBanner)
 admin_Route.get('/specialization',adminController.specilizations)
