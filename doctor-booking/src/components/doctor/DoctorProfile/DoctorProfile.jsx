@@ -21,12 +21,12 @@ function DoctorProfile({
     <>
       <div className="h-[40vh]  w-full overflow-hidden my-2 py-5">
         <div className="relative  ">
-          <button
+         { !edit && <button
             className="absolute top-0 right-5"
             onClick={() => setEdit((pre) => !pre)}
           >
             Edit
-          </button>
+          </button>}
           <div className="mx-auto w-48 h-48 shadow-2xl shadow-black bg-slate-500 rounded-full">
             <img
               src={`${VITE_SERVER_URL}/images/${doctorData.image}`}
@@ -121,6 +121,26 @@ function DoctorProfile({
             className="w-1/2 bg-gray-300 p-2"
           />
         </div>
+        <div className="flex justify-around items-center">
+          <div className="w-1/2 flex h-full text-start p-2 items-center">
+            <label htmlFor="" className="full">
+              Consultaion Fee :
+            </label>
+          </div>
+          <input
+            disabled={!edit}
+            type="number"
+            name="phoneNumber"
+            placeholder={doctorData.feePerConsultation}
+            value={doctorNew.feePerConsultation}
+            onChange={handleChange}
+            className="w-1/2 bg-gray-300 p-2"
+          />
+        </div>
+      </div>
+      <div className="w-full flex justify-center mt-10">
+      { edit && <button onClick={handleSubmit} className="p-2 w-1/4 bg-lime-700">update</button>}
+
       </div>
       <div className="mt-6 px-4 ">
         <hr />
@@ -161,8 +181,8 @@ function DoctorProfile({
           />
         </div>
       </div>
+      
 
-      <button onClick={handleSubmit}>update</button>
     </>
   );
 }

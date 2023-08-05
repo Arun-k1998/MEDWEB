@@ -14,8 +14,8 @@ function DoctorProfile() {
     phoneNumber:''
   } 
   const [doctor, setDoctor] = useState({});
-  const [doctorNew,setDoctorNew] = useState(initialValues)
-  
+  const [doctorNew,setDoctorNew] = useState({})
+  const [success,setSuccess] = useState(false)
   const [image, setImage] = useState("");
 
   const onImageChange = (e) => {
@@ -36,12 +36,20 @@ function DoctorProfile() {
   const handleSubmit = () => {
     const form = new FormData();
 
-    form.append("image", image);
+    form.append('doctorData',JSON.stringify(doctorNew))
+    form.append("image", image);  
     form.append("id", doctor._id);
     doctorApi.post("/profile", form, {
       headers: {
         "content-type": "multipart/form-data",
       },
+    }).then((res)=>{
+      
+      if(res.data.status){
+        alert('success')
+        setDoctor({...res.data.user})
+        setSuccess(prev => !prev)
+      }
     });
   };
   useEffect(() => {
@@ -52,7 +60,7 @@ function DoctorProfile() {
         }
       });
     }
-  }, [id]);
+  }, [id,success]);
   return (
     <div>
       <Navbar />

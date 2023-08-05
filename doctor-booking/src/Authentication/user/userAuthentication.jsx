@@ -60,15 +60,16 @@ export const Authorization = ({ children, accessBy }) => {
   }, []);
 
   if (!loading && accessBy == "Authorized"){
-   
+
     return children;
   } 
   else if(!loading && accessBy == "non-Authorized"){
     console.log(!!loading);
     console.log(accessBy == "non-Authorized");
-    alert('hiibbib')
+
     navigate('/')
   } else if(loading && accessBy == "non-Authorized"){
+   
     return children
   }
 //   else {
