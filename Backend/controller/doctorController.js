@@ -481,7 +481,7 @@ const sss = async (req, res) => {
   }
 };
 
-const getProfile = async (req, res) => {
+const getProfile = async (req, res) => { 
   try {
     const { id } = req.params;
     console.log(id);
@@ -499,7 +499,9 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id,doctorData } = req.body;
+    console.log(JSON.parse(doctorData));
+    let newData = JSON.parse(doctorData)
     const doctorDta = await doctor.findById({ _id: id });
     if (doctorDta) {
       const oldImage = doctorDta?.image;
@@ -507,21 +509,28 @@ const updateProfile = async (req, res) => {
       if (oldImage) {
         newPath = path.join(
           "C:\\Users\\arunk\\doctorconsultation\\Backend\\public\\images\\",
-          oldImage
+          oldImage 
         );
       }
-
-      await doctor.findByIdAndUpdate(
-        { _id: id },
-        {
-          image: req.file.filename,
-        }
-      );
-      if (oldImage) fs.unlinkSync(newPath);
-
+      let savedUserData;
+      if(req?.file?.filename){
+        savedUserData= await doctor.findByIdAndUpdate(
+          { _id: id },
+        {$set:{...newData, image: req.file.filename,}}
+        );
+        if (oldImage) fs.unlinkSync(newPath);
+      }else{
+        console.log('hiiiii');
+        savedUserData = await doctor.findByIdAndUpdate(
+           id,
+          {...newData}
+        );
+        console.log("-----------------",savedUserData);
+      }
       res.json({
         status: true,
         message: "Success",
+        user:savedUserData
       });
     }
   } catch (error) {

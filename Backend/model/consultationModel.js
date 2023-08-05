@@ -42,7 +42,47 @@ const consultaionSchema = mongoose.Schema({
     videoCallId:{
         type:String,
         required:[true,'videoCallId is required']
-    }
+    },
+    prescription:[
+        {
+            medicine:{
+                type:String
+            },
+            totalDays:{
+                type:Number
+            },
+            quantity:{
+                type:Number
+            },
+            time:{
+                morning:{
+                    after:{
+                        type:Boolean
+                    },
+                    before:{
+                        type:Boolean
+                    }
+                },
+                afterNoon:{
+                    after:{
+                        type:Boolean
+                    },
+                    before:{
+                        type:Boolean
+                    }
+                },
+                night:{
+                    after:{
+                        type:Boolean
+                    },
+                    before:{
+                        type:Boolean
+                    }
+                }
+                
+            }
+        }
+    ]
 
 },{timestamps:true})
 
