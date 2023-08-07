@@ -36,8 +36,8 @@ function VideoMeetPage() {
         api.addEventListeners({
           readyToClose: handleClose,
           participantLeft: handleParticipantLeft,
-          participantJoined: handleParticipantJoined,
-          videoConferenceJoined: handleVideoConferenceJoined,
+          // participantJoined: handleParticipantJoined,
+          // videoConferenceJoined: handleVideoConferenceJoined,
           videoConferenceLeft: handleVideoConferenceLeft,
         });
       }, [api]);

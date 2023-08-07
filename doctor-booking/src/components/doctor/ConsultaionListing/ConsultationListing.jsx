@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 function ConsultationListing() {
   const [consultationList, setConsultationList] = useState([]);
   const navigate = useNavigate();
   const doctorId = useSelector((store) => store.doctor.id);
+  const { show } = useContext(ToastifyContest);
 
   const formatTime = (timee) => {
     let time = moment(timee).format("LT");
@@ -23,6 +25,13 @@ function ConsultationListing() {
     return result;
   };
 
+  const handleFinish = (consultationId) => {
+    doctorApi.post(`/consultation_finish/${consultationId}`).then((res) => {
+      if (res.data.status) {
+        show(res.data.message);
+      }
+    });
+  };
   // const handleStartMeeting = (starting, ending, id) => {
   //   const timeNow = moment();
   //   if (timeNow.isBefore(moment(starting)))
@@ -31,7 +40,6 @@ function ConsultationListing() {
   //   else navigate(`/meet/${id}`);
   // };
 
-  
   useEffect(() => {
     doctorApi.get(`/appointments/${doctorId}`).then((response) => {
       if (response.data.status) {
@@ -42,7 +50,11 @@ function ConsultationListing() {
   return (
     <div className="w-full bg-slate-400 h-[88vh] ">
       <div className="w-full flex justify-center ">
-    <p className="underline underline-offset-4">Appointments</p>
+        <p className="underline underline-offset-4">Appointments</p>
+      </div>
+      <div className="flex gap-4 mx-auto w-[90%]">
+        <button className="text-white bg-zinc-600 p-2">Upcoming</button>
+        <button className="text-white bg-zinc-600 p-2">Consulted</button>
       </div>
       <div className=" my-10 mx-auto w-[90%] px-[10%] h-[90%] overflow-y-scroll bg-black ">
         <div className="w-full h-full ">
@@ -74,8 +86,8 @@ function ConsultationListing() {
                       </div>
                     </div>
                   </div>
-                  <div className="w-[33.6%] h-full bg-lime-600 ">
-                    <div className="w-full h-full flex gap-3 justify-center items-center ">
+                  <div className="w-[33.6%] flex flex-col justify-around h-full bg-lime-600 ">
+                    <div className="w-full h-1/2 flex gap-3 justify-center items-center ">
                       <button
                         className="bg-white p-2 rounded-s-2xl hover:bg-slate-600 hover:text-white"
                         onClick={() => navigate(`/doctor/meet/${obj._id}`)}
@@ -84,6 +96,14 @@ function ConsultationListing() {
                       </button>
                       <button className="bg-white p-2 rounded-e-2xl">
                         Cancel
+                      </button>
+                    </div>
+                    <div className="w-full h-1/2 flex gap-3 justify-center items-center">
+                      <button
+                        className="bg-white p-2 w-32 hover:shadow-inner hover:shadow-red-600  rounded-2xl"
+                        onClick={() => handleFinish(obj._id)}
+                      >
+                        Finish
                       </button>
                     </div>
                   </div>
