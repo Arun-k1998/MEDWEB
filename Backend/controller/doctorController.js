@@ -548,9 +548,11 @@ const getAppointments = async (req, res) => {
     const currentTimeIST = moment().tz('Asia/Kolkata');
     console.log(currentTimeIST.toDate());
     const consultationList = await consultationModel
-      .find({ $and: [{ doctorId: id }, { status: "pending" },{
+      .find({ $and: [{ doctorId: id }, { status: "pending" }
+      ,{
         startingTime: { $gte: currentTimeIST.toDate() }
-      }]})
+      }
+    ]})
       .populate("doctorId")
       .populate("userId")
       .sort({ date: 1 })
@@ -564,6 +566,60 @@ const getAppointments = async (req, res) => {
     console.log(error.message);
   }
 };
+
+const createPrescription = async(req,res)=>{
+  try {
+    const {meetId,medicines} = req.body
+    console.log('--------------presctiption--------------');
+    console.log(meetId);
+    console.log(medicines);
+    console.log('------end-----------');
+    const updatedConsultation = await consultationModel.findByIdAndUpdate(meetId,{prescription:medicines})
+    if(updatedConsultation){
+      res.json({
+        status:true,
+        message:'prescription added successfully'
+      })
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const consultationFinish = async(req,res) => {
+  try {
+    const {consultationId} = req.params
+    if(consultationId){
+      const updatedConsultation = await consultationModel.findByIdAndUpdate(consultationId,{status:'finish'})
+      if(updatedConsultation) {
+        res.json({
+          status:true,
+          message:'Consultation Finished'
+        })
+      }
+    }
+
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const patients = async(req,res)=>{
+  try {
+    const {doctorId} = req.params
+    console.log(doctorId);
+
+    const patientsList = await consultationModel.find({$and:[{status:'finish'},{doctorId:doctorId}]}).populate('userId').populate('doctorId')
+    console.log(patientsList);
+    res.json({
+      status:true,
+      patients:patientsList
+    }) 
+
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 module.exports = {
   signup,
@@ -582,4 +638,7 @@ module.exports = {
   getProfile,
   updateProfile,
   getAppointments,
+  createPrescription,
+  consultationFinish,
+  patients
 };

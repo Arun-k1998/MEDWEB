@@ -326,6 +326,7 @@ const checkoutSession = async (req, res) => {
     console.log("-----paymentMethod-----", paymentMethod);
     if (paymentMethod === "wallet") {
       const userData = await users.findById(userId);
+      console.log(userData);
       console.log(userData.wallet);
       console.log(consultationFee);
       if (userData.wallet < consultationFee) {

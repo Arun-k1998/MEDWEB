@@ -22,6 +22,6 @@ user_Route.post('/payment-succes',userAuth,userController.slotBookingWithJwt)
 // user_Route.post('/webhook',express.raw({type:"application/json"}),userController.testHook)
 user_Route.post('/create-checkout-session',userAuth,userController.checkoutSession)
 user_Route.get('/appointments/:userId',userAuth,userAuth,userController.getAppointments)
-user_Route.get('/meet/:id',userAuth,userController.meetingId)
+user_Route.get('/meet/:id',userController.meetingId)
 user_Route.post('/cancel_appointment/:id',userAuth,userAuth,userController.cancelConsultation)
 module.exports = user_Route
