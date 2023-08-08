@@ -24,4 +24,5 @@ user_Route.post('/create-checkout-session',userAuth,userController.checkoutSessi
 user_Route.get('/appointments/:userId',userAuth,userAuth,userController.getAppointments)
 user_Route.get('/meet/:id',userController.meetingId)
 user_Route.post('/cancel_appointment/:id',userAuth,userAuth,userController.cancelConsultation)
+user_Route.get('/profile/:id',userAuth,userController.getProfile)
 module.exports = user_Route

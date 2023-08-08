@@ -542,9 +542,9 @@ const getAppointments = async (req, res) => {
       .find({
         $and: [
           { userId: userId },
-          {
-            startingTime: { $gt: currentTimeIST.toDate() },
-          },
+          // {
+          //   startingTime: { $gt: currentTimeIST.toDate() },
+          // },
         ],
       })
       .populate("doctorId")
@@ -627,6 +627,24 @@ const cancelConsultation = async (req, res) => {
   }
 };
 
+const getProfile = async (req,res)=>{
+  try {
+    const userId = req.params.id
+    const userData = await users.findById(userId,{password:0})
+    console.log(userData);
+    
+    if(req.user){
+      res.json({
+        status:true,
+        user:userData
+      })
+    }
+
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 module.exports = {
   signup,
   login,
@@ -642,4 +660,5 @@ module.exports = {
   getAppointments,
   meetingId,
   cancelConsultation,
+  getProfile
 };
