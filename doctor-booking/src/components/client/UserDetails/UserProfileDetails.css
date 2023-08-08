@@ -1,0 +1,20 @@
+.Edit_button{
+    transition: all 0.3s ease 0s;
+}
+
+.Edit_button:hover{
+    background-color: #0a6583;
+    box-shadow: 0px 15px 20px rgba(9, 81, 117, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+.save_changes{
+    transition: all 0.3s ease 0s;
+}
+
+.save_changes:hover{
+    background-color: #0a6583;
+    box-shadow: 0px 15px 20px rgba(9, 81, 117, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}

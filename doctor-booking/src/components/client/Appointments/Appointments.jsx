@@ -56,13 +56,19 @@ function Appointments({ appointments }) {
                     alt=""
                   />
                 </div>
-                <div className="w-[50%] ml-2 flex items-center h-full">
+                <div className="w-[50%] ml-2 flex flex-col justify-around items-center h-full">
                   <p>
                     Dr .
                     {firstLetterUpperCase(appointment?.doctorId?.firstName) +
                       " " +
                       firstLetterUpperCase(appointment?.doctorId?.lastName)}
                   </p>
+                  {
+                  appointment.status === "finish" ? <div className="w-full flex  justify-center gap-3 items-center">
+                    <div className="w-2 h-2 rounded-full bg-lime-700"></div>
+                    <p>Consulted</p>
+                  </div>:'' }
+                  
                 </div>
               </div>
               <div>
@@ -85,8 +91,11 @@ function Appointments({ appointments }) {
                   <p>{formatTime(appointment?.endingTime)}</p>
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <button
+              <div className="flex  gap-2">
+                {
+                  appointment.status === "finish" ? <div className="w-50  h-full flex gap-3 items-center">
+                   <button  className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32" >Prescripton</button>
+                  </div> :<button
                   className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
                   onClick={() =>
                     handleStartMeeting(
@@ -99,6 +108,8 @@ function Appointments({ appointments }) {
                 >
                   Join Room
                 </button>
+                }
+                
                
               </div>
             </div>

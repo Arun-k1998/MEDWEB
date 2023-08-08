@@ -15,7 +15,7 @@ function Sidebar() {
     <div className="h-[88vh] w-full bg-[#189AB4] py-4 pt-16  font-serif sticky top-[12v] ">
       <div className="h-14 focus:bg-slate-400 flex items-center justify-center pl-4 md:justify-start text-sm lg:text-lg hover:bg-sky-800">
         <MdSpaceDashboard className="mr-1" />
-        <p className="hidden md:block ">Dashboard</p>
+        <p className="hidden md:block " onClick={()=> navigate('/dashBoard')}>Dashboard</p>
       </div>
       <div className="h-14 flex items-center justify-center pl-4 md:justify-start text-sm lg:text-lg hover:bg-sky-800">
         <FaUserDoctor className="mr-1" />
@@ -44,7 +44,6 @@ function Sidebar() {
         className="h-14 flex items-center justify-center  pl-4 md:justify-start text-sm lg:text-lg cursor-pointer hover:bg-sky-800"
         onClick={()=> navigate('/admin/specialization')}
       >
-        
         <p className="hidden md:block" >specialization</p>
       </div>
  

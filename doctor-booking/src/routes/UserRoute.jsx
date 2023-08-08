@@ -29,6 +29,7 @@ function user() {
         <Route element={<PaymentSuccessPage />} path='/payment/success' />
         <Route element={<VideoMeetPage />} path='/meet/:id' />
         <Route element={<Authorization accessBy={'Authorized'} ><Payments /></Authorization>} path = '/payments' />
+        <Route element={<Authorization accessBy={'Authorized'} ><UserProfilePage /></Authorization>} path='/profile' />
       </Routes>
       </div>
   )

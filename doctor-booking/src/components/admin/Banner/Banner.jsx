@@ -44,7 +44,7 @@ function Banner() {
       <div className="mt-36 ml-20 flex grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-center">
         {banner.map((data, index) => {
           return (
-            <Card key={index} data={data} updatePath={'/admin/banner_u/'} deleteClick={deleteClick}  />
+            <Card key={index} data={data} updatePath={'/admin/banner_u'} deleteClick={deleteClick}  />
             // <div
             //   className="rounded-xl bg-white w-full truncate p-2 shadow-lg"
             //   key={index}

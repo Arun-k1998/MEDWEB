@@ -1,7 +1,10 @@
 export default function validation(values, page) {
   let error = {};
   const email_pattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z0-9.-]+$/;
-  const password_pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{4,10}$/;
+  // const password_pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{4,10}$/;
+  const password_pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,16}$/
+
+
 
   if (page == "signUp") {
     if (!values.firstName.trim()) {
