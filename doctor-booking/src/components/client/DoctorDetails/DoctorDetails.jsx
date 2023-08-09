@@ -159,28 +159,31 @@ function DoctorDetails() {
   }, [doctorId]);
 
   return (
-    <div className="w-full h-full flex justify-center gap-8  my-6">
-      <div className="w-[40%] flex flex-col items-start bg-slate-200">
-        <div className=" flex justify-center  mt-10 w-full">
+    <div className="w-full  md:h-[90%] flex flex-col md:flex-row justify-center gap-8 px-5 my-6 ">
+      <div className=" w-full md:w-[40%]  h-96 md:h-full py-8 flex flex-col items-center justify-center bg-slate-200 rounded-xl">
+        <div className=" flex justify-center w-40 h-40 md:w-56 lg:w-60 lg:h-60 shadow-2xl shadow-black rounded-full overflow-hidden  ">
           <img
             src={`${VITE_SERVER_URL}/images/${doctorDetails.image}`}
             alt=""
+            className="w-full h-full object-cover"
           />
         </div>
-        <div className="w-full grid grid-cols-3 px-10 mt-11">
-          <div className="">
+        <div className=" bg-white p-2 w-[90%] h-[50%] md:h-[40%]  grid grid-cols-2 md:grid-cols-3 px-2 text-sm md:text-base md:px-10 mt-11 mx-auto rounded-lg shadow-2xl">
+          <div className=" w-full flex flex-col items-start  justify-center">
             <p className="mb-4">Name </p>
             <p className="mb-4">Specialization </p>
             <p className="mb-4">consultaion Fee </p>
           </div>
-          <div className="flex flex-col">
+          <div className="hidden md:block w-full h-full">
+          <div className=" flex flex-col justify-center items-center w-full h-full">
             <span className="mb-4">:</span>
             <span className="mb-4">:</span>
             <span className="mb-4">:</span>
           </div>
-          <div>
+          </div>
+          <div  className="flex flex-col items-end  w-full  justify-center ">
             <div>
-              <p className="text-xl mb-4">Dr . {doctorDetails.firstName}</p>
+              <p className="md:text-xl mb-4">Dr . {doctorDetails.firstName}</p>
             </div>
             <p className="mb-4">{doctorDetails?.specialization?.name}</p>
             <div className="mb-4 flex items-center gap-1">
@@ -190,7 +193,7 @@ function DoctorDetails() {
           </div>
         </div>
       </div>
-      <div className="w-[60%] flex flex-col items-center bg-slate-200">
+      <div className=" md:w-[60%] h-96 md:h-full overflow-y-scroll flex flex-col items-center bg-slate-200 rounded-xl px-2">
         {!confirmPopup && (
           <div
             className={`${
@@ -200,10 +203,10 @@ function DoctorDetails() {
             {/* absolute top-0 left-4 md:left-24 shadow-2xl bg-slate-300 py-10 flex flex-col md:grid md:grid-cols-1 lg:grid-cols-[3fr,7fr] gap-4 px-5 */}
             <p>Available Slotes</p>
 
-            <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600">
+            <div className="w-full mt-5 md:w-full flex  justify-center sticky top-0 bg-slate-600 p-2 rounded-lg ">
               <div className="w-full gap-4 items-center flex flex-row justify-evenly">
                 <div
-                  className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center"
+                  className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center "
                   onMouseEnter={handleScrollLeft}
                 >
                   <AiOutlineArrowLeft className="" />
@@ -215,7 +218,7 @@ function DoctorDetails() {
                   {timeSlotes?.map((timeSlote, index) => {
                     return (
                       <div
-                        className="p-1 bg-[#509393] text-white min-w-max cursor-pointer"
+                        className=" bg-[#509393] text-white min-w-max cursor-pointer rounded-lg p-2"
                         key={index}
                         onClick={() => getSlotes(timeSlote)}
                       >
@@ -234,7 +237,7 @@ function DoctorDetails() {
             </div>
 
             {/* ------------------- */}
-            <div className="w-full flex flex-col ">
+            <div className="w-full h-full overflow-y-scroll flex flex-col  ">
               {sessions.length
                 ? sessions.map((session, index) => {
                     return (
@@ -244,27 +247,27 @@ function DoctorDetails() {
 
                           <p>{session.session}</p>
                         </div>
-                        <div className="grid grid-cols-5 gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:gird-cols-4 lg:grid-cols-5 gap-3 mx-auto">
                           {session.slots.map((obj, index) => {
                             return (
                               <div
                                 key={index}
                                 className={`${
                                   obj.is_Booked ? "pointer-events-none" : ""
-                                } cursor-pointer  w-30`}
+                                } cursor-pointer  w-32 md:30 `}
                                 // onClick={() =>{
                                 //   setConfirmPopup(pre => !pre)
                                 //   // hadleSlotBooking(obj, session)
                                 // } }
                                 onClick={() => handlePopup(obj, session)}
                               >
-                                <p className=" flex justify-center bg-stone-300 hover:bg-stone-500 hover:text-white border-solid border-teal-500 p-2">
+                                <div className=" flex justify-center bg-stone-300 hover:bg-stone-500 hover:text-white border-solid border-teal-500 p-2 rounded-lg ">
                                   <span className="ml-1">
                                     {formatTime(obj.start)}
                                   </span>
                                   <span className="ml-1">-</span>
                                   <span>{formatTime(obj.end)}</span>
-                                </p>
+                                </div>
                               </div>
                             );
                           })}

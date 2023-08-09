@@ -153,9 +153,12 @@ function DoctorVideoMeetPage() {
           margin: 0,
         }}
       ></div> */}
-      <div className="fixed bg-slate-500 h-full  top-0 right-0 w-1/2 ml-10">
-        <div className="w-full h-full bg-red-500 py-10 px-5">
-          <div className="w-full h-full bg-red-300 px-1">
+      <div className="fixed  h-full  top-0 right-0 w-1/2 ml-10">
+        <div className="w-full h-full  py-10 px-5">
+          <div className="w-full h-full bg-slate-100 shadow-lg py-4 px-4">
+            <div className="w-full flex justify-center">
+              <p className="text-lg underline underline-offset-8">Prescription</p>
+            </div>
             {medicines.map((medicine, index) => {
               return (
                 <>
@@ -166,7 +169,7 @@ function DoctorVideoMeetPage() {
                         type="text"
                         name="medicine"
                         value={medicine?.medicine}
-                        className="w-full"
+                        className="w-full border-2"
                         onChange={(e) => handleChange(e, index)}
                       />
                     </div>
@@ -176,7 +179,7 @@ function DoctorVideoMeetPage() {
                         type="Number"
                         name="quantity"
                         value={medicine?.quantity}
-                        className="w-full"
+                        className="w-full border-2"
                         onChange={(e) => handleChange(e, index)}
                       />
                     </div>
@@ -186,7 +189,7 @@ function DoctorVideoMeetPage() {
                         type="Number"
                         name="totalDays"
                         value={medicine?.totalDays}
-                        className="w-full"
+                        className="w-full border-2"
                         onChange={(e) => handleChange(e, index)}
                       />
                     </div>

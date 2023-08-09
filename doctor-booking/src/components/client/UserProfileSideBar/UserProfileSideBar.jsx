@@ -16,6 +16,10 @@ function UserProfileSideBar({ user,edit }) {
       path: "/prescription",
       active: location.pathname === "/prescription" ? true : false,
     },
+    {name:'Consultation History',
+     path:'/consultation History',  
+     active: location.path === '/consultation History' ? true : false 
+    }
   ];
 
   const [sidebarContent, setSideBarContent] = useState(sideBarConent);

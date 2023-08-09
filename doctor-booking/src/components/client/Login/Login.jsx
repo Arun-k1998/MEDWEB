@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import api from "../../../helper/axios/userAxios";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { userLogin } from "../../../redux/userSlice";
-import validation from "../../../helper/formValidation";
+import validation from "../../../helper/FormValidation";
+import {ToastifyContest} from '../../../helper/contest/ToastifyContest'
+
 function UserLogin() {
   const initialValues = { email: "", password: "" };
 
@@ -15,7 +17,7 @@ function UserLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+const {show} = useContext(ToastifyContest)
   const handleClick = () => {
     setFormErrors(validation(formValues, "login"));
     setSubmit(true);
@@ -43,7 +45,7 @@ function UserLogin() {
           dispatch(userLogin({ firstName, _id, email }));
           navigate("/");
         } else {
-          alert(response.data.message);
+          show(response.data.message);
         }
       });
     }

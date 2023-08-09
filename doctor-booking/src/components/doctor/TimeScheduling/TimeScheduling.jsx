@@ -6,6 +6,7 @@ import { GrClose } from "react-icons/gr";
 import DeleteButton from "../../../container/deleteButton/DeleteButton";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 import { data } from "autoprefixer";
+import { useNavigate } from "react-router-dom";
 function TimeScheduling() {
   const { id } = useSelector((store) => store.doctor);
   const duration = [10, 15, 20];
@@ -32,6 +33,7 @@ function TimeScheduling() {
   const [timeSlotes,setTimeSlots] = useState([]);
   const [schedulePopup, setSchedulePopup] = useState(false);
   const {show} = useContext(ToastifyContest)
+  const navigate = useNavigate()
 
   const timeConvertion = (time) => {
     const convertedDate = moment(time, "HH:mm").format("LT");
@@ -273,7 +275,12 @@ function TimeScheduling() {
 
   return (
     <div className="flex flex-col items-center w-full bg-sky-50 pt-20  relative ">
-      <div className=" w-4/5 bg-white px-10 rounded-2xl shadow-xl  ">
+      <div className="w-full absolute top-3 right-6 bg-slate-500">
+      <button className=" p-2 rounded-lg absolute top-3 right-6 bg-slate-500" onClick={()=> navigate('/doctor/scheduled_slotes')} >Already Scheduled</button>
+      </div>
+      
+      
+      <div className=" w-4/5 bg-white px-10 rounded-2xl shadow-xl  mt-4 ">
         <div className="text-center text-lg underline underline-offset-8 my-4 ">
           <h1>Schedule Consultation</h1>
         </div>

@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 
-function Appointments({ appointments }) {
+function Appointments({ appointments,setAppointmentsType }) {
   const navigate = useNavigate();
 
-  const {show} = useContext(ToastifyContest) 
+  const { show } = useContext(ToastifyContest);
 
   const formatTime = (timee) => {
     let time = moment(timee).format("LT");
@@ -29,15 +29,60 @@ function Appointments({ appointments }) {
 
   const handleStartMeeting = (starting, ending, id) => {
     const timeNow = moment();
-    if (timeNow.isBefore(moment(starting))) show("You can join only at the given time",303);
-    else if (timeNow.isAfter(moment(ending))) ToastifyContest("Your time ended",303);
+    if (timeNow.isBefore(moment(starting)))
+      show("You can join only at the given time", 303);
+    else if (timeNow.isAfter(moment(ending)))
+      ToastifyContest("Your time ended", 303);
     else navigate(`/meet/${id}`);
   };
+
+  const buttons = [
+    {
+      name: "Upcoming...",
+      value:'upcoming',
+      active: true,
+    },
+    {
+      name: "Consulted",
+      value:'consulted',
+      active: false,
+    },
+  ];
+  const [buttonNames, setButtonsNames] = useState(buttons);
+
+  const handleButtonClick = (index)=>{
+    let newButton = buttonNames.map((button,index1)=>{
+      return {
+        ...button,
+        active : index==index1 
+      }
+    })
+    setButtonsNames(newButton)
+   
+    console.log(buttonNames[index]['value'])
+    setAppointmentsType(buttonNames[index]['value'])
+  }
 
   return (
     <div className="w-[80%] h-full mx-auto bg-slate-400 py-10  ">
       <div className="w-full flex justify-center mb-4 underline underline-offset-8 text-xl">
         <h2>Your Appointments</h2>
+      </div>
+      <div className="w-[95%] mx-auto  my-5 gap-6 flex">
+        {buttonNames.map((button,index) => {
+          return (
+            <button
+              className={`${
+                button.active ? "bg-slate-500 text-white" : "bg-slate-300"
+              } p-2 rounded-lg`} 
+              onClick={()=>handleButtonClick(index)}
+            >
+              {button.name}
+            </button>
+          );
+        })}
+        {/* <button className="p-2 bg-slate-300 rounded-lg">Upcoming</button>
+        <button className="p-2 bg-slate-300 rounded-lg">Consulted</button> */}
       </div>
       <div className="w-[95%] h-full mx-auto overflow-y-scroll  ">
         {appointments?.map((appointment, index) => {
@@ -63,12 +108,14 @@ function Appointments({ appointments }) {
                       " " +
                       firstLetterUpperCase(appointment?.doctorId?.lastName)}
                   </p>
-                  {
-                  appointment.status === "finish" ? <div className="w-full flex  justify-center gap-3 items-center">
-                    <div className="w-2 h-2 rounded-full bg-lime-700"></div>
-                    <p>Consulted</p>
-                  </div>:'' }
-                  
+                  {appointment.status === "finish" ? (
+                    <div className="w-full flex  justify-center gap-3 items-center">
+                      <div className="w-2 h-2 rounded-full bg-lime-700"></div>
+                      <p>Consulted</p>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
               <div>
@@ -92,25 +139,27 @@ function Appointments({ appointments }) {
                 </div>
               </div>
               <div className="flex  gap-2">
-                {
-                  appointment.status === "finish" ? <div className="w-50  h-full flex gap-3 items-center">
-                   <button  className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32" >Prescripton</button>
-                  </div> :<button
-                  className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
-                  onClick={() =>
-                    handleStartMeeting(
-                      appointment?.startingTime,
-                      appointment?.doctorId?.lastName,
-                      appointment._id
-                    )
-                  }
-                  // navigate(`/meet/${appointment._id}`)}}>
-                >
-                  Join Room
-                </button>
-                }
-                
-               
+                {appointment.status === "finish" ? (
+                  <div className="w-50  h-full flex gap-3 items-center">
+                    <button className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32">
+                      Prescripton
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                    onClick={() =>
+                      handleStartMeeting(
+                        appointment?.startingTime,
+                        appointment?.doctorId?.lastName,
+                        appointment._id
+                      )
+                    }
+                    // navigate(`/meet/${appointment._id}`)}}>
+                  >
+                    Join Room
+                  </button>
+                )}
               </div>
             </div>
           );

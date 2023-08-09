@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import validation from "../../../helper/formValidation";
+import React, { useContext, useEffect, useState } from "react";
+import validation from "../../../helper/FormValidation";
 import api from "../../../helper/axios/userAxios";
 import { useNavigate } from "react-router-dom";
 import Toggle from "../../../assets/Toggle/Toggle";
+import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 
 function Signup() {
   const initialValues = {
@@ -23,6 +24,8 @@ function Signup() {
   const [timer, setTimer] = useState(60);
   const navigate = useNavigate();
   const [id,setId] = useState('')
+  const {show} = useContext(ToastifyContest)
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -38,6 +41,9 @@ function Signup() {
     api.post("/verify_otp", { ...formValues,['id']:id }).then((response) => {
       if (response.data.status) {
         navigate("/");
+      }else{
+       
+        show(res.data.message)
       }
     });
   };
@@ -71,6 +77,9 @@ function Signup() {
             interValId = setInterval(() => {
               setTimer((preTime) => preTime - 1);
             }, 1000);
+          }else{
+            
+            show(response.data.message)
           }
         })
         .catch((error) => {

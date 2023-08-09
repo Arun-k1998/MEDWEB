@@ -8,13 +8,13 @@ import Footer from '../../components/client/Footer/Footer'
 function AppointmentsPage() {
 
     const [appointments,setAppointments] = useState([{}])
-
+    const [appointmentsType,setAppointmentsType] = useState('upcoming')
     const userId = useSelector(store=> store.user.id)
 console.log(userId);
     useEffect(()=>{
         if(userId){
             
-            api.get(`/appointments/${userId}`).then((response)=>{
+            api.get(`/appointments/${userId}/${appointmentsType}`).then((response)=>{
                 if(response.data.status){
                     console.log(response.data.appointments);
                     setAppointments([...response.data.appointments])
@@ -22,7 +22,7 @@ console.log(userId);
             })
 
         }
-    },[])
+    },[appointmentsType])
   return (
     <div>
    
@@ -30,7 +30,7 @@ console.log(userId);
     <Navbar />
     </div>
     <div className='w-full bg-slate-300 h-[90vh] '>
-    <Appointments appointments={appointments} />
+    <Appointments appointments={appointments} setAppointmentsType={setAppointmentsType} />
     </div>
 
     <div className='w-full h-[25vh]'>

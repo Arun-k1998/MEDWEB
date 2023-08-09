@@ -11,10 +11,10 @@ function DoctorSinglePage() {
      <div className=" w-full h-[10vh] sticky top-0 z-10 ">
       <Navbar />
       </div>
-      <div className='w-full h-[90vh] '>
+      <div className='w-full  md:h-[90vh] '>
         <DoctorDetails />
       </div>
-    <div>
+    <div >
         <Footer />
     </div>
     </div>
