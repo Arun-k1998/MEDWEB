@@ -53,7 +53,10 @@ const signup = async (req, res) => {
     const { phoneNumber, country_code } = req.body;
     console.log(phoneNumber, country_code);
     if (!userInEmail) {
-      vonage.verify
+
+      const phoneNumberChecking = await users.findOne({phoneNumber:phoneNumber})
+      if(!phoneNumberChecking){
+        vonage.verify
         .start({
           number: `917907051954`,
           brand: "Vonage",
@@ -68,7 +71,15 @@ const signup = async (req, res) => {
           });
         })
         .catch((err) => console.error(err));
+      }else{
+        res.json({
+          status:false,
+          message:'Phone Number already exit'
+        })
+      }
+      
     } else {
+      console.log(userInEmail);
       res.json({
         message: "Email already exits",
       });
@@ -535,13 +546,17 @@ const slotBookingWithJwt = async (req, res) => {
 
 const getAppointments = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { userId,type } = req.params;
+    let query;
+    if(type === 'upcoming') query = 'pending'
+    else if(type === 'consulted') query = 'finish'
     const currentTimeIST = moment().tz("Asia/Kolkata");
     console.log(currentTimeIST.toDate());
     const appointmentsList = await consultationModel
       .find({
         $and: [
           { userId: userId },
+          {status:query}
           // {
           //   startingTime: { $gt: currentTimeIST.toDate() },
           // },
