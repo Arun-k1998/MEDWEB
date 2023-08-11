@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 
-function Appointments({ appointments,setAppointmentsType }) {
+function Appointments({
+  appointments,
+  setAppointmentsType,
+  setPresView,
+  handlePrescriptionButton,
+}) {
   const navigate = useNavigate();
 
   const { show } = useContext(ToastifyContest);
@@ -39,29 +44,29 @@ function Appointments({ appointments,setAppointmentsType }) {
   const buttons = [
     {
       name: "Upcoming...",
-      value:'upcoming',
+      value: "upcoming",
       active: true,
     },
     {
       name: "Consulted",
-      value:'consulted',
+      value: "consulted",
       active: false,
     },
   ];
   const [buttonNames, setButtonsNames] = useState(buttons);
 
-  const handleButtonClick = (index)=>{
-    let newButton = buttonNames.map((button,index1)=>{
+  const handleButtonClick = (index) => {
+    let newButton = buttonNames.map((button, index1) => {
       return {
         ...button,
-        active : index==index1 
-      }
-    })
-    setButtonsNames(newButton)
-   
-    console.log(buttonNames[index]['value'])
-    setAppointmentsType(buttonNames[index]['value'])
-  }
+        active: index == index1,
+      };
+    });
+    setButtonsNames(newButton);
+
+    console.log(buttonNames[index]["value"]);
+    setAppointmentsType(buttonNames[index]["value"]);
+  };
 
   return (
     <div className="w-[80%] h-full mx-auto bg-slate-400 py-10  ">
@@ -69,13 +74,13 @@ function Appointments({ appointments,setAppointmentsType }) {
         <h2>Your Appointments</h2>
       </div>
       <div className="w-[95%] mx-auto  my-5 gap-6 flex">
-        {buttonNames.map((button,index) => {
+        {buttonNames.map((button, index) => {
           return (
             <button
               className={`${
                 button.active ? "bg-slate-500 text-white" : "bg-slate-300"
-              } p-2 rounded-lg`} 
-              onClick={()=>handleButtonClick(index)}
+              } p-2 rounded-lg`}
+              onClick={() => handleButtonClick(index)}
             >
               {button.name}
             </button>
@@ -141,7 +146,12 @@ function Appointments({ appointments,setAppointmentsType }) {
               <div className="flex  gap-2">
                 {appointment.status === "finish" ? (
                   <div className="w-50  h-full flex gap-3 items-center">
-                    <button className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32">
+                    <button
+                      className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                      onClick={() =>
+                        handlePrescriptionButton(appointment._id, index)
+                      }
+                    >
                       Prescripton
                     </button>
                   </div>

@@ -28,6 +28,7 @@ function VideoMeetPage() {
           parentNode: document.querySelector("#jitsi-iframe"),
           userInfo: {
             displayName: meetingId.userId?.firstName,
+            // email:meetingId.userId.email
           },
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,8 +37,8 @@ function VideoMeetPage() {
         api.addEventListeners({
           readyToClose: handleClose,
           participantLeft: handleParticipantLeft,
-          // participantJoined: handleParticipantJoined,
-          // videoConferenceJoined: handleVideoConferenceJoined,
+          participantJoined: handleParticipantJoined,
+          videoConferenceJoined: handleVideoConferenceJoined,
           videoConferenceLeft: handleVideoConferenceLeft,
         });
       }, [api]);
@@ -65,7 +66,8 @@ function VideoMeetPage() {
     
       const handleParticipantJoined = async (participant) => {
         console.log("handleParticipantJoined", participant);
-        await getParticipants();
+        const participents  =await getParticipants();
+        console.log(participents,"-----------------------------");
       };
     
       const handleVideoConferenceJoined = async (participant) => {

@@ -3,7 +3,10 @@ import {createSlice} from '@reduxjs/toolkit'
 const INITIAL_VALUES = {
     name:'',
     id:'',
-    email:''
+    email:'',
+    notifications:[{
+        message:''
+    }]
 }
 
 const userSlice = createSlice({
@@ -15,6 +18,7 @@ const userSlice = createSlice({
             state.name = userDetails.firstName
             state.id = userDetails._id
             state.email = userDetails.email
+            state.notifications = userDetails.notifications
         },
         userLogout(state,actions){
             state.name = ''

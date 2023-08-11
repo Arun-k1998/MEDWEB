@@ -1,5 +1,5 @@
 import icon from '/images/medweblogo.png'
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate} from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
@@ -25,9 +25,10 @@ function classNames(...classes) {
 function Navbar() {
 
   const navigate  = useNavigate()
-  const { name,id } = useSelector((state) => state.user);
+  const { name,id,notifications } = useSelector((state) => state.user);
   const dispatch = useDispatch()
-
+  const [newNotification,setNewNotification] = useState(false)
+  const [notificationCount,setNotificatonCount] = useState(0)
   const handleSignout = ()=>{
     const expires = "expires=" + 'Thu, 01 Jan 1970 00:00:01 GMT';
     // Thu, 01 Jan 1970 00:00:01 GMT
@@ -36,6 +37,16 @@ function Navbar() {
    dispatch(userLogout());
     navigate("/login");
   }
+
+  useEffect(()=>{
+    if(notifications){
+      notifications.forEach((notification)=>{
+        if(!notification.view){
+          setNotificatonCount(prev=> prev+1)
+        }
+      })
+    }
+  },[notifications])
   
   return (
     <Disclosure as="nav" className= " bg-white shadow-lg sticky top-0 z-10 h-full ">
@@ -91,7 +102,8 @@ function Navbar() {
                   className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                   onClick={()=>navigate('/notifications')}
                 >
-                  <span className="sr-only">View notifications</span>
+                  <p>{notificationCount}</p>
+                  {/* <span className="sr-only">View notifications</span> */}
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
 

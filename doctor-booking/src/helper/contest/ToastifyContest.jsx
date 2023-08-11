@@ -30,9 +30,10 @@ function toastityFucn({ children }) {
       theme: "dark",
       Transition:'flip'
       });
-    }else if(status >400){
-      toast.error({message}, {
-        position: "top-right",
+    }else if(status >= 400){
+     
+      toast.error(`${message}`, {
+        position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,

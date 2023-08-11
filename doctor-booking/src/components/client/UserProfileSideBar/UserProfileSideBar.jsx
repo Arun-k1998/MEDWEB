@@ -2,9 +2,10 @@ import React, { useRef, useState } from "react";
 import profile from "../../../assets/profileImage.webp";
 import { useLocation, useNavigate } from "react-router-dom";
 
-function UserProfileSideBar({ user,edit }) {
+function UserProfileSideBar({ user,edit,setImage }) {
+  const {VITE_SERVER_URL}  = import.meta.env
   const location = useLocation();
-    const navigate = useNavigate()
+  const navigate = useNavigate()
   const sideBarConent = [
     {
       name: "Profile",
@@ -22,24 +23,32 @@ function UserProfileSideBar({ user,edit }) {
     }
   ];
 
+
   const [sidebarContent, setSideBarContent] = useState(sideBarConent);
   const imageSelection = useRef(null);
   const handleProfileImage = () => {
     if (imageSelection.current) {
       imageSelection.current.click();
+      
     }
   };
+
+  const handleImageChange = (e)=>{
+    const {name}= e.target
+   setImage(e?.target?.files[0])
+    
+  }
 
   return (
     <div className="w-[80%] h-[80%] my-10 mx-auto bg-slate-50 py-5">
       <div className="w-52 h-52 bg-slate-900 overflow-hidden rounded-full flex justify-center items-center mx-auto pt-8 relative">
         <img
-          src={user.image ? `${VITE_SERVER_URL}/images/${user.image}` : profile}
+          src={user?.image ? `${VITE_SERVER_URL}/userImages/${user?.image}` : profile}
           alt=""
           className="w-48 h-48 rounded-full border-8 border-dashed  border-sky-500   "
         />
       </div>
-      <input type="file" hidden ref={imageSelection} />
+      <input type="file" name="image" hidden ref={imageSelection} onChange={handleImageChange} />
       
      { !edit ?'': 
      <div className="w-full bg-slate-500 h-14">
@@ -52,9 +61,7 @@ function UserProfileSideBar({ user,edit }) {
      </div>
      
      }
-     <div className="w-full flex justify-center">
-        <p>{`${user.firstName} ${user.lastName}`}</p>
-     </div>
+     
      <div className="mt-5">
      {sidebarContent.map((content) => {
         return (

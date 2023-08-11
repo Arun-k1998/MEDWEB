@@ -5,8 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 function PaymentSuccessPage() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const navigate = useNavigate();
   const session_id = queryParams.get("session_id");
+  const navigate = useNavigate();
   const jwt = localStorage.getItem("myToken");
   useEffect(() => {
     if (jwt && session_id) {

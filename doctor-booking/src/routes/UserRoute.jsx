@@ -12,16 +12,17 @@ import PaymentSuccessPage from '../pages/client/PaymentSuccessPage'
 import AppointmentsPage from '../pages/client/AppointmentsPage'
 import VideoMeetPage from '../pages/client/VideoMeetPage'
 import Payments from '../pages/client/Payments'
+import UserPrescriptionPage from '../pages/client/UserPrescriptionPage'
+import UserNotificationPage from '../pages/client/UserNotificationPage'
 
 
 function user() {
   return (
    <div>
       <Routes >
-        
         <Route element={ <HomeVerification > <Home /> </ HomeVerification>} path='/' />
         <Route element={<Authorization accessBy={'non-Authorized'}> <UserLogin /> </ Authorization>} path='/login' />
-        <Route element={<Authorization accessBy={'non-Authorized'}> <Register /> </ Authorization>} path='/signup' />
+        <Route element={<Authorization accessBy={'non-Authorized'}> <Register /></ Authorization>} path='/signup' />
         <Route element={ <HomeVerification >  <DoctorList /> </ HomeVerification>} path='/consult/:name' />
         <Route element={<UserProfilePage />} path='/profile/:id' />
         <Route element={ <HomeVerification ><DoctorSinglePage /></HomeVerification> } path='/consult/detail/:doctorId' />
@@ -30,7 +31,8 @@ function user() {
         <Route element={<VideoMeetPage />} path='/meet/:id' />
         <Route element={<Authorization accessBy={'Authorized'} ><Payments /></Authorization>} path = '/payments' />
         <Route element={<Authorization accessBy={'Authorized'} ><UserProfilePage /></Authorization>} path='/profile' />
-       
+        <Route element={ <Authorization accessBy={'Authorized'} > <UserPrescriptionPage /> </Authorization>  } path='/prescription' />
+        <Route element={<Authorization accessBy={'Authorized'} ><UserNotificationPage /></Authorization>} path='/notifications' />
       </Routes>
       </div>
   )

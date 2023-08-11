@@ -21,16 +21,8 @@ function DoctorVideoMeetPage() {
   const [meetingId, setMeetingId] = useState({});
   const [medicines, setMedicines] = useState([initialValues]);
   const {show} = useContext(ToastifyContest)
-
-  useEffect(() => {
-    if(id){
-    userApi.get(`/meet/${id}`).then((res) => {
-      if (res.data.status) {
-        console.log(res.data);
-        setMeetingId({ ...res.data.meetingId });
-      }
-    });}
-  }, [id]);
+  
+ 
 
   const startMeet = useCallback(() => {
     const options = {
@@ -45,6 +37,7 @@ function DoctorVideoMeetPage() {
       parentNode: document.querySelector("#jitsi-iframe"),
       userInfo: {
         displayName: `Dr. ${meetingId?.doctorId?.firstName}`,
+        // email:meetingId.doctorId.email
       },
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,8 +46,8 @@ function DoctorVideoMeetPage() {
     api.addEventListeners({
       readyToClose: handleClose,
       participantLeft: handleParticipantLeft,
-      // participantJoined: handleParticipantJoined,
-      // videoConferenceJoined: handleVideoConferenceJoined,
+      participantJoined: handleParticipantJoined,
+      videoConferenceJoined: handleVideoConferenceJoined,
       videoConferenceLeft: handleVideoConferenceLeft,
     });
   }, [api]);
@@ -68,6 +61,16 @@ function DoctorVideoMeetPage() {
       }
     }
   }, [startMeet]);
+
+  useEffect(() => {
+    if(id){
+    userApi.get(`/meet/${id}`).then((res) => {
+      if (res.data.status) {
+        console.log(res.data);
+        setMeetingId({ ...res.data.meetingId });
+      }
+    });}
+  }, [id]);
 
   // ALL OUR HANDLERS
   const handleClose = () => {
