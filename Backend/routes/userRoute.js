@@ -2,6 +2,34 @@ const express = require('express')
 const user_Route = express.Router()
 
 
+
+const multer = require('multer')
+const path = require('path')
+
+
+const storage =multer.diskStorage({
+  destination : function(req,file,cb){
+    cb(null,path.join(__dirname,'../public/userImages'))
+  },
+  filename  : function(req,file,cb){
+    const name = Date.now()+'-'+file.originalname;
+    cb(null,name);    
+  }
+
+});
+
+const fileFilter = (req,file,cb)=>{
+  if(file.mimetype ==='image/png' || file.mimetype ==='image/jpg' || file.mimetype ==='image/jpeg' || file.mimetype === 'image/webp'||file.mimetype === 'image/gif'){
+      cb(null,true)
+  }else{
+   
+      cb(null,false)
+  }
+ 
+}
+const upload=multer({storage:storage,fileFilter:fileFilter})
+
+
 const userController = require('../controller/userController')
 const userAuth = require('../middleware/userAuth')
 const doctorController = require('../controller/doctorController')
@@ -13,7 +41,6 @@ user_Route.post('/signup',userController.signup)
 user_Route.post('/login',userController.login)
 user_Route.post('/verify_otp',userController.otpVerification)
 user_Route.post('/resendotp',userController.resendOTP)
-user_Route.get('/token_v',userAuth,userController.tokenVerification)
 user_Route.get('/consult/:name',doctorController.doctorList)
 user_Route.get('/timeSlotes/:id',doctorController.sss)
 user_Route.get('/doctorSearch/:search',userController.searchDoctor)
@@ -25,4 +52,11 @@ user_Route.get('/appointments/:userId/:type',userAuth,userAuth,userController.ge
 user_Route.get('/meet/:id',userController.meetingId)
 user_Route.post('/cancel_appointment/:id',userAuth,userAuth,userController.cancelConsultation)
 user_Route.get('/profile/:id',userAuth,userController.getProfile)
+user_Route.post('/profile/:id',userAuth,upload.single('image'),userController.updateProfile)
+user_Route.get('/prescription/:userId',userAuth,userController.getPrescription)
+
+
+
+user_Route.get('/token_v',userAuth,userController.tokenVerification)
+
 module.exports = user_Route

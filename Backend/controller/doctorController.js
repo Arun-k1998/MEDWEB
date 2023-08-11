@@ -10,7 +10,8 @@ const { Vonage } = require("@vonage/server-sdk");
 const fs = require("fs");
 const path = require("path");
 const consultationModel = require("../model/consultationModel");
-const moment = require('moment-timezone');
+const userModel = require("../model/useModel");
+const moment = require("moment-timezone");
 const vonage = new Vonage({
   apiKey: "a3a8bec7",
   apiSecret: "GXxHHP0Ql17HlP2p",
@@ -462,7 +463,7 @@ const sss = async (req, res) => {
     const timeSlotes = await timeSloteModel
       .find({ doctorId: id })
       .sort({ date: 1 });
-    const doctorData = await doctor.findById(id).populate('specialization');
+    const doctorData = await doctor.findById(id).populate("specialization");
     console.log(timeSlotes);
     if (timeSlotes) {
       console.log("successfull");
@@ -481,7 +482,7 @@ const sss = async (req, res) => {
   }
 };
 
-const getProfile = async (req, res) => { 
+const getProfile = async (req, res) => {
   try {
     const { id } = req.params;
     console.log(id);
@@ -499,9 +500,9 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { id,doctorData } = req.body;
+    const { id, doctorData } = req.body;
     console.log(JSON.parse(doctorData));
-    let newData = JSON.parse(doctorData)
+    let newData = JSON.parse(doctorData);
     const doctorDta = await doctor.findById({ _id: id });
     if (doctorDta) {
       const oldImage = doctorDta?.image;
@@ -509,28 +510,25 @@ const updateProfile = async (req, res) => {
       if (oldImage) {
         newPath = path.join(
           "C:\\Users\\arunk\\doctorconsultation\\Backend\\public\\images\\",
-          oldImage 
+          oldImage
         );
       }
       let savedUserData;
-      if(req?.file?.filename){
-        savedUserData= await doctor.findByIdAndUpdate(
+      if (req?.file?.filename) {
+        savedUserData = await doctor.findByIdAndUpdate(
           { _id: id },
-        {$set:{...newData, image: req.file.filename,}}
+          { $set: { ...newData, image: req.file.filename } }
         );
         if (oldImage) fs.unlinkSync(newPath);
-      }else{
-        console.log('hiiiii');
-        savedUserData = await doctor.findByIdAndUpdate(
-           id,
-          {...newData}
-        );
-        console.log("-----------------",savedUserData);
+      } else {
+        console.log("hiiiii");
+        savedUserData = await doctor.findByIdAndUpdate(id, { ...newData });
+        console.log("-----------------", savedUserData);
       }
       res.json({
         status: true,
         message: "Success",
-        user:savedUserData
+        user: savedUserData,
       });
     }
   } catch (error) {
@@ -539,25 +537,27 @@ const updateProfile = async (req, res) => {
 };
 // import 'moment-timezone';
 
-
 const getAppointments = async (req, res) => {
   const { id } = req.params;
 
   try {
-    
-    const currentTimeIST = moment().tz('Asia/Kolkata');
+    const currentTimeIST = moment().tz("Asia/Kolkata");
     console.log(currentTimeIST.toDate());
     const consultationList = await consultationModel
-      .find({ $and: [{ doctorId: id }, { status: "pending" }
-      // ,{
-      //   startingTime: { $gte: currentTimeIST.toDate() }
-      // }
-    ]})
+      .find({
+        $and: [
+          { doctorId: id },
+          { status: "pending" },
+          // ,{
+          //   startingTime: { $gte: currentTimeIST.toDate() }
+          // }
+        ],
+      })
       .populate("doctorId")
       .populate("userId")
       .sort({ date: 1 })
       .sort({ startingTime: 1 });
-    console.log(consultationList,'----------------');
+    console.log(consultationList, "----------------");
     res.json({
       status: true,
       conslutationList: consultationList,
@@ -567,59 +567,160 @@ const getAppointments = async (req, res) => {
   }
 };
 
-const createPrescription = async(req,res)=>{
+const createPrescription = async (req, res) => {
   try {
-    const {meetId,medicines} = req.body
-    console.log('--------------presctiption--------------');
+    const { meetId, medicines } = req.body;
+    console.log("--------------presctiption--------------");
     console.log(meetId);
     console.log(medicines);
-    console.log('------end-----------');
-    const updatedConsultation = await consultationModel.findByIdAndUpdate(meetId,{prescription:medicines})
-    if(updatedConsultation){
+    console.log("------end-----------");
+    const updatedConsultation = await consultationModel.findByIdAndUpdate(
+      meetId,
+      { prescription: medicines }
+    );
+    if (updatedConsultation) {
       res.json({
-        status:true,
-        message:'prescription added successfully'
-      })
+        status: true,
+        message: "prescription added successfully",
+      });
     }
   } catch (error) {
     console.log(error.message);
   }
-}
+};
 
-const consultationFinish = async(req,res) => {
+const consultationFinish = async (req, res) => {
   try {
-    const {consultationId} = req.params
-    if(consultationId){
-      const updatedConsultation = await consultationModel.findByIdAndUpdate(consultationId,{status:'finish'})
-      if(updatedConsultation) {
+    const { consultationId } = req.params;
+    if (consultationId) {
+      const updatedConsultation = await consultationModel.findByIdAndUpdate(
+        consultationId,
+        { status: "finish" }
+      );
+      if (updatedConsultation) {
+        res.json({
+          status: true,
+          message: "Consultation Finished",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const patients = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    console.log(doctorId);
+
+    const patientsList = await consultationModel
+      .find({ $and: [{ status: "finish" }, { doctorId: doctorId }] })
+      .populate("userId")
+      .populate("doctorId");
+    console.log(patientsList);
+    res.json({
+      status: true,
+      patients: patientsList,
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const updateSession = async (req, res) => {
+  try {
+    const { startingTime, endingTime, scheduleId, index, duration } = req.body;
+    const scheduleData = await timeSloteModel.findById(scheduleId);
+    console.log(scheduleData);
+    console.log(scheduleData.sessions[index], "----------------");
+    // ---------------------------------------------------------------------------------
+
+    // Set the time zone to Asia/Kolkata
+    const timeZone = "Asia/Kolkata";
+
+    let start = moment.tz(startingTime, timeZone).valueOf();
+    let end = moment.tz(endingTime, timeZone).valueOf();
+
+    let array = [];
+    let count = 0;
+    let eachSlot = {};
+    let starting = start;
+
+    for (let i = start; i < end; i = starting) {
+      starting = i + parseInt(duration) * 60 * 1000;
+      const newStart = moment.tz(i, timeZone);
+      const newEnd = moment.tz(starting, timeZone);
+      eachSlot = { tokenNo: count + 1, start: newStart, end: newEnd };
+      array[count] = eachSlot;
+      count++;
+    }
+    console.log(array);
+    scheduleData.sessions[index].startingTime = startingTime;
+    scheduleData.sessions[index].endingTime = endingTime;
+    scheduleData.sessions[index].slotes = array;
+    scheduleData.sessions[index].totalTokens = array.length;
+    scheduleData.sessions[index].session = index + 1;
+    const updatedScheduleTime = await scheduleData.save();
+
+    console.log(updatedScheduleTime);
+    if (updatedScheduleTime) {
+      res.json({
+        status: true,
+        message: "successfully updated",
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const deletScheduledDate = async (req, res) => {
+  try {
+    const { dateId } = req.body;
+
+    const deletedScheduleTime = await timeSloteModel.deleteOne({ _id: dateId });
+    if (deletedScheduleTime) {
+      const scheduledConsultations = await consultationModel.find({
+        dateId: dateId,
+      });
+      await consultationModel.updateMany({dateId,dateId},{is_delete:true})
+      const doctorId = scheduledConsultations[0].doctorId;
+
+      const doctorData = await doctor.findById(doctorId);
+      const userIds = scheduledConsultations.map(
+        (consultation) => consultation.userId
+      );
+      console.log(userIds);
+      const notificationMessage = `user consultation with doctor ${doctorData.firstName} wil be cancelled due to the in convienience of doctor. paid amount ${doctorData.feePerConsultation} is added to your wallet.`;
+      const userNotification = await userModel.updateMany(
+        {
+          _id: { $in: userIds },
+        },
+        {
+          $push: {
+            notifications: {
+              message: notificationMessage,
+              view: false, // Set the 'view' field to false for new notifications
+            },
+          },
+          $inc: {
+            wallet: doctorData.feePerConsultation,
+          },
+        }
+      );
+      console.log(userNotification);
+      if(deletedScheduleTime){
         res.json({
           status:true,
-          message:'Consultation Finished'
+          message:'slot deleted Sccessfully. notifications send into user'
         })
       }
     }
-
   } catch (error) {
     console.log(error.message);
   }
-}
-
-const patients = async(req,res)=>{
-  try {
-    const {doctorId} = req.params
-    console.log(doctorId);
-
-    const patientsList = await consultationModel.find({$and:[{status:'finish'},{doctorId:doctorId}]}).populate('userId').populate('doctorId')
-    console.log(patientsList);
-    res.json({
-      status:true,
-      patients:patientsList
-    }) 
-
-  } catch (error) {
-    console.log(error.message);
-  }
-}
+};
 
 module.exports = {
   signup,
@@ -640,5 +741,7 @@ module.exports = {
   getAppointments,
   createPrescription,
   consultationFinish,
-  patients
+  patients,
+  updateSession,
+  deletScheduledDate,
 };

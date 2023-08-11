@@ -20,6 +20,7 @@ mongoose.connect(process.env.MONGOCONNECT, {
  
   
 app.use(express.json())
+// app.use(express.urlencoded({extended:false}))
 app.use(bodyParser.json({
   verify: (req, res, buf) => {
     req.rawBody = buf; // Save the raw body data

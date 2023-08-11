@@ -32,9 +32,17 @@ const userSchema = mongoose.Schema({
     image:{
         type:String
     },
-    notifications:{
-        type:[String]
-    },
+    notifications:[{
+
+        message:{
+            type:String,
+            
+        },
+        view:{
+            type:Boolean,
+            default:false
+        }
+    }],
     documents:[{
         name:{
             type:String

@@ -10,7 +10,8 @@ async function userAuth(req, res, next) {
     const verify = jwt.verify(token,process.env.JSON_SECRET_KEY)
     const user = await users.findById(verify.id)
     if(!user) throw new Error('User not found')
-    req.user = {_id:user._id,firstName:user.firstName,email:user.email}
+    if(user.is_Blocked) throw new Error('Your Account Blocked')
+    req.user = {_id:user._id,firstName:user.firstName,email:user.email,notifications:user.notifications}
     next();
   } catch (error) {
     res.status(401).json({ message: error.message });

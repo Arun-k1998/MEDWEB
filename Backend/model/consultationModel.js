@@ -78,6 +78,10 @@ const consultaionSchema = mongoose.Schema(
         },
       },
     ],
+    is_delete:{
+      type:Boolean,
+      default:false
+    }
   },
   { timestamps: true }
 );

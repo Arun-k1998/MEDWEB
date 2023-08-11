@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment-timezone");
 const buffer = require("buffer");
 const { v4 } = require("uuid");
+const path = require('path')
 //Schema
 const users = require("../model/useModel");
 const banners = require("../model/bannerModel");
@@ -12,6 +13,7 @@ const specialization = require("../model/specializationModel");
 const timeSloteModel = require("../model/doctorTimeSlotModel");
 const consultationModel = require("../model/consultationModel");
 const nodeMailer = require("nodemailer");
+const fs = require('fs')
 
 const { Vonage } = require("@vonage/server-sdk");
 const vonage = new Vonage({
@@ -178,7 +180,7 @@ const login = async (req, res) => {
           res.json({ message: "Password didn't match" });
         }
       } else {
-        res.json({ message: "Account get blocked" });
+        res.status(401).json({ message: "Account get blocked" });
       }
     } else {
       res.json({
@@ -488,11 +490,14 @@ const slotBookingWithJwt = async (req, res) => {
     const paymentChecking = await stripe.checkout.sessions.retrieve(paymentId);
     console.log(paymentChecking);
     console.log(paymentChecking.payment_status);
+
     if (paymentChecking.payment_status === "paid") {
+      
       const consultationDetails = jwt.verify(
         req.body.booking,
         process.env.JSON_SECRET_KEY
       );
+
       console.log(consultationDetails);
       const { doctorId, slot, date, userId, sessions } = consultationDetails;
       console.log(doctorId);
@@ -556,7 +561,8 @@ const getAppointments = async (req, res) => {
       .find({
         $and: [
           { userId: userId },
-          {status:query}
+          {status:query},
+          {is_delete:false}
           // {
           //   startingTime: { $gt: currentTimeIST.toDate() },
           // },
@@ -660,6 +666,59 @@ const getProfile = async (req,res)=>{
   }
 }
 
+const updateProfile = async(req,res)=>{
+console.log(req.body);
+  const {userId,user} = req.body
+  console.log(user)
+  const parsedData = JSON.parse(user)
+  console.log(parsedData);
+  const profileImage = req?.file?.filename
+  // console.log(req.file);
+  // console.log(profileImage);
+  const userData = await users.findById(userId)
+  // console.log(userData,userId); 
+  if(profileImage){
+     await users.findByIdAndUpdate(userId,{
+      image:profileImage
+    })
+    if(userData.image){
+      const oldImage = path.join('C:\\Users\\arunk\\doctorconsultation\\Backend\\public\\userImages',userData.image)
+      fs.unlinkSync(oldImage)
+    }
+  }
+  const updatedUser = await users.findByIdAndUpdate(userId,{
+    firstName:parsedData?.firstName,
+    lastName:parsedData?.lastName,
+    phoneNumber:parsedData?.phoneNumber,
+    email:parsedData?.email,
+  })
+
+  if(updatedUser){
+    res.json({
+      status:true,
+      message:'successfully updated'
+    })
+  }
+
+}
+
+const getPrescription = async(req,res)=>{
+  const {userId} = req.params
+  console.log(userId);
+
+  try {
+    const consultationData = await consultationModel.find({userId:userId}).populate('')
+    res.json({
+      status:true,
+      consulation:consultationData 
+    })  
+  } catch (error) {
+    console.log(error.message);
+    res.status(404).json({message:error.message})
+  }
+}
+
+
 module.exports = {
   signup,
   login,
@@ -675,5 +734,7 @@ module.exports = {
   getAppointments,
   meetingId,
   cancelConsultation,
-  getProfile
+  getProfile,
+  updateProfile,
+  getPrescription
 };
