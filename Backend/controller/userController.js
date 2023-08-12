@@ -562,10 +562,10 @@ const getAppointments = async (req, res) => {
         $and: [
           { userId: userId },
           {status:query},
-          {is_delete:false}
-          // {
-          //   startingTime: { $gt: currentTimeIST.toDate() },
-          // },
+          {is_delete:false},
+          {
+            startingTime: { $gt: currentTimeIST.toDate() },
+          },
         ],
       })
       .populate("doctorId")
@@ -603,6 +603,7 @@ const meetingId = async (req, res) => {
 const cancelConsultation = async (req, res) => {
   try {
     const appointmentId = req.params.id;
+    console.log(appointmentId);
     const consultationData = await consultationModel.findOne({
       _id: appointmentId,
     });

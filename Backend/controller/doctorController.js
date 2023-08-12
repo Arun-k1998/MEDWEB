@@ -313,6 +313,7 @@ const doctorTimeScheduling = async (req, res) => {
     // console.log("duration ", duration);
     // console.log(schedule);
     console.log(schedule);
+    if (!schedule.duration) schedule.duration = 10;
     let obj1 = schedule.sessions.map((obj) => {
       console.log("object");
       console.log(obj.startingTime);
@@ -539,7 +540,7 @@ const updateProfile = async (req, res) => {
 
 const getAppointments = async (req, res) => {
   const { id } = req.params;
-
+  console.log(id);
   try {
     const currentTimeIST = moment().tz("Asia/Kolkata");
     console.log(currentTimeIST.toDate());
@@ -548,9 +549,10 @@ const getAppointments = async (req, res) => {
         $and: [
           { doctorId: id },
           { status: "pending" },
-          // ,{
-          //   startingTime: { $gte: currentTimeIST.toDate() }
-          // }
+          
+          {
+            startingTime: { $gt: currentTimeIST.toDate() },
+          },
         ],
       })
       .populate("doctorId")
@@ -617,7 +619,7 @@ const patients = async (req, res) => {
     const patientsList = await consultationModel
       .find({ $and: [{ status: "finish" }, { doctorId: doctorId }] })
       .populate("userId")
-      .populate("doctorId");
+      .populate("doctorId").sort({date:1});
     console.log(patientsList);
     res.json({
       status: true,
@@ -684,7 +686,10 @@ const deletScheduledDate = async (req, res) => {
       const scheduledConsultations = await consultationModel.find({
         dateId: dateId,
       });
-      await consultationModel.updateMany({dateId,dateId},{is_delete:true})
+      await consultationModel.updateMany(
+        { dateId, dateId },
+        { is_delete: true }
+      );
       const doctorId = scheduledConsultations[0].doctorId;
 
       const doctorData = await doctor.findById(doctorId);
@@ -710,11 +715,11 @@ const deletScheduledDate = async (req, res) => {
         }
       );
       console.log(userNotification);
-      if(deletedScheduleTime){
+      if (deletedScheduleTime) {
         res.json({
-          status:true,
-          message:'slot deleted Sccessfully. notifications send into user'
-        })
+          status: true,
+          message: "slot deleted Sccessfully. notifications send into user",
+        });
       }
     }
   } catch (error) {
