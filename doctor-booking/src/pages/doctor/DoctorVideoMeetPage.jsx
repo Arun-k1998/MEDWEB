@@ -138,7 +138,7 @@ function DoctorVideoMeetPage() {
     });
   };
   return (
-    <div className="grid grid-cols-2 gap-4 bg-orange-400">
+    <div className=" bg-orange-400">
       {/* <header
         style={{
           backgroundColor: "rgb(10, 25, 41)",
@@ -156,7 +156,7 @@ function DoctorVideoMeetPage() {
           margin: 0,
         }}
       ></div> */}
-      <div className="fixed  h-full  top-0 right-0 w-1/2 ml-10">
+      {/* <div className="fixed  h-full  top-0 right-0 w-1/2 ml-10">
         <div className="w-full h-full  py-10 px-5">
           <div className="w-full h-full bg-slate-100 shadow-lg py-4 px-4">
             <div className="w-full flex justify-center">
@@ -267,7 +267,7 @@ function DoctorVideoMeetPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

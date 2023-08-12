@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
+import api from "../../../helper/axios/userAxios";
 
 function Appointments({
   appointments,
@@ -66,6 +67,16 @@ function Appointments({
 
     console.log(buttonNames[index]["value"]);
     setAppointmentsType(buttonNames[index]["value"]);
+  };
+
+  const handleCancellation = (id) => {
+    alert(id)
+    api.post(`/cancel_appointment/${id}`).then((res) => {
+      if (res.data.status) {
+        show(res.data.message);
+        
+      }
+    });
   };
 
   return (
@@ -156,7 +167,8 @@ function Appointments({
                     </button>
                   </div>
                 ) : (
-                  <button
+                  <>
+                   <button
                     className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
                     onClick={() =>
                       handleStartMeeting(
@@ -169,6 +181,14 @@ function Appointments({
                   >
                     Join Room
                   </button>
+                  <button
+                  className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                  onClick={() => handleCancellation(appointment._id)}
+                >
+                  Cancel
+                </button>
+                  </>
+                 
                 )}
               </div>
             </div>

@@ -40,6 +40,12 @@ function ConsultationListing() {
   //   else navigate(`/meet/${id}`);
   // };
 
+  const handleStart = (consultaionId)=>{
+    navigate(`/doctor/meet/${consultaionId}`)
+    const url = `http://localhost:5173/doctor/prescription/${consultaionId}`
+    window.open(url, '_blank');
+  }
+
   useEffect(() => {
     doctorApi.get(`/appointments/${doctorId}`).then((response) => {
       if (response.data.status) {
@@ -90,7 +96,7 @@ function ConsultationListing() {
                     <div className="w-full h-1/2 flex gap-3 justify-center items-center ">
                       <button
                         className="bg-white p-2 rounded-s-2xl hover:bg-slate-600 hover:text-white"
-                        onClick={() => navigate(`/doctor/meet/${obj._id}`)}
+                        onClick={() => handleStart(obj._id)}
                       >
                         Start
                       </button>

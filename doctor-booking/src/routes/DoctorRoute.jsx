@@ -12,6 +12,7 @@ import DoctorVideoMeetPage from '../pages/doctor/DoctorVideoMeetPage'
 import DoctorPatientsListingPage from '../pages/doctor/DoctorPatientsListingPage'
 import AlreadyScheduledPage from '../pages/doctor/AlreadyScheduledPage'
 import ScheduledPage from '../pages/doctor/ScheduledPage'
+import Prescription from '../pages/doctor/Prescription'
 
 
 function DoctorRoute() {
@@ -28,6 +29,7 @@ function DoctorRoute() {
        <Route element={<DoctorVideoMeetPage />} path='/meet/:id' />
        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorPatientsListingPage /></DoctorAuthentication>} path='/patients' />
        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><ScheduledPage /></DoctorAuthentication>} path='/scheduled_slotes' />
+       <Route element={<DoctorAuthentication accessBy={'Authorized'} ><Prescription /></DoctorAuthentication>} path='/prescription/:consultationid' />
       </Routes>
     </div>
   )

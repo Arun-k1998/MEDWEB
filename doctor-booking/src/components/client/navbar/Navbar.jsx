@@ -1,55 +1,54 @@
-import icon from '/images/medweblogo.png'
+import icon from "/images/medweblogo.png";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
 import GetCookie from "../../../helper/getCookie";
 
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import {CgProfile} from 'react-icons/cg'
+import { Fragment } from "react";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CgProfile } from "react-icons/cg";
 import { userLogout } from "../../../redux/userSlice";
 
-
-
 const navigation = [
-  { name: ' Doctors', href: '#', current: true },
-  { name: 'Specilizations', href: '#', current: false },
-  { name: 'Appointments', href: '/appointments', current: false },
-]
+  { name: " Doctors", href: "#", current: true },
+  { name: "Specilizations", href: "#", current: false },
+  { name: "Appointments", href: "/appointments", current: false },
+];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 function Navbar() {
-
-  const navigate  = useNavigate()
-  const { name,id,notifications } = useSelector((state) => state.user);
-  const dispatch = useDispatch()
-  const [newNotification,setNewNotification] = useState(false)
-  const [notificationCount,setNotificatonCount] = useState(0)
-  const handleSignout = ()=>{
-    const expires = "expires=" + 'Thu, 01 Jan 1970 00:00:01 GMT';
+  const navigate = useNavigate();
+  const { name, id, notifications } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const [newNotification, setNewNotification] = useState(false);
+  const [notificationCount, setNotificatonCount] = useState(0);
+  const handleSignout = () => {
+    const expires = "expires=" + "Thu, 01 Jan 1970 00:00:01 GMT";
     // Thu, 01 Jan 1970 00:00:01 GMT
-    document.cookie =
-        "userToken=Bearer "+";" + expires + "; path=/";
-   dispatch(userLogout());
+    document.cookie = "userToken=Bearer " + ";" + expires + "; path=/";
+    dispatch(userLogout());
     navigate("/login");
-  }
+  };
 
-  useEffect(()=>{
-    if(notifications){
-      notifications.forEach((notification)=>{
-        if(!notification.view){
-          setNotificatonCount(prev=> prev+1)
+  useEffect(() => {
+    if (notifications[0].message) {
+      notifications.forEach((notification) => {
+        if (!notification.view) {
+          setNotificatonCount((prev) => prev + 1);
         }
-      })
+      });
     }
-  },[notifications])
-  
+  }, [notifications]);
+
   return (
-    <Disclosure as="nav" className= " bg-white shadow-lg sticky top-0 z-10 h-full ">
+    <Disclosure
+      as="nav"
+      className=" bg-white shadow-lg sticky top-0 z-10 h-full "
+    >
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 ">
@@ -85,10 +84,12 @@ function Navbar() {
                         key={item.name}
                         href={item.href}
                         className={classNames(
-                          item.current ? ' text-gray-400 hover:bg-gray-700 ' : 'text-gray-400 hover:bg-gray-700 hover:text-white',
-                          'rounded-md px-3 py-2 text-sm font-medium'
+                          item.current
+                            ? " text-gray-400 hover:bg-gray-700 "
+                            : "text-gray-400 hover:bg-gray-700 hover:text-white",
+                          "rounded-md px-3 py-2 text-sm font-medium"
                         )}
-                        aria-current={item.current ? 'page' : undefined}
+                        aria-current={item.current ? "page" : undefined}
                       >
                         {item.name}
                       </a>
@@ -99,10 +100,10 @@ function Navbar() {
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <button
                   type="button"
-                  className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  onClick={()=>navigate('/notifications')}
+                  className="rounded-full flex gap-2 bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  onClick={() => navigate("/notifications")}
                 >
-                  <p>{notificationCount}</p>
+                  { notificationCount > 0 ? <p className="w-5 h-5 bg-red-600 text-white rounded-full">{notificationCount}</p>: '' }
                   {/* <span className="sr-only">View notifications</span> */}
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
@@ -110,16 +111,25 @@ function Navbar() {
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    {name &&<Menu.Button className="flex rounded-full bg-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                      <span className="sr-only">Open user menu</span>
-                      {/* <img
+                    {name && (
+                      <Menu.Button className="flex rounded-full bg-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                        <span className="sr-only">Open user menu</span>
+                        {/* <img
                         className="h-8 w-8 rounded-full"
                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                         alt=""
                       /> */}
-                      <CgProfile className='h-8 w-8 rounded-full' />
-                    </Menu.Button>}
-                    {!name && <button className='p-2 bg-gray-700 rounded-lg' onClick={()=>navigate('/login')}>LogIn</button>}
+                        <CgProfile className="h-8 w-8 rounded-full" />
+                      </Menu.Button>
+                    )}
+                    {!name && (
+                      <button
+                        className="p-2 bg-gray-700 rounded-lg"
+                        onClick={() => navigate("/login")}
+                      >
+                        LogIn
+                      </button>
+                    )}
                   </div>
                   <Transition
                     as={Fragment}
@@ -134,8 +144,11 @@ function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            onClick={()=>navigate(`/profile`)}
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            onClick={() => navigate(`/profile`)}
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
                           >
                             Your Profile
                           </a>
@@ -145,7 +158,10 @@ function Navbar() {
                         {({ active }) => (
                           <a
                             href="/payments"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
                           >
                             Payments
                           </a>
@@ -155,7 +171,10 @@ function Navbar() {
                         {({ active }) => (
                           <a
                             href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
                             onClick={handleSignout}
                           >
                             Sign out
@@ -177,10 +196,12 @@ function Navbar() {
                   as="a"
                   href={item.href}
                   className={classNames(
-                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                    'block rounded-md px-3 py-2 text-base font-medium'
+                    item.current
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                    "block rounded-md px-3 py-2 text-base font-medium"
                   )}
-                  aria-current={item.current ? 'page' : undefined}
+                  aria-current={item.current ? "page" : undefined}
                 >
                   {item.name}
                 </Disclosure.Button>

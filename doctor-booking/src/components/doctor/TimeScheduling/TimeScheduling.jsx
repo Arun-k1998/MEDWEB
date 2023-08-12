@@ -393,19 +393,19 @@ function TimeScheduling() {
 
           {datee.sessions.map((slot, index) => (
             <Fragment key={index}>
-              <div className="w-full bg-emerald-400 flex justify-between text-white">
+              <div className="w-full bg-emerald-400 flex justify-between text-white py-1 px-5 rounded-lg">
                 <p> Slote NO:{slot.session}</p>
               </div>
 
               <div key={index} className="mb-2 flex justify-evenly w-full gap-4 ">
-                <div className="flex flex-col my-3 w-1/4">
+                <div className="flex flex-col my-3 w-1/4 ">
                   <label htmlFor="">Starting time : </label>
                   <input
                     type="time"
                     name="startingTime"
                     value={formattedTime(slot?.startingTime)}
                     onChange={(e) => handleTime(e, index)}
-                    className="p-1 text-center bg-slate-500 w-full"
+                    className="p-1 text-center bg-slate-500 w-full rounded-lg"
                   />
                 </div>
                 <div className="flex flex-col my-3 w-1/4">
@@ -415,7 +415,7 @@ function TimeScheduling() {
                     name="endingTime"
                     value={formattedTime(slot?.endingTime)}
                     onChange={(e) => handleTime(e, index)}
-                    className="p-1 text-center  bg-slate-500 w-full"
+                    className="p-1 text-center  bg-slate-500 w-full rounded-lg "
                   />
                 </div>
                 <div className="flex flex-col my-3 w-1/4 ">
@@ -423,7 +423,7 @@ function TimeScheduling() {
                   <input
                     type="text"
                     value={slot?.totalTokens}
-                    className="p-1 text-center  bg-slate-200 w-full"
+                    className="p-1 text-center  bg-slate-200 w-full rounded-lg"
                     disabled
                   />
                 </div>
