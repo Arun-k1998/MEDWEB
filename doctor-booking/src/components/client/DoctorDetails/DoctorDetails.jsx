@@ -56,6 +56,8 @@ function DoctorDetails() {
       ["date"]: date,
       ["sessions"]: session,
       ["userId"]: userId,
+      ["paymentMethod"]:reshedule ? "reschedule" : "",
+      ['consultationId'] :reshedule? reshedule:''
     });
   };
   const getSlotes = (obj) => {
