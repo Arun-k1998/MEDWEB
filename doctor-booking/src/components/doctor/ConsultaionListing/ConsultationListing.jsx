@@ -28,9 +28,13 @@ function ConsultationListing() {
   const handleFinish = (consultationId) => {
     doctorApi.post(`/consultation_finish/${consultationId}`).then((res) => {
       if (res.data.status) {
+        alert('success');
         show(res.data.message);
       }
-    });
+    }).catch((error)=>{
+      console.log('error');
+      show(error.response.data.message,400)
+    })
   };
   // const handleStartMeeting = (starting, ending, id) => {
   //   const timeNow = moment();

@@ -13,6 +13,7 @@ import DoctorPatientsListingPage from '../pages/doctor/DoctorPatientsListingPage
 import AlreadyScheduledPage from '../pages/doctor/AlreadyScheduledPage'
 import ScheduledPage from '../pages/doctor/ScheduledPage'
 import Prescription from '../pages/doctor/Prescription'
+import PaymentsHistoryPage from '../pages/doctor/PaymentsHistoryPage'
 
 
 function DoctorRoute() {
@@ -25,11 +26,13 @@ function DoctorRoute() {
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorRegiteration /></DoctorAuthentication>} path='/register' />
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><TimeSchedulingPage /></DoctorAuthentication>} path='/schedule' />
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorConsultaionPage /></DoctorAuthentication>} path='/consultation' />
-       <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorProfile /></DoctorAuthentication>} path='/profile/:id' />
-       <Route element={<DoctorVideoMeetPage />} path='/meet/:id' />
-       <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorPatientsListingPage /></DoctorAuthentication>} path='/patients' />
-       <Route element={<DoctorAuthentication accessBy={'Authorized'} ><ScheduledPage /></DoctorAuthentication>} path='/scheduled_slotes' />
-       <Route element={<DoctorAuthentication accessBy={'Authorized'} ><Prescription /></DoctorAuthentication>} path='/prescription/:consultationid' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorProfile /></DoctorAuthentication>} path='/profile/:id' />
+        <Route element={<DoctorVideoMeetPage />} path='/meet/:id' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><DoctorPatientsListingPage /></DoctorAuthentication>} path='/patients' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><ScheduledPage /></DoctorAuthentication>} path='/scheduled_slotes' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><Prescription /></DoctorAuthentication>} path='/prescription/:consultationid' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'} ><Prescription /></DoctorAuthentication>} path='/prescription/:consultationid/update' />
+        <Route element={<DoctorAuthentication accessBy={'Authorized'}><PaymentsHistoryPage /> </DoctorAuthentication>} path='/payments' />
       </Routes>
     </div>
   )

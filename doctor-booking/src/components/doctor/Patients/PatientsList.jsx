@@ -2,29 +2,40 @@ import React, { useState } from "react";
 import "./PatientList.css";
 import icon from "../.../../../../assets/logo/medweblogo.png";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 function PatientsList({ patients }) {
+  const [today, setToday] = useState(moment());
   const { VITE_SERVER_URL } = import.meta.env;
   console.log("----patientListing----", patients);
   const [prescription, setPrescription] = useState(false);
   const [index, setIndex] = useState(null);
+  const navigate = useNavigate();
 
   const formateDate = (date) => {
     let result = moment(date).format("LL");
     return result;
   };
+
+  const compareDates = (presDate) => {
+    const prescriptonDate = moment(presDate);
+    const twoDaysBefore = moment().subtract(2, "days");
+
+    return prescriptonDate.isAfter(twoDaysBefore);
+  };
+
   return (
     <div className="w-full h-full p-5 relative">
       <div className=" h-full grid grid-cols-3 gap-5 ">
         {patients.map((patient, index) => {
           return (
-            <div className="w-4/5 shadow-2xl h-96 flex flex-col mx-auto  p-5 ">
+            <div className="w-4/5 shadow-2xl h-96 flex flex-col mx-auto  p-3 bg-slate-400 ">
               <div className="w-full flex flex-col items-center ">
-                <div className="w-32 h-32 overflow-hidden rounded-full my-2">
+                <div className="w-32 h-32 overflow-hidden rounded-full my-1">
                   <img
                     src={
                       patient?.userId?.image
-                        ? `${VITE_SERVER_URL}/images/${patient?.userId?.image}`
+                        ? `${VITE_SERVER_URL}userImages/${patient?.userId?.image}`
                         : "https://www.shutterstock.com/image-vector/male-silhouette-avatar-profile-picture-600w-199246382.jpg"
                     }
                     alt=""
@@ -38,13 +49,34 @@ function PatientsList({ patients }) {
                 <hr />
               </div>
               <div className="w-full flex-col items-stretch">
-                <div className="w-full flex justify-between my-2">
-                  <p>Phone Number</p>
-                  <p>{patient?.userId?.phoneNumber}</p>
+                <div className="w-full flex justify-between my-1">
+                  <div className="w-full">
+                    <p>Phone Number</p>
+                  </div>
+                  <div className=" w-full ">
+                    <p>{patient?.userId?.phoneNumber}</p>
+                  </div>
                 </div>
-                <div className="w-full flex justify-between my-2">
+                <div className="w-full flex justify-between my-1">
+                  <div className="w-full">
                   <p>Email</p>
+
+                  </div>
+                  <div className="w-full">
                   <p>{patient?.userId?.email}</p>
+
+                  </div>
+                </div>
+                <div className="w-full flex justify-between my-1">
+                <div className="w-full">
+                <p>Date</p>
+
+                </div>
+                <div className="w-full">
+                <p>{formateDate(patient?.date)}</p>
+
+                </div>
+
                 </div>
                 <div className="w-full flex justify-center mt-8">
                   <button
@@ -75,8 +107,26 @@ function PatientsList({ patients }) {
           </div>
           <div className="w-full h-full mt-5">
             <div className="w-full flex flex-col items-center justify-center h-36 p-2   overflow-hidden">
-              <div className="w-36  h-auto overflow-hidden">
+              <div
+                className={`${
+                  compareDates(patients[index].date)
+                    ? "justify-between"
+                    : "justify-center"
+                } w-full h-full flex  item-center  overflow-hidden `}
+              >
                 <img src={icon} alt="" className="w-36 h-28" />
+                {compareDates(patients[index].date) && (
+                  <button
+                    className="bg-black text-white h-10 w-24 "
+                    onClick={() =>
+                      navigate(
+                        `/doctor/prescription/${patients[index]._id}/update`
+                      )
+                    }
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
               <div className="w-full mt-2">
                 <hr className=" " />
@@ -116,7 +166,6 @@ function PatientsList({ patients }) {
             </div>
             <div className="w-full h-atuo ">
               <table class="w-full max-h-14 text-sm text-left text-gray-500 dark:text-gray-400 shadow-xl rounded-lg overflow-hidden">
-               
                 <thead class="text-xs py-2 text-gray-700 uppercase bg-[#05445E] dark:text-gray-400">
                   <tr>
                     <th class="px-4 py-2">Medicine</th>

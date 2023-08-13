@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import userApi from '../../helper/axios/userAxios'
+
 function VideoMeetPage() {
     const domain = "meet.jit.si";
     let api = {};
@@ -65,8 +66,12 @@ function VideoMeetPage() {
       };
     
       const handleParticipantJoined = async (participant) => {
-        console.log("handleParticipantJoined", participant);
-        const participents  =await getParticipants();
+       
+        const participents  = await getParticipants();
+        userApi.post('/userJoin',{consulatationId:meetingId._id}).then((res)=> {
+          if( res.data.status) console.log('successfully join updated')
+        })
+
         console.log(participents,"-----------------------------");
       };
     

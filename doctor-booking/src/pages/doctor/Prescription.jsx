@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ToastifyContest } from "../../helper/contest/ToastifyContest";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { doctorApi } from "../../helper/axios/doctorAxios";
 import userApi from "../../helper/axios/userAxios";
 
 function Prescription() {
-  const { consultationid } = useParams();
   let initialValues = {
     medicine: "",
     totalDays: 0,
@@ -18,7 +17,24 @@ function Prescription() {
   };
   const [medicines, setMedicines] = useState([initialValues]);
   const [consultation, setConsultation] = useState({});
+  const [update,setUpdate] = useState(false)
   const { show } = useContext(ToastifyContest);
+  const { consultationid } = useParams();
+  const location = useLocation()
+ 
+ 
+  useEffect(()=>{
+    if(location.pathname === `/doctor/prescription/${consultationid}/update`){
+     doctorApi.get(`/prescripton/${consultationid}`).then((res)=>{
+      if(res.data.status){
+        setMedicines([...res.data.medicines])
+        setConsultation({...res.data.consultation})
+        setUpdate(pre=>!pre)
+      }
+     })
+    }
+  },[consultationid])
+  
 
   const handleAddMore = () => {
     setMedicines((prev) => {
@@ -42,7 +58,6 @@ function Prescription() {
   };
   const handlePrescriptionSubmit = () => {
     const meetId = consultation._id;
-    alert(meetId);
     doctorApi
       .post("/prescription-c", { meetId:consultation._id, medicines })
       .then((res) => {
@@ -177,12 +192,17 @@ function Prescription() {
             Add More
           </button>
           <div className="w-full flex justify-center">
-            <button
+           { update? <button
+              className="p-2 bg-green-800 w-28 h-10 text-center text-white rounded-xl hover:w-32 hover:h-12"
+              onClick={handlePrescriptionSubmit}
+            >
+              update
+            </button> : <button
               className="p-2 bg-green-800 w-28 h-10 text-center text-white rounded-xl hover:w-32 hover:h-12"
               onClick={handlePrescriptionSubmit}
             >
               Submit
-            </button>
+            </button>}
           </div>
         </div>
       </div>

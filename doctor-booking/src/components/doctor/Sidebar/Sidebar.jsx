@@ -28,10 +28,10 @@ function Sidebar() {
     }
     ,
     {
-      name: "Appointments",
-      path: "/doctor/appointments",
+      name: "Payments History",
+      path: "/doctor/payments",
       symbol: <BiSolidUser className="mr-1" />,
-      active:  location.pathname === "/doctor/appointments"  ? true : false
+      active:  location.pathname === "/doctor/payments"  ? true : false
     
     },
     {

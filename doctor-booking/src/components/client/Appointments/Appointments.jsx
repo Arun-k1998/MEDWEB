@@ -70,11 +70,10 @@ function Appointments({
   };
 
   const handleCancellation = (id) => {
-    alert(id)
+    alert(id);
     api.post(`/cancel_appointment/${id}`).then((res) => {
       if (res.data.status) {
         show(res.data.message);
-        
       }
     });
   };
@@ -167,28 +166,41 @@ function Appointments({
                     </button>
                   </div>
                 ) : (
-                  <>
-                   <button
-                    className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
-                    onClick={() =>
-                      handleStartMeeting(
-                        appointment?.startingTime,
-                        appointment?.doctorId?.lastName,
-                        appointment._id
-                      )
-                    }
-                    // navigate(`/meet/${appointment._id}`)}}>
-                  >
-                    Join Room
-                  </button>
-                  <button
-                  className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
-                  onClick={() => handleCancellation(appointment._id)}
-                >
-                  Cancel
-                </button>
-                  </>
-                 
+                  <div className="flex flex-col gap-3">
+                    <div className="flex gap-3">
+                      <button
+                        className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                        onClick={() =>
+                          handleStartMeeting(
+                            appointment?.startingTime,
+                            appointment?.doctorId?.lastName,
+                            appointment._id
+                          )
+                        }
+                        // navigate(`/meet/${appointment._id}`)}}>
+                      >
+                        Join Room
+                      </button>
+                      <button
+                        className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                        onClick={() => handleCancellation(appointment._id)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <div>
+                      <button
+                        className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-64"
+                        onClick={() =>
+                          navigate(
+                            `/consult/detail/${appointment?.doctorId?._id}?reschedule=${appointment._id}`
+                          )
+                        }
+                      >
+                        ReSchedule
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

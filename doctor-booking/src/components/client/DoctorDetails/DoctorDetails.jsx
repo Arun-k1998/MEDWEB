@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "../../../helper/axios/userAxios";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import {BsCurrencyRupee} from 'react-icons/bs'
 function DoctorDetails() {
+  const location = useLocation()
+  const reshedule = new URLSearchParams(location.search).get('reschedule')
   const { VITE_SERVER_URL } = import.meta.env;
   const { doctorId } = useParams();
   const [doctorDetails, setDoctorDetails] = useState({});
@@ -311,7 +313,7 @@ function DoctorDetails() {
                 </p>
               </div>
               <div className="flex gap-3">
-                <div>
+               {reshedule?'':<><div>
                   <label htmlFor="">Wallet</label>
                   <input
                     type="radio"
@@ -330,7 +332,7 @@ function DoctorDetails() {
                     checked={paymentMethod === "online"}
                     onChange={handlePaymentChange}
                   />
-                </div>
+                </div></>}
               </div>
               <div>
                 <button
