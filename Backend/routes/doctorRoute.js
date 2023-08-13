@@ -45,9 +45,10 @@ doctor_Route.get('/profile/:id',doctorAuth,doctorController.getProfile)
 doctor_Route.post('/profile',doctorAuth,upload.single('image'),doctorController.updateProfile)
 doctor_Route.get('/appointments/:id',doctorAuth,doctorController.getAppointments)
 doctor_Route.post('/prescription-c',doctorAuth,doctorController.createPrescription)
+doctor_Route.get('/prescripton/:consultationId',doctorController.getPresctipton)
 doctor_Route.post('/consultation_finish/:consultationId',doctorAuth,doctorController.consultationFinish)
 doctor_Route.get('/patients/:doctorId',doctorAuth,doctorController.patients)
-
+doctor_Route.get('/allConsultation/:doctorId',doctorAuth,doctorController.getAllConsultation)
 doctor_Route.get('/token_v',doctorAuth,doctorController.tokenVerification)
 
 

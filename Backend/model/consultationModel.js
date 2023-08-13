@@ -14,9 +14,10 @@ const consultaionSchema = mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "processing", "finish"],
+      enum: ["pending",, "processing", "finish","canceled"],
       required: [true, "status of consultation required"],
-    },
+    }
+    ,
     dateId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -79,6 +80,28 @@ const consultaionSchema = mongoose.Schema(
       },
     ],
     is_delete:{
+      type:Boolean,
+      default:false
+    },
+    userJoin:{
+      type:Boolean,
+      default:false
+    },
+    doctorFee:{
+      type:Number
+    },
+    doctorPayment:{
+      type:Number
+    },
+    adminPayment:{
+      type:Number
+    }
+    ,
+    cancelByUser:{
+      type:Boolean,
+      default:false
+    },
+    cancelByDoctor:{
       type:Boolean,
       default:false
     }

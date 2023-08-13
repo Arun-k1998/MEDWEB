@@ -550,9 +550,9 @@ const getAppointments = async (req, res) => {
           { doctorId: id },
           { status: "pending" },
           
-          {
-            startingTime: { $gt: currentTimeIST.toDate() },
-          },
+          // {
+          //   startingTime: { $gt: currentTimeIST.toDate() },
+          // },
         ],
       })
       .populate("doctorId")
@@ -591,13 +591,43 @@ const createPrescription = async (req, res) => {
   }
 };
 
+const getPresctipton = async (req,res)=>{
+  try {
+    const {consultationId} = req.params
+    const consultationData = await consultationModel.findById(consultationId)
+    console.log('-----pres==========',consultationData);
+    if(consultationData) {
+      res.json({
+        status:true,
+        medicines:consultationData.prescription,
+        consultaton: consultationData
+      })
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 const consultationFinish = async (req, res) => {
   try {
     const { consultationId } = req.params;
+    console.log(consultationId);
     if (consultationId) {
+      const consulatatonData = await consultationModel.findById(consultationId)
+      const timeZone = "Asia/Kolkata";
+      let time = moment().tz(timeZone)
+      let consultationTime = moment(consulatatonData.startingTime,timeZone)
+      if(time < consultationTime) throw new Error("Can't Update consultaton befor the time ")
+      const consultaionFee = consulatatonData.doctorFee
+      const doctorPayment = consultaionFee*80/100
+      const adminPayment = consultaionFee*20/100
+      console.log(doctorPayment,adminPayment);
       const updatedConsultation = await consultationModel.findByIdAndUpdate(
         consultationId,
-        { status: "finish" }
+        { status: "finish",
+        doctorPayment,
+        adminPayment
+      }
       );
       if (updatedConsultation) {
         res.json({
@@ -607,7 +637,9 @@ const consultationFinish = async (req, res) => {
       }
     }
   } catch (error) {
-    console.log(error.message);
+    res.status(400).json({
+      message:error.message
+    })
   }
 };
 
@@ -619,7 +651,7 @@ const patients = async (req, res) => {
     const patientsList = await consultationModel
       .find({ $and: [{ status: "finish" }, { doctorId: doctorId }] })
       .populate("userId")
-      .populate("doctorId").sort({date:1});
+      .populate("doctorId").sort({createdAt:-1});
     console.log(patientsList);
     res.json({
       status: true,
@@ -629,6 +661,23 @@ const patients = async (req, res) => {
     console.log(error.message);
   }
 };
+
+const getAllConsultation = async (req,res)=>{
+  try {
+    const {doctorId} = req.params
+    console.log(doctorId);
+    const consultation = await consultationModel.find({doctorId:doctorId,status:'finish'}).populate('doctorId').populate('userId').populate('dateId')
+    if(consultation){
+      console.log('consultation',consultation);
+      res.json({
+        status:true,
+        bookings:consultation
+      })
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 const updateSession = async (req, res) => {
   try {
@@ -688,7 +737,7 @@ const deletScheduledDate = async (req, res) => {
       });
       await consultationModel.updateMany(
         { dateId, dateId },
-        { is_delete: true }
+        { is_delete: true,status:'canceled' }
       );
       const doctorId = scheduledConsultations[0].doctorId;
 
@@ -749,4 +798,6 @@ module.exports = {
   patients,
   updateSession,
   deletScheduledDate,
+  getPresctipton,
+  getAllConsultation
 };
