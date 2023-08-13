@@ -54,6 +54,8 @@ admin_Route.post('/user_b/:action/:userId',adminController.userBlockAndUnblock)
 admin_Route.get('/doctor_list',adminController.getAllDoctors)
 admin_Route.post('/doctor_b/:action/:doctorId',adminController.doctorBlockAndUnBlock)
 
+admin_Route.get('/dashBoard',adminController.dashBoard)
+
 admin_Route.get('/token_v',adminAuth,adminController.tokenVerification)
 
 module.exports = admin_Route

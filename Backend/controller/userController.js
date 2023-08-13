@@ -329,14 +329,16 @@ const searchDoctor = async (req, res) => {
 // };
 
 const checkoutSession = async (req, res) => {
-  console.log("iiiiiiiii");
+ 
 
   const { doctorId, slot, date, userId, sessions, paymentMethod } = req.body;
 
   try {
     const doctorData = await doctorModel.findOne({ _id: doctorId });
     const consultationFee = doctorData.feePerConsultation;
+
     console.log("-----paymentMethod-----", paymentMethod);
+
     if (paymentMethod === "wallet") {
       const userData = await users.findById(userId);
       console.log(userData);
@@ -363,7 +365,7 @@ const checkoutSession = async (req, res) => {
           startingTime: new Date(slot.start),
           endingTime: new Date(slot.end),
           videoCallId: videoCallId,
-          doctorFee:doctorData.feePerConsultation
+          doctorFee: doctorData.feePerConsultation,
         });
         const bookedConsultaion = await consultation.save();
         await users.findByIdAndUpdate(userId, {
@@ -398,6 +400,71 @@ const checkoutSession = async (req, res) => {
           }
         }
       }
+    } else if (paymentMethod == "reschedule") {
+      console.log("reschduling started");
+      const { consultationId } = req.body;
+      const consulatatonData = await consultationModel.findOne({
+        $and: [{ _id: consultationId }, { status: "pending" }],
+      });
+      if (!consulatatonData) {
+        const error = new Error("couldn't find Your booking information");
+        error.status = 404;
+        throw error;
+      }
+      console.log(slot.start);
+      console.log(req.body);
+      const formattedDate = slot.start.replace(/\.\d{3}Z$/, "Z");
+      const formattedStartingTime = slot.start.replace(/\.\d{3}Z$/, "Z");
+      const formattedEndingTime = slot.end.replace(/\.\d{3}Z$/, "Z");
+
+      const timezoneDate = moment(formattedDate).tz("Asia/Kolkata");
+      const timezoneStartingTime = moment(formattedStartingTime).tz(
+        "Asia/Kolkata"
+      );
+      const timezoneEndingTime = moment(formattedEndingTime).tz("Asia/Kolkata");
+
+      const updatedConsultation = await consultationModel.findByIdAndUpdate(
+        consultationId,
+        {
+          date: timezoneDate,
+          sessionNo: sessions.session,
+          tokenNo: slot.tokenNo,
+          dateId: sessions.dateId,
+          startingTime: timezoneStartingTime,
+          endingTime: timezoneEndingTime,
+        }
+      );
+      const tokenNo = slot.tokenNo;
+
+      if (updatedConsultation) { // updating previous slot to open to other user 
+        const timeScheduleData = await timeSloteModel.findById(consulatatonData.dateId);
+        timeScheduleData.sessions.forEach((session, index) => {
+          if (consulatatonData.sessionNo - 1 === index) {
+            session.slotes.forEach((slot) => {
+              if (slot.tokenNo === consulatatonData.tokenNo) slot.is_Booked = false;
+            });
+          }
+        });
+        await timeScheduleData.save();
+
+        const newDate = await timeSloteModel.findOne({
+          _id: sessions.dateId,
+        });
+        console.log("---------------newData-----", newDate);
+        newDate.sessions.forEach((session) => {
+          if (session.session === sessions.session) {
+            session.slotes.forEach((updateSlot) => {
+              if (updateSlot.tokenNo === slot.tokenNo) {
+                updateSlot.is_Booked = true;
+              }
+            });
+          }
+        });
+        const updatedSlot = await newDate.save();
+
+        console.log("rescheduling ended");
+        res.json({ status: true, message: "Successfully Rescheduled " });
+      }
     } else {
       console.log("----------online--------");
       if (doctorData) {
@@ -430,7 +497,8 @@ const checkoutSession = async (req, res) => {
           ],
           mode: "payment",
           success_url: `${CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: "http://localhost:5173/consult/detail/64aec98ff79d0a03023e88a5",
+          cancel_url:
+            "http://localhost:5173/consult/detail/64aec98ff79d0a03023e88a5",
         });
 
         res.json({
@@ -443,6 +511,9 @@ const checkoutSession = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -495,20 +566,18 @@ const slotBookingWithJwt = async (req, res) => {
     const paymentChecking = await stripe.checkout.sessions.retrieve(paymentId);
     console.log(paymentChecking);
     console.log(paymentChecking.payment_status);
-    const consultationDetails =  jwt.verify(
+    const consultationDetails = jwt.verify(
       req.body.booking,
       process.env.JSON_SECRET_KEY
     );
     const { doctorId, slot, date, userId, sessions } = consultationDetails;
-    const doctorData = await doctorModel.findById(doctorId)
+    const doctorData = await doctorModel.findById(doctorId);
 
     if (paymentChecking.payment_status === "paid") {
-     
-
       console.log(consultationDetails);
-      
-      console.log('doctorData',doctorData);
-      
+
+      console.log("doctorData", doctorData);
+
       // const DoctorData = await doctorModel.findOne({_id:doctorId})
       // const userData = await users.findOne({_id:userId})
       ("------------------------");
@@ -526,7 +595,7 @@ const slotBookingWithJwt = async (req, res) => {
         startingTime: new Date(slot.start),
         endingTime: new Date(slot.end),
         videoCallId: videoCallId,
-        doctorFee:doctorData.feePerConsultation
+        doctorFee: doctorData.feePerConsultation,
       });
       const bookedConsultaion = await consultation.save();
       // console.log(new Date(bookedConsultaion.startingTime).toLocaleString());
@@ -611,7 +680,7 @@ const meetingId = async (req, res) => {
 
 const updateUserJoin = async (req, res) => {
   const { consulatationId } = req.body;
-  console.log('userJoinUpdate' ,consulatationId);
+  console.log("userJoinUpdate", consulatationId);
   try {
     const userJoin = await consultationModel.findByIdAndUpdate(
       consulatationId,
@@ -749,6 +818,8 @@ const getPrescription = async (req, res) => {
   }
 };
 
+
+
 module.exports = {
   signup,
   login,
@@ -767,5 +838,6 @@ module.exports = {
   getProfile,
   updateProfile,
   getPrescription,
-  updateUserJoin
+  updateUserJoin,
+  
 };

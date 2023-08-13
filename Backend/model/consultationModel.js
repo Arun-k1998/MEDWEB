@@ -14,7 +14,7 @@ const consultaionSchema = mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending",, "processing", "finish","canceled"],
+      enum: ["pending", "finish","canceled"],
       required: [true, "status of consultation required"],
     }
     ,

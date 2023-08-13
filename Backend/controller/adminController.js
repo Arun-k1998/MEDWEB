@@ -318,6 +318,17 @@ const doctorBlockAndUnBlock = async(req,res)=>{
 }
 }
 
+const dashBoard = async (req,res)=>{
+  try {
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
+  }
+}
+
 module.exports = {
   login,
   bannerUpload,
@@ -331,5 +342,6 @@ module.exports = {
   tokenVerification,
   getAllUser,userBlockAndUnblock,
   getAllDoctors,
-  doctorBlockAndUnBlock
+  doctorBlockAndUnBlock,
+  dashBoard
 };
