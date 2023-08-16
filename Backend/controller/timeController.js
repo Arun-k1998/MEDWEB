@@ -12,7 +12,7 @@ const timeSlotes = async(req,res)=>{
         }
     } catch (error) {
         console.log(error.message);
-        res.status(404).json({
+        res.status(error.status).json({
             message:error.message
         })
     }

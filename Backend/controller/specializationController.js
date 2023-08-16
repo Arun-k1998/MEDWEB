@@ -15,6 +15,9 @@ module.exports = {
       }
     } catch (error) {
       console.log(error.message);
+      res.status(error.status).json({
+        message:error.message
+    })
     }
   },
 
@@ -43,7 +46,9 @@ module.exports = {
         });
 
     } catch (error) {
-        console.log(error.message);
+      res.status(error.status).json({
+        message:error.message
+    })
     }
   }
 };

@@ -12,6 +12,9 @@ const path = require("path");
 const consultationModel = require("../model/consultationModel");
 const userModel = require("../model/useModel");
 const moment = require("moment-timezone");
+const specializationModel = require("../model/specializationModel");
+const ObjctId = mongoose.Types.ObjectId;
+
 const vonage = new Vonage({
   apiKey: "a3a8bec7",
   apiSecret: "GXxHHP0Ql17HlP2p",
@@ -37,6 +40,9 @@ const tokenVerification = (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -147,6 +153,9 @@ const otpVerification = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -194,7 +203,9 @@ const login = async (req, res) => {
     }
   } catch (error) {
     console.log("error");
-    res.json({ message: error.message });
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -215,6 +226,9 @@ const doctorDetails = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -254,6 +268,9 @@ const updateDoctorDetails = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -303,6 +320,9 @@ const doctorApproval = async (req, res) => {
       });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -362,6 +382,9 @@ const doctorTimeScheduling = async (req, res) => {
       });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -392,15 +415,17 @@ const timeSlotes = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
 const deleteTimeSlote = async (req, res) => {
   const { id, slotId } = req.body;
 
-  console.log(id);
-  console.log(slotId);
-  const scheduledDate = await timeSloteModel.findById(id);
+  try {
+    const scheduledDate = await timeSloteModel.findById(id);
   const sessions = scheduledDate.sessions.filter(
     (obj, index) => obj._id != slotId
   );
@@ -424,34 +449,59 @@ const deleteTimeSlote = async (req, res) => {
         });
       });
   }
+    
+  } catch (error) {
+    console.log(error.messag);
+    res.status(error.status).json({
+      message:error.message
+    })
+  }
+
+
+
 };
 
 const doctorList = async (req, res) => {
   try {
-    const { name } = req.params;
-    console.log(name, "dsfsf");
+    const { sid } = req.query;
+    const filter = req?.query?.filter || "";
+    let query = {
+      approved: "approved",
+      is_Blocked: false
+    };
+    if (sid) {
+      let splitarray = sid.split(',')
+      console.log(splitarray);
+      query['specialization'] = {$in:splitarray}
+    }
+
     const doctorList = await doctor
-      .find({
-        $and: [
-          { specialization: name },
-          { approved: "approved" },
-          { is_Blocked: false },
-        ],
-      })
-      .populate("specialization", "name");
-    // const timeSlotes = await timeSloteModel.find({doctorId:'64aec98ff79d0a03023e88a5'}).sort({date:1})
-    console.log(doctorList);
-    // console.log(timeSlotes);
+    .find(query)
+    .populate("specialization", "name");   
+      // .find({  
+      //   $and: [
+      //     { specialization: sid },
+      //     { approved: "approved" },
+      //     { is_Blocked: false },
+      //   ],
+      // })
+      // .populate("specialization", "name");
+
+    const specilizations = await specializationModel.find(
+      { is_delete: false },
+      { name: 1 }
+    );
+
     if (doctorList) {
       res.json({
         status: true,
         doctors: doctorList,
-        // timeSlotes:timeSlotes
+        specilizations,
       });
     }
   } catch (error) {
     console.log(error.message);
-    res.status(404).json({
+    res.status(error.status).json({
       message: error.message,
     });
   }
@@ -477,7 +527,7 @@ const sss = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(404).json({
+    res.status(error.status).json({
       message: error.message,
     });
   }
@@ -496,6 +546,9 @@ const getProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -534,6 +587,9 @@ const updateProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 // import 'moment-timezone';
@@ -549,7 +605,7 @@ const getAppointments = async (req, res) => {
         $and: [
           { doctorId: id },
           { status: "pending" },
-          
+
           // {
           //   startingTime: { $gt: currentTimeIST.toDate() },
           // },
@@ -566,6 +622,9 @@ const getAppointments = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -588,46 +647,53 @@ const createPrescription = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
-const getPresctipton = async (req,res)=>{
+const getPresctipton = async (req, res) => {
   try {
-    const {consultationId} = req.params
-    const consultationData = await consultationModel.findById(consultationId)
-    console.log('-----pres==========',consultationData);
-    if(consultationData) {
+    const { consultationId } = req.params;
+    const consultationData = await consultationModel.findById(consultationId);
+    console.log("-----pres==========", consultationData);
+    if (consultationData) {
       res.json({
-        status:true,
-        medicines:consultationData.prescription,
-        consultaton: consultationData
-      })
+        status: true,
+        medicines: consultationData.prescription,
+        consultaton: consultationData,
+      });
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
-}
+};
 
 const consultationFinish = async (req, res) => {
   try {
     const { consultationId } = req.params;
     console.log(consultationId);
     if (consultationId) {
-      const consulatatonData = await consultationModel.findById(consultationId)
+      const consulatatonData = await consultationModel.findById(consultationId);
       const timeZone = "Asia/Kolkata";
-      let time = moment().tz(timeZone)
-      let consultationTime = moment(consulatatonData.startingTime,timeZone)
-      if(time < consultationTime) throw new Error("Can't Update consultaton befor the time ")
-      const consultaionFee = consulatatonData.doctorFee
-      const doctorPayment = consultaionFee*80/100
-      const adminPayment = consultaionFee*20/100
-      console.log(doctorPayment,adminPayment);
+      let time = moment().tz(timeZone);
+      let consultationTime = moment(consulatatonData.startingTime, timeZone);
+      if (time < consultationTime){
+        const error = new Error("Can't Update consultaton befor the time ");
+        error.status = 400
+        throw error
+      }
+      const consultaionFee = consulatatonData.doctorFee;
+      const doctorPayment = (consultaionFee * 80) / 100;
+      const adminPayment = (consultaionFee * 20) / 100;
+      console.log(doctorPayment, adminPayment);
       const updatedConsultation = await consultationModel.findByIdAndUpdate(
         consultationId,
-        { status: "finish",
-        doctorPayment,
-        adminPayment
-      }
+        { status: "finish", doctorPayment, adminPayment }
       );
       if (updatedConsultation) {
         res.json({
@@ -637,9 +703,9 @@ const consultationFinish = async (req, res) => {
       }
     }
   } catch (error) {
-    res.status(400).json({
-      message:error.message
-    })
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -651,7 +717,8 @@ const patients = async (req, res) => {
     const patientsList = await consultationModel
       .find({ $and: [{ status: "finish" }, { doctorId: doctorId }] })
       .populate("userId")
-      .populate("doctorId").sort({createdAt:-1});
+      .populate("doctorId")
+      .sort({ createdAt: -1 });
     console.log(patientsList);
     res.json({
       status: true,
@@ -659,25 +726,35 @@ const patients = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
-const getAllConsultation = async (req,res)=>{
+const getAllConsultation = async (req, res) => {
   try {
-    const {doctorId} = req.params
+    const { doctorId } = req.params;
     console.log(doctorId);
-    const consultation = await consultationModel.find({doctorId:doctorId,status:'finish'}).populate('doctorId').populate('userId').populate('dateId')
-    if(consultation){
-      console.log('consultation',consultation);
+    const consultation = await consultationModel
+      .find({ doctorId: doctorId, status: "finish" })
+      .populate("doctorId")
+      .populate("userId")
+      .populate("dateId");
+    if (consultation) {
+      console.log("consultation", consultation);
       res.json({
-        status:true,
-        bookings:consultation
-      })
+        status: true,
+        bookings: consultation,
+      });
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
-}
+};
 
 const updateSession = async (req, res) => {
   try {
@@ -722,7 +799,9 @@ const updateSession = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
   }
 };
 
@@ -737,7 +816,7 @@ const deletScheduledDate = async (req, res) => {
       });
       await consultationModel.updateMany(
         { dateId, dateId },
-        { is_delete: true,status:'canceled' }
+        { is_delete: true, status: "canceled" }
       );
       const doctorId = scheduledConsultations[0].doctorId;
 
@@ -773,6 +852,107 @@ const deletScheduledDate = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message:error.message
+    })
+  }
+};
+
+const dashBoard = async (req, res) => {
+  try {
+    const weekStart = moment.tz("Asia/Kolkata").startOf("week");
+    const weekEnd = moment.tz("Asia/Kolkata").endOf("week");
+    const monthStart = moment.tz("Asia/Kolkata").startOf("month");
+    const monthEnd = moment().tz("Asia/Kolkata").endOf("month");
+    const yearStart = moment.tz("Asia/Kolkata").startOf("Year");
+    const yearEnd = moment.tz("Asia/Kolkata").endOf("year");
+
+    const { doctorId } = req.params;
+    console.log(doctorId);
+    const weekPatientCount = await consultationModel
+      .find({
+        $and: [
+          { doctorId: doctorId },
+          { status: "finish" },
+          { date: { $gte: weekStart.toDate() } },
+          { date: { $lte: weekEnd.toDate() } },
+        ],
+      })
+      .countDocuments();
+
+    const monthlyPatientCount = await consultationModel
+      .find({
+        $and: [
+          { doctorId: doctorId },
+          { status: "finish" },
+          { date: { $gte: monthStart.toDate() } },
+          { date: { $lte: monthEnd.toDate() } },
+        ],
+      })
+      .countDocuments();
+
+    const YearlyPatientCount = await consultationModel
+      .find({
+        $and: [
+          { doctorId: doctorId },
+          { status: "finish" },
+          { date: { $gte: yearStart.toDate() } },
+          { date: { $lte: yearEnd.toDate() } },
+        ],
+      })
+      .countDocuments();
+
+    // const totalPatients = await consultationModel.find({$and:[{doctorId:doctorId},{status:'finish'}]})
+    let doctorObjectId = new ObjctId(doctorId);
+
+    const totalConsultationDetails = await consultationModel.aggregate([
+      { $match: { status: "finish", doctorId: doctorObjectId } },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+          totalAmount: { $sum: "$doctorPayment" },
+        },
+      },
+    ]);
+    // console.log(totalConsultationDetails,'totalPatients');
+
+    const currentTime = moment.tz("Asia/Kolkata");
+    const sevenDaysAgo = currentTime.clone().subtract(7, "days");
+    console.log(currentTime, sevenDaysAgo);
+
+    const weeklyReport = await consultationModel.aggregate([
+      {
+        $match: {
+          doctorId: doctorObjectId,
+          status: "finish",
+          date: { $gte: sevenDaysAgo.toDate(), $lte: currentTime.toDate() },
+        },
+      },
+      {
+        $group: {
+          _id: "$date",
+          totalAmount: { $sum: "$doctorPayment" },
+        },
+      },
+    ]);
+
+    console.log("durationData", weeklyReport);
+    res.json({
+      status: true,
+      weeklyPatientCount: weekPatientCount,
+      monthlyPatientCount: monthlyPatientCount,
+      YearlyPatientCount: YearlyPatientCount,
+      totalCounsultation: totalConsultationDetails,
+      weeklyReportStartingDate: currentTime,
+      weeklyReportEndingDate: sevenDaysAgo,
+      weeklyReport: weeklyReport,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -799,5 +979,6 @@ module.exports = {
   updateSession,
   deletScheduledDate,
   getPresctipton,
-  getAllConsultation
+  getAllConsultation,
+  dashBoard,
 };

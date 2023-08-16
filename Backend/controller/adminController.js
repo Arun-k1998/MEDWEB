@@ -4,9 +4,12 @@ const bcrypt = require("bcrypt");
 const banner = require("../model/bannerModel");
 const specialization = require("../model/specializationModel");
 const doctor = require("../model/doctorModel");
-const userModel = require('../model/useModel');
+const userModel = require("../model/useModel");
 const doctorModel = require("../model/doctorModel");
 const { doctorList } = require("./doctorController");
+const consultationModel = require("../model/consultationModel");
+const specializationModel = require("../model/specializationModel");
+const moment = require("moment-timezone");
 
 const tokenVerification = async (req, res) => {
   res.status(200).json({
@@ -29,14 +32,12 @@ const login = async (req, res) => {
         const token = jwt.sign({ id: adminData._id }, "adminSecrectKey123", {
           expiresIn: "2d",
         });
-        res
-          .status(200)
-          .json({
-            status: true,
-            token,
-            message: "Successfully Login",
-            admin: adminData,
-          });
+        res.status(200).json({
+          status: true,
+          token,
+          message: "Successfully Login",
+          admin: adminData,
+        });
       } else {
         res.status(400).json({ status: false, message: "Incorrect Password" });
       }
@@ -45,6 +46,7 @@ const login = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
 };
 
@@ -62,7 +64,8 @@ const bannerUpload = async (req, res) => {
       res.status(201).json({ status: true, message: "successfully created" });
   } catch (error) {
     console.log(error.message);
-  } 
+    res.status(error.status).json({ status: false, message: error.message });
+  }
 };
 
 const banners = async (req, res) => {
@@ -71,6 +74,7 @@ const banners = async (req, res) => {
     res.json({ status: true, banners: bannerCollection });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
 };
 
@@ -107,6 +111,7 @@ const getBanner = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
 };
 
@@ -128,6 +133,7 @@ const updateBanner = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
 };
 
@@ -142,6 +148,7 @@ const specilizations = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
 };
 
@@ -182,6 +189,7 @@ const createSpecialization = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
 };
 
@@ -197,19 +205,18 @@ const deleteSpecilization = async (req, res) => {
         },
       }
     );
-    if(specializationDelete){
-        res.json({
-            status:true,
-            message:'success'
-        })
+    if (specializationDelete) {
+      res.json({
+        status: true,
+        message: "success",
+      });
     }
-
   } catch (error) {
     console.log(error.message);
     res.status(404).json({
-        status:false,
-        message:error.message
-    })
+      status: false,
+      message: error.message,
+    });
   }
 };
 
@@ -231,103 +238,224 @@ const doctorDetails = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
 };
 
-const getAllUser = async(req,res)=>{
+const getAllUser = async (req, res) => {
   try {
-    
-    const userList = await userModel.find({})
+    const userList = await userModel.find({});
     console.log(userList);
     res.json({
-      status:true,
-      userList :userList
-    })
+      status: true,
+      userList: userList,
+    });
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
-}
+};
 
-const userBlockAndUnblock = async(req,res)=>{
+const userBlockAndUnblock = async (req, res) => {
   try {
-    const {action,userId} = req.params
-    console.log(action,userId);
+    const { action, userId } = req.params;
+    console.log(action, userId);
     let actionBoolean;
-    if(action === 'block') actionBoolean = true
-    else if(action === 'unBlock') actionBoolean = false
+    if (action === "block") actionBoolean = true;
+    else if (action === "unBlock") actionBoolean = false;
     console.log(actionBoolean);
-    const userData = await userModel.findByIdAndUpdate({_id:userId},{
-      $set:{
-        is_Blocked: actionBoolean
+    const userData = await userModel.findByIdAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          is_Blocked: actionBoolean,
+        },
       }
-    })
-    
-    
-    if(userData){
-      res.json({
-        status:true,
-        message:`User ${actionBoolean? 'Block': "UnBlock" } Successfully`
-      })
-    }
+    );
 
+    if (userData) {
+      res.json({
+        status: true,
+        message: `User ${actionBoolean ? "Block" : "UnBlock"} Successfully`,
+      });
+    }
   } catch (error) {
-    res.status(404).json({status:false,message:error.message})
+    res.status(error.status).json({ status: false, message: error.message });
     console.log(error.message);
   }
-}
+};
 
-const getAllDoctors = async(req,res)=>{
+const getAllDoctors = async (req, res) => {
   try {
-    const docotrList = await doctorModel.find({approved:'approved'})
-    if(doctorList){
+    const docotrList = await doctorModel.find({ approved: "approved" });
+    if (doctorList) {
       res.json({
-        status:true,
-        doctorList:docotrList
-      })
+        status: true,
+        doctorList: docotrList,
+      });
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({ status: false, message: error.message });
   }
-}
+};
 
-const doctorBlockAndUnBlock = async(req,res)=>{ 
-  try{
-  const {action,doctorId} = req.params
-  console.log(action,doctorId);
-  let actionBoolean;
-  if(action === 'block') actionBoolean = true
-  else if(action === 'unBlock') actionBoolean = false
-  console.log(actionBoolean);
-  const userData = await doctorModel.findByIdAndUpdate({_id:doctorId},{
-    $set:{
-      is_Blocked: actionBoolean
-    }
-  })
-  
-  
-  if(userData){
-    res.json({
-      status:true,
-      message:`User ${actionBoolean? 'Block': "UnBlock" } Successfully`
-    })
-  }
-
-} catch (error) {
-  res.status(404).json({status:false,message:error.message})
-  console.log(error.message);
-}
-}
-
-const dashBoard = async (req,res)=>{
+const doctorBlockAndUnBlock = async (req, res) => {
   try {
-    
+    const { action, doctorId } = req.params;
+    console.log(action, doctorId);
+    let actionBoolean;
+    if (action === "block") actionBoolean = true;
+    else if (action === "unBlock") actionBoolean = false;
+    console.log(actionBoolean);
+    const userData = await doctorModel.findByIdAndUpdate(
+      { _id: doctorId },
+      {
+        $set: {
+          is_Blocked: actionBoolean,
+        },
+      }
+    );
+
+    if (userData) {
+      res.json({
+        status: true,
+        message: `User ${actionBoolean ? "Block" : "UnBlock"} Successfully`,
+      });
+    }
+  } catch (error) {
+    res.status(error.status).json({ status: false, message: error.message });
+    console.log(error.message);
+  }
+};
+
+const dashBoard = async (req, res) => {
+  try {
+    const userCount = userModel.find({ is_Blocked: false }).countDocuments();
+    const doctorCount = doctorModel
+      .find({ is_Blocked: false })
+      .countDocuments();
+    const consultationCount = consultationModel
+      .find({ status: "finish" })
+      .countDocuments();
+
+    const specilalizaionWise = await consultationModel.aggregate([
+      {
+        $match: { status: "finish" }, // Use $match to filter documents
+      },
+      {
+        $lookup: {
+          from: "doctors",
+          localField: "doctorId",
+          foreignField: "_id",
+          as: "doctor",
+        },
+      },
+      {
+        $unwind: "$doctor",
+      },
+      {
+        $lookup: {
+          from: "specializations",
+          localField: "doctor.specialization",
+          foreignField: "_id",
+          as: "specialization",
+        },
+      },
+      { $unwind: "$specialization" },
+      {
+        $group: {
+          _id: "$specialization.name",
+          doctorPayment: { $sum: "$doctorPayment" },
+          adminPayment: { $sum: "$adminPayment" },
+        },
+      },
+    ]);
+
+    const currentTime = moment.tz('Asia/Kolkata');
+    const sevenDaysAgo = currentTime.clone().subtract(7, 'days');
+    const weeklySalesReport =  await consultationModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: sevenDaysAgo.toDate(),
+          },
+          status: "finish",
+        },
+      },
+      {
+        $group: {
+          _id:'$date' 
+            
+          ,
+          totalAmount: {
+            $sum: "$adminPayment",
+          },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+    // const weeklySalesReport =  await consultationModel.aggregate([
+    //   {
+    //     $match: {
+    //       createdAt: {
+    //         $gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+    //       },
+    //       status: "finish",
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: {
+    //         $dayOfWeek: "$createdAt",
+    //       },
+    //       totalAmount: {
+    //         $sum: "$adminPayment",
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $sort: {
+    //       _id: 1,
+    //     },
+    //   },
+    // ]);
+
+    console.log(specilalizaionWise);
+    console.log(weeklySalesReport);
+
+    Promise.all([userCount, doctorCount, consultationCount])
+      .then(
+        ([userCount, doctorCount, consultationCount]) => { 
+          res.json({
+            status: true,
+            userCount,
+            doctorCount,
+            consultationCount,
+            pieChartData: specilalizaionWise,
+            weeklySalesReport,
+            lineChartFrom:currentTime,
+            lineChartTo:sevenDaysAgo
+
+          });
+        }
+      )
+      .catch((error) => {
+        res.status(error.status).jons({
+          message: error.message,
+        });
+      });
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
-}
+};
 
 module.exports = {
   login,
@@ -340,8 +468,9 @@ module.exports = {
   createSpecialization,
   doctorDetails,
   tokenVerification,
-  getAllUser,userBlockAndUnblock,
+  getAllUser,
+  userBlockAndUnblock,
   getAllDoctors,
   doctorBlockAndUnBlock,
-  dashBoard
+  dashBoard,
 };

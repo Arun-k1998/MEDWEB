@@ -6,7 +6,7 @@ async function doctorAuth(req,res,next){
         if(!authorization) throw new Error("Authorization header required")
         const token = authorization.replace('Bearer ','')
         const verification = jwt.verify(token,process.env.JSON_SECRET_KEY)
-        
+        console.log(verification);
         const doctorData = await doctorModel.findById({_id:verification.id})
         if(!doctorData) throw new Error('Doctor Not Found')
         req.doctor = doctorData

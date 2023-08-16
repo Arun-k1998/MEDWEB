@@ -41,7 +41,7 @@ user_Route.post('/signup',userController.signup)
 user_Route.post('/login',userController.login)
 user_Route.post('/verify_otp',userController.otpVerification)
 user_Route.post('/resendotp',userController.resendOTP)
-user_Route.get('/consult/:name',doctorController.doctorList)
+user_Route.get('/consult',doctorController.doctorList)
 user_Route.get('/timeSlotes/:id',doctorController.sss)
 user_Route.get('/doctorSearch/:search',userController.searchDoctor)
 // user_Route.post('/payment_success',userController.slotBooking)
@@ -55,7 +55,7 @@ user_Route.post('/cancel_appointment/:id',userAuth,userAuth,userController.cance
 user_Route.get('/profile/:id',userAuth,userController.getProfile)
 user_Route.post('/profile/:id',userAuth,upload.single('image'),userController.updateProfile)
 user_Route.get('/prescription/:userId',userAuth,userController.getPrescription)
-
+user_Route.get('/paymentHistory/:userId',userAuth,userController.paymentHistory)
 
 
 user_Route.get('/token_v',userAuth,userController.tokenVerification)

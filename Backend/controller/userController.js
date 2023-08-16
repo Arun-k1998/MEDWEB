@@ -42,8 +42,11 @@ const home = async (req, res) => {
       banners: bannerData,
       specialization: specializationData,
     });
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -86,8 +89,11 @@ const signup = async (req, res) => {
         message: "Email already exits",
       });
     }
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -128,8 +134,11 @@ const otpVerification = async (req, res) => {
       })
 
       .catch((err) => console.error(err));
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -151,8 +160,11 @@ const resendOTP = async (req, res) => {
         });
       })
       .catch((err) => console.error(err));
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -188,21 +200,25 @@ const login = async (req, res) => {
       });
     }
   } catch (error) {
-    res.json({ message: error.message });
+    res.status(error.statu).json({ message: error.message });
   }
 };
 
 const tokenVerification = async (req, res) => {
   try {
     res.json({ status: true, user: req.user });
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
 const searchDoctor = async (req, res) => {
   try {
     const search = req.params.search;
+
     const doctors = await doctorModel
       .find({
         $and: [
@@ -223,8 +239,11 @@ const searchDoctor = async (req, res) => {
         message: "Can't find a doctor in this name",
       });
     }
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -329,8 +348,6 @@ const searchDoctor = async (req, res) => {
 // };
 
 const checkoutSession = async (req, res) => {
- 
-
   const { doctorId, slot, date, userId, sessions, paymentMethod } = req.body;
 
   try {
@@ -436,12 +453,16 @@ const checkoutSession = async (req, res) => {
       );
       const tokenNo = slot.tokenNo;
 
-      if (updatedConsultation) { // updating previous slot to open to other user 
-        const timeScheduleData = await timeSloteModel.findById(consulatatonData.dateId);
+      if (updatedConsultation) {
+        // updating previous slot to open to other user
+        const timeScheduleData = await timeSloteModel.findById(
+          consulatatonData.dateId
+        );
         timeScheduleData.sessions.forEach((session, index) => {
           if (consulatatonData.sessionNo - 1 === index) {
             session.slotes.forEach((slot) => {
-              if (slot.tokenNo === consulatatonData.tokenNo) slot.is_Booked = false;
+              if (slot.tokenNo === consulatatonData.tokenNo)
+                slot.is_Booked = false;
             });
           }
         });
@@ -588,12 +609,15 @@ const slotBookingWithJwt = async (req, res) => {
         userId: userId,
         doctorId: doctorId,
         status: "pending",
-        date: new Date(date),
+        // date: new Date(date),
+        date: moment(date).tz("Asia/Kolkata").toDate(),
         sessionNo: sessions.session,
         tokenNo: slot.tokenNo,
         dateId: sessions.dateId,
-        startingTime: new Date(slot.start),
-        endingTime: new Date(slot.end),
+        // startingTime: new Date(slot.start),
+        startingTime: moment(slot.start).tz("Asia/Kolkata").toDate(),
+        endingTime: moment(slot.end).tz("Asia/Kolkata").toDate(),
+        // endingTime: new Date(slot.end),
         videoCallId: videoCallId,
         doctorFee: doctorData.feePerConsultation,
       });
@@ -622,8 +646,11 @@ const slotBookingWithJwt = async (req, res) => {
         }
       }
     }
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -649,6 +676,7 @@ const getAppointments = async (req, res) => {
       .populate("doctorId")
       .populate("userId")
       .sort({ date: 1 });
+
     if (appointmentsList) {
       // console.log(app);
       res.status(202).json({
@@ -656,8 +684,11 @@ const getAppointments = async (req, res) => {
         appointments: appointmentsList,
       });
     }
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -673,8 +704,11 @@ const meetingId = async (req, res) => {
     if (consultaion) {
       res.json({ status: true, meetingId: consultaion });
     }
-  } catch (error) {
+  }catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -693,6 +727,9 @@ const updateUserJoin = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -705,7 +742,10 @@ const cancelConsultation = async (req, res) => {
     });
     console.log("----------consultationDetails--------", consultationData);
     const { sessionNo, tokenNo, doctorId, userId, dateId } = consultationData;
-    await consultationModel.deleteOne({ _id: appointmentId });
+    await consultationModel.updateOne(
+      { _id: appointmentId },
+      { status: "canceled" }
+    );
     const timeScheduleData = await timeSloteModel.findById(dateId);
     timeScheduleData.sessions.forEach((session, index) => {
       if (sessionNo - 1 === index) {
@@ -742,6 +782,9 @@ const cancelConsultation = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
@@ -759,43 +802,53 @@ const getProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
 const updateProfile = async (req, res) => {
-  console.log(req.body);
-  const { userId, user } = req.body;
-  console.log(user);
-  const parsedData = JSON.parse(user);
-  console.log(parsedData);
-  const profileImage = req?.file?.filename;
-  // console.log(req.file);
-  // console.log(profileImage);
-  const userData = await users.findById(userId);
-  // console.log(userData,userId);
-  if (profileImage) {
-    await users.findByIdAndUpdate(userId, {
-      image: profileImage,
-    });
-    if (userData.image) {
-      const oldImage = path.join(
-        "C:\\Users\\arunk\\doctorconsultation\\Backend\\public\\userImages",
-        userData.image
-      );
-      fs.unlinkSync(oldImage);
+  try {
+    console.log(req.body);
+    const { userId, user } = req.body;
+    console.log(user);
+    const parsedData = JSON.parse(user);
+    console.log(parsedData);
+    const profileImage = req?.file?.filename;
+    // console.log(req.file);
+    // console.log(profileImage);
+    const userData = await users.findById(userId);
+    // console.log(userData,userId);
+    if (profileImage) {
+      await users.findByIdAndUpdate(userId, {
+        image: profileImage,
+      });
+      if (userData.image) {
+        const oldImage = path.join(
+          "C:\\Users\\arunk\\doctorconsultation\\Backend\\public\\userImages",
+          userData.image
+        );
+        fs.unlinkSync(oldImage);
+      }
     }
-  }
-  const updatedUser = await users.findByIdAndUpdate(userId, {
-    firstName: parsedData?.firstName,
-    lastName: parsedData?.lastName,
-    phoneNumber: parsedData?.phoneNumber,
-    email: parsedData?.email,
-  });
+    const updatedUser = await users.findByIdAndUpdate(userId, {
+      firstName: parsedData?.firstName,
+      lastName: parsedData?.lastName,
+      phoneNumber: parsedData?.phoneNumber,
+      email: parsedData?.email,
+    });
 
-  if (updatedUser) {
-    res.json({
-      status: true,
-      message: "successfully updated",
+    if (updatedUser) {
+      res.json({
+        status: true,
+        message: "successfully updated",
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
     });
   }
 };
@@ -814,11 +867,42 @@ const getPrescription = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(404).json({ message: error.message });
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 
+const paymentHistory = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const userData = users.findById(userId);
 
+    const paymentHistory = consultationModel
+      .find({
+        userId: userId,
+        status: { $in: ["finish", "canceled"] },
+      })
+      .populate("doctorId")
+      .sort({ date: 1 });
+
+    Promise.all([userData, paymentHistory]).then(
+      ([userData, paymentHistory]) => {
+        console.log(paymentHistory);
+        res.json({
+          status: true,
+          paymentHistory,
+          userData,
+        });
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   signup,
@@ -839,5 +923,5 @@ module.exports = {
   updateProfile,
   getPrescription,
   updateUserJoin,
-  
+  paymentHistory,
 };
