@@ -15,10 +15,51 @@ const consultationModel = require("../model/consultationModel");
 const nodeMailer = require("nodemailer");
 const fs = require("fs");
 
+const otpGenerator = () => {
+  const otp = Math.floor(Math.random() * 1000000);
+  return otp;
+};
+
+const EmailOtp = {};
+
+const noedeMailerconnect = (email) => {
+  const otp = otpGenerator();
+  console.log(otp);
+  EmailOtp[email] = otp;
+
+  const transporter = nodeMailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+
+    service: "gmail",
+    auth: {
+      user: process.env.USER_EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+    secure: false,
+
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
+  });
+  var mailOptions = {
+    from: process.env.USER_EMAIL,
+    to: email,
+    subject: "Otp for registration is: ",
+    html: `<h3>OTP for account verification  </h3>" '<hr />'
+      <h1 style='font-weight:bold;'> OTP from MEDWEB is ${otp}</h1>`, // html body
+  };
+
+  const sendMail = { transporter, mailOptions };
+
+  return sendMail;
+};
+
 const { Vonage } = require("@vonage/server-sdk");
 const vonage = new Vonage({
-  apiKey: "a3a8bec7",
-  apiSecret: "GXxHHP0Ql17HlP2p",
+  apiKey: process.env.VONAGE_API_KEY,
+  apiSecret: process.env.VONAGE_API_SECRET,
 });
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST_KEY);
@@ -42,7 +83,7 @@ const home = async (req, res) => {
       banners: bannerData,
       specialization: specializationData,
     });
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
@@ -62,21 +103,47 @@ const signup = async (req, res) => {
         phoneNumber: phoneNumber,
       });
       if (!phoneNumberChecking) {
-        vonage.verify
-          .start({
-            number: `917907051954`,
-            brand: "Vonage",
-          })
-          .then((resp) => {
-            console.log(resp.request_id);
+        // var mailOptions = {
+        //   from: "medwebdoctors@gmail.com",
+        //   to: newUser.email,
+        //   subject: "Otp for registration is: ",
+        //   html:
+        //     `<h3>OTP for account verification  </h3>" '<hr />'
+        //     <h1 style='font-weight:bold;'> OTP from MEDWEB is ${otp}</h1>`, // html body
+        // };
+        const sendMail = noedeMailerconnect(newUser.email);
+        console.log(EmailOtp);
 
+        sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
+          if (error) {
+            console.log(error);
             res.json({
-              status: true,
-              message: "successfully created account",
-              id: resp.request_id,
+              status: false,
+              message: "otp creation fail",
             });
-          })
-          .catch((err) => console.error(err));
+          } else {
+            console.log("success");
+            console.log(info);
+            res.json({ status: true, message: "successfully Send the email" });
+          }
+          // res.render("otppage", { status: "false" });
+        });
+
+        // vonage.verify
+        //   .start({
+        //     number: `917907051954`,
+        //     brand: "Vonage",
+        //   })
+        //   .then((resp) => {
+        //     console.log(resp.request_id);
+
+        //     // res.json({
+        //     //   status: true,
+        //     //   message: "successfully created account",
+        //     //   id: resp.request_id,
+        //     // });
+        //   })
+        //   .catch((err) => console.error(err));
       } else {
         res.json({
           status: false,
@@ -89,7 +156,7 @@ const signup = async (req, res) => {
         message: "Email already exits",
       });
     }
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
@@ -109,33 +176,44 @@ const otpVerification = async (req, res) => {
       otp,
       id,
     } = req.body;
+    console.log(req.body);
 
-    vonage.verify
-      .check(id, otp)
-      .then(async (resp) => {
-        console.log(resp);
-        const spassword = await hash(password);
-        const user = new users({
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          phoneNumber: phoneNumber,
-          password: spassword,
-          countryCode: country_code,
-        });
-        const userData = await user.save();
-        res.json({
-          status: true,
-          message: "User Created",
-          user: userData,
-        });
+    // vonage.verify
+    //   .check(id, otp)
+    //   .then(async (resp) => {
+    //     console.log(resp);
+    console.log(EmailOtp);
+    if (otp == EmailOtp[email]) {
+      delete EmailOtp[email];
 
-        console.log(resp);
-      })
+      const spassword = await hash(password);
+      const user = new users({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: spassword,
+        countryCode: country_code,
+      });
+      const userData = await user.save();
+      res.json({
+        status: true,
+        message: "User Created",
+        user: userData,
+      });
+    } else {
+      const error = new Error("Wrong otp ");
+      error.status = 401;
+      throw error;
+    }
 
-      .catch((err) => console.error(err));
-  }catch (error) {
+    //   console.log(resp);
+    // })
+
+    // .catch((err) => console.error(err));
+  } catch (error) {
     console.log(error.message);
+    console.log(error.status);
     res.status(error.status).json({
       message: error.message,
     });
@@ -145,22 +223,38 @@ const otpVerification = async (req, res) => {
 const resendOTP = async (req, res) => {
   try {
     // const { phoneNumber, country_code } = req.body;
-    await vonage.verify
-      .start({
-        number: `917907051954`,
-        brand: "Vonage",
-      })
-      .then((resp) => {
-        console.log(resp.request_id);
+    // await vonage.verify
+    //   .start({
+    //     number: `917907051954`,
+    //     brand: "Vonage",
+    //   })
+    //   .then((resp) => {
+    //     console.log(resp.request_id);
 
+    //     res.json({
+    //       status: true,
+    //       message: "successfully Successfully send otp",
+    //       id: resp.request_id,
+    //     });
+    //   })
+    //   .catch((err) => console.error(err));
+
+    const sendMail = noedeMailerconnect(newUser.email);
+    sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
         res.json({
-          status: true,
-          message: "successfully Successfully send otp",
-          id: resp.request_id,
+          status: false,
+          message: "otp creation fail",
         });
-      })
-      .catch((err) => console.error(err));
-  }catch (error) {
+      } else {
+        console.log("success");
+        console.log(info);
+        res.json({ status: true, message: "Successfully resend OTP" });
+      }
+      // res.render("otppage", { status: "false" });
+    });
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
@@ -207,7 +301,7 @@ const login = async (req, res) => {
 const tokenVerification = async (req, res) => {
   try {
     res.json({ status: true, user: req.user });
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
@@ -239,7 +333,7 @@ const searchDoctor = async (req, res) => {
         message: "Can't find a doctor in this name",
       });
     }
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
@@ -646,7 +740,7 @@ const slotBookingWithJwt = async (req, res) => {
         }
       }
     }
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
@@ -684,7 +778,7 @@ const getAppointments = async (req, res) => {
         appointments: appointmentsList,
       });
     }
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
@@ -704,7 +798,7 @@ const meetingId = async (req, res) => {
     if (consultaion) {
       res.json({ status: true, meetingId: consultaion });
     }
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
       message: error.message,
