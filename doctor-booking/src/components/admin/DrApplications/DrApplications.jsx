@@ -17,7 +17,7 @@ function DrApplications() {
     <div className="p-4 mt-10">
       <div className="relative overflow-x-auto">
         {
-          doctors.length? (
+          doctors?.length? (
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 shadow-xl ">
           <thead className="text-xs text-gray-700 uppercase bg-[#05445E] dark:text-gray-400">
             <tr>

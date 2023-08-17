@@ -5,63 +5,142 @@ import { useParams } from "react-router-dom";
 import DoctorListingCard from "../../components/client/doctorListingCard/DoctorListingCard";
 import SearchBar from "../../components/client/SearchBar/SearchBar";
 import UserSidbar from "../../components/client/SideBar/UserSidbar";
+import Login from "../admin/Login";
+import Footer from "../../components/client/Footer/Footer";
 
 function DoctorList() {
   const { name } = useParams();
   const [docotrsList, setDoctorsList] = useState([]);
-  const [search ,setSearch] = useState('')
-  const [value,setValue] = useState('')
-  const searchByName = (e)=>{
-    
-    const search = e.target.value
-    setValue(search)
-   
+  const [search, setSearch] = useState("");
+  const [value, setValue] = useState("");
+  const [specilization, setSpecilization] = useState([{}]);
+  const [filter, setFilter] = useState([name]);
+  const [filterState, setFilterState] = useState(false);
 
-  }
-  useEffect(()=>{
-    if(value){
-        api.get(`/doctorSearch/${value}`).then((response)=>{
-            if(response.data.status){
-             console.log(response.data.doctors);
-                setDoctorsList([...response.data.doctors])
-            }else{
-              
-              setDoctorsList([])
-            }
-        })
-    }
-  },[value])
+  const searchByName = (e) => {
+    const search = e.target.value;
+    setValue(search);
+  };
+
+  const handleCheckBoxChange = (e, index) => {
+    const { value, checked } = e.target;
+
+    // if (checked) {
+    //   setFilter((prev) => [...prev, value]);
+    //   setFilterState((pre) => !pre);
+    // } else {
+    //   setFilter((prev) => [...prev.filter((id) => id !== value)]);
+    //   setFilterState((pre) => !pre);
+    // }
+
+    setSpecilization((prev) => {
+      return [
+        ...prev.map((specilization, index1) => {
+          if (index1 === index) {
+            specilization["checked"] = checked;
+          }
+          return specilization;
+        }),
+      ];
+    });
+    setTimeout(() => {
+      let array = [];
+      specilization.forEach((obj) => {
+        if (obj.checked) array.push(obj._id);
+      });
+      let stringArray = array.join(",");
+
+      api.get(`/consult?sid=${stringArray}`).then((res) => {
+        if (res.data.status) {
+          setDoctorsList([...res.data.doctors]);
+        }
+      });
+    }, 0);
+  };
+
   useEffect(() => {
-    if( name && !value){
-     
-        api.get(`/consult/${name}`).then((response) => {
-            if (response.data.status) {
-              setDoctorsList([...response.data.doctors]);
-            }
-          });
+    if (value) {
+      api.get(`/doctorSearch/${value}`).then((response) => {
+        if (response.data.status) {
+          console.log(response.data.doctors);
+          setDoctorsList([...response.data.doctors]);
+        } else {
+          setDoctorsList([]);
+        }
+      });
     }
-    
-  }, []);
+  }, [value]);
+
+  // useEffect(()=>{
+  //   let stringArray = filter.join(',') ?filter : name
+  //   console.log(filter,'filterrrrrrrrrrrrrrrrr');
+  //   api.get(`/consult?sid=${stringArray}`).then((res)=>{
+  //     if(res.data.status){
+  //       console.log(res.data.doctors,'doofoofofd');
+  //       setDoctorsList([...res.data.doctors]);
+  //     }
+  //   })
+  // },[filterState])
+
+  useEffect(() => {
+    if (name && !value) {
+      // console.log(filter,'filter');
+      // setFilter(pre=>[...pre,name])
+      let stringArray = filter.join(",") ? filter : name;
+
+      console.log(stringArray, "string");
+      api.get(`/consult?sid=${stringArray}`).then((response) => {
+        if (response.data.status) {
+          setDoctorsList([...response.data.doctors]);
+          console.log(response.data.doctors, "doco");
+          // console.log(response.data.specilizations);
+          console.log(filter, "filter");
+          let updatedSpecilization = response.data.specilizations.map(
+            (specilizaion) => {
+              if (
+                specilizaion._id === name ||
+                filter.includes(specilizaion._id)
+              ) {
+                specilizaion["checked"] = true;
+              }
+              return specilizaion;
+            }
+          );
+          setSpecilization([...updatedSpecilization]);
+        }
+      });
+    }
+  }, [name]);
+  // console.log(specilization,'spc');
 
   return (
     <div>
       <div className="h-[10vh] bg-black">
-      <Navbar />
+        <Navbar />
       </div>
-    
+
       <div className="w-full border-b-2 border-b-[#189AB4] h-[10vh] flex justify-center items-center">
-      {/* <SearchBar value={value} search={searchByName} /> */}
-      <h1 className="text-xl">Cosnsult With Our specialist</h1>
+        {/* <SearchBar value={value} search={searchByName} /> */}
+        <h1 className="text-xl">Cosnsult With Our specialist</h1>
       </div>
-    
-      <div className="grid md:grid-cols-[2fr_7.5fr] h-[80vh]">
-      <div className='hidden w-[20vw] md:block border-r-2 border-r-[#189AB4]'>
-        <SearchBar value={value} search={searchByName}  />
-      
-    </div>
-      <DoctorListingCard doctors={docotrsList} />
+
+      <div className="grid md:grid-cols-[2fr_7.5fr] h-[80vh] border-r-2 border-b-2 border-b-[#189AB4]">
+        <div className="hidden h-full w-[20vw] md:block border-r-2 border-r-[#189AB4]">
+          <SearchBar
+            value={value}
+            search={searchByName}
+            specilizations={specilization}
+            handleCheckBoxChange={handleCheckBoxChange}
+          />
+        </div>
+        <DoctorListingCard doctors={docotrsList} />
       </div>
-      
+      <div className="w-full bg-[#98ced8] h-10 flex justify-center items-center py-2 mt-10">
+        <p>Consult with our Doctors</p>
+      </div>
+      <div>
+        <Footer />
+      </div>
     </div>
   );
 }

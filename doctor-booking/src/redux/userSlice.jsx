@@ -6,7 +6,8 @@ const INITIAL_VALUES = {
     email:'',
     notifications:[{
         message:''
-    }]
+    }],
+    wallet:null
 }
 
 const userSlice = createSlice({
@@ -19,6 +20,7 @@ const userSlice = createSlice({
             state.id = userDetails._id
             state.email = userDetails.email
             state.notifications = userDetails.notifications
+            state.wallet = userDetails.wallet
         },
         userLogout(state,actions){
             state.name = ''

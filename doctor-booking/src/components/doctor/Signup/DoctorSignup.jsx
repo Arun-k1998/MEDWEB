@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import validation from "../../../helper/formValidation";
+import validation from "../../../helper/FormValidation";
 import { useNavigate } from "react-router-dom";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 
@@ -36,7 +36,7 @@ function DoctorSignup() {
   const otpSubmit = () => {
     doctorApi.post("verify_otp", { ...formValues,['otpId']:otpId }).then((response) => {
       if (response.data.status) {
-        navigate("/");
+        navigate("/doctor/dashboard");
       }
     });
   };

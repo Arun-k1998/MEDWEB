@@ -35,11 +35,16 @@ function Appointments({
 
   const handleStartMeeting = (starting, ending, id) => {
     const timeNow = moment();
-    if (timeNow.isBefore(moment(starting)))
+    if (timeNow.isBefore(moment(starting))) {
       show("You can join only at the given time", 303);
-    else if (timeNow.isAfter(moment(ending)))
-      ToastifyContest("Your time ended", 303);
-    else navigate(`/meet/${id}`);
+    } else if (timeNow.isAfter(moment(ending))) {
+      show("Your time ended", 303);
+    } else navigate(`/meet/${id}`);
+  };
+
+  const timChecker = (endingTime) => {
+    const timeNow = moment();
+    return timeNow.isAfter(moment(endingTime));
   };
 
   const buttons = [
@@ -78,6 +83,8 @@ function Appointments({
     });
   };
 
+  
+
   return (
     <div className="w-[80%] h-full mx-auto bg-slate-400 py-10  ">
       <div className="w-full flex justify-center mb-4 underline underline-offset-8 text-xl">
@@ -99,11 +106,15 @@ function Appointments({
         {/* <button className="p-2 bg-slate-300 rounded-lg">Upcoming</button>
         <button className="p-2 bg-slate-300 rounded-lg">Consulted</button> */}
       </div>
-      <div className="w-[95%] h-full mx-auto overflow-y-scroll  ">
+      <div className="w-[95%] h-[85%] mx-auto overflow-y-scroll  ">
         {appointments?.map((appointment, index) => {
           return (
             <div
-              className="flex  items-center justify-evenly gap-2 w-full h-40  bg-slate-600 mb-2  text-white "
+              className={`${
+                timChecker(appointment?.endingTime)
+                  ? 'bg-slate-500'
+                  : 'bg-slate-600'
+              } flex items-center justify-evenly gap-2 w-full h-40 mb-2 text-white`}
               key={index}
             >
               <div className="w-[30%] p-2 h-full flex ">
@@ -166,40 +177,54 @@ function Appointments({
                     </button>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex gap-3">
-                      <button
-                        className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
-                        onClick={() =>
-                          handleStartMeeting(
-                            appointment?.startingTime,
-                            appointment?.doctorId?.lastName,
-                            appointment._id
-                          )
-                        }
-                        // navigate(`/meet/${appointment._id}`)}}>
-                      >
-                        Join Room
-                      </button>
-                      <button
-                        className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
-                        onClick={() => handleCancellation(appointment._id)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                    <div>
-                      <button
-                        className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-64"
-                        onClick={() =>
-                          navigate(
-                            `/consult/detail/${appointment?.doctorId?._id}?reschedule=${appointment._id}`
-                          )
-                        }
-                      >
-                        ReSchedule
-                      </button>
-                    </div>
+                  <div
+                    className={`${
+                      timChecker(appointment?.endingTime)
+                        ? "pointer-events-none"
+                        : ""
+                    } flex flex-col gap-3 `}
+                  >
+                    {timChecker(appointment?.endingTime) ? (
+                      <p className="text-white font-bold ">
+                        You Missed the consultation
+                      </p>
+                    ) : (
+                      <>
+                        <div className="flex gap-3">
+                          <button
+                            className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                            onClick={() =>
+                              handleStartMeeting(
+                                appointment?.startingTime,
+                                appointment?.endingTime,
+                                appointment?._id
+                              )
+                            }
+                            // navigate(`/meet/${appointment._id}`)}}>
+                          >
+                            Join Room
+                          </button>
+                          <button
+                            className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                            onClick={() => handleCancellation(appointment._id)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <div>
+                          <button
+                            className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-[16.75rem]"
+                            onClick={() =>
+                              navigate(
+                                `/consult/detail/${appointment?.doctorId?._id}?reschedule=${appointment._id}`
+                              )
+                            }
+                          >
+                            ReSchedule
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

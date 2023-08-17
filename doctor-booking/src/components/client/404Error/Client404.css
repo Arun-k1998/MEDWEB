@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins&family=Roboto+Slab:wght@300&family=Signika&display=swap');
+
+.circle{
+animation: rotation 10s ;
+animation-timing-function: inherit;
+animation-iteration-count: infinite;
+}
+
+@keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .circle{
+    border-style: dashed ;
+
+  }
+  .four{
+    font-family: 'Orbitron', sans-serif;
+  }
+
+  .client404button{
+    font-family: 'Orbitron', sans-serif
+  }

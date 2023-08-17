@@ -14,7 +14,7 @@ import { userLogout } from "../../../redux/userSlice";
 const navigation = [
   { name: " Doctors", href: "#", current: true },
   { name: "Specilizations", href: "#", current: false },
-  { name: "Appointments", href: "/appointments", current: false },
+  { name: "Appointments", href: "/appointments", current: false  },
 ];
 
 function classNames(...classes) {
@@ -35,7 +35,7 @@ function Navbar() {
   };
 
   useEffect(() => {
-    if (notifications[0].message) {
+    if (notifications[0]?.message) {
       notifications.forEach((notification) => {
         if (!notification.view) {
           setNotificatonCount((prev) => prev + 1);
@@ -43,6 +43,9 @@ function Navbar() {
       });
     }
   }, [notifications]);
+
+  const userId = useSelector(store=>store.user.id)
+
 
   return (
     <Disclosure
@@ -67,20 +70,22 @@ function Navbar() {
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
                   <img
-                    className="block h-auto md:h-16 w-36 md:w-auto lg:hidden"
+                    className="block h-auto md:h-16 w-36 md:w-auto lg:hidden cursor-pointer"
                     src={icon}
                     alt="Your Company"
+                    onClick={() => navigate("/")}
                   />
                   <img
-                    className="hidden h-8 w-auto lg:block"
+                    className="hidden h-8 w-auto lg:block cursor-pointer"
                     src={icon}
                     alt="Your Company"
+                    onClick={() => navigate("/")}
                   />
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
-                      <a
+                    userId&&  <a
                         key={item.name}
                         href={item.href}
                         className={classNames(
@@ -98,15 +103,21 @@ function Navbar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <button
+                {userId && <button
                   type="button"
                   className="rounded-full flex gap-2 bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                   onClick={() => navigate("/notifications")}
                 >
-                  { notificationCount > 0 ? <p className="w-5 h-5 bg-red-600 text-white rounded-full">{notificationCount}</p>: '' }
+                  {notificationCount > 0 ? (
+                    <p className="w-5 h-5 bg-red-600 text-white rounded-full">
+                      {notificationCount}
+                    </p>
+                  ) : (
+                    ""
+                  )}
                   {/* <span className="sr-only">View notifications</span> */}
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                </button>}
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
@@ -124,7 +135,7 @@ function Navbar() {
                     )}
                     {!name && (
                       <button
-                        className="p-2 bg-gray-700 rounded-lg"
+                        className="p-2 bg-gray-700 rounded-lg text-white w-20"
                         onClick={() => navigate("/login")}
                       >
                         LogIn
@@ -154,7 +165,7 @@ function Navbar() {
                           </a>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
+                      {/* <Menu.Item>
                         {({ active }) => (
                           <a
                             href="/payments"
@@ -166,7 +177,7 @@ function Navbar() {
                             Payments
                           </a>
                         )}
-                      </Menu.Item>
+                      </Menu.Item> */}
                       <Menu.Item>
                         {({ active }) => (
                           <a

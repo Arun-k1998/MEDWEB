@@ -5,12 +5,14 @@ import { userLogin,userLogout } from "../../redux/userSlice"
 import api from "../../helper/axios/userAxios"
 import { useContext, useEffect, useState } from "react"
 import { ToastifyContest } from "../../helper/contest/ToastifyContest"
+import { useNavigate } from "react-router-dom"
 
 
 export const HomeVerification = ({children})=>{
     const cookie = getCookies()
     const user = useSelector((store)=> store.user)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const {show} = useContext(ToastifyContest)
     console.log(cookie);
@@ -50,13 +52,23 @@ export const HomeVerification = ({children})=>{
                     }else if(response.status == 401) console.log(response);
                 }).catch((error) => {
                     console.log('Blocked');
-                    const expires = "expires=" + "Thu, 01 Jan 1970 00:00:01 GMT";
+                    console.log(error);
+                    if(error?.response?.data?.block){
+                        
+                        const expires = "expires=" + "Thu, 01 Jan 1970 00:00:01 GMT";
                     // Thu, 01 Jan 1970 00:00:01 GMT
                     document.cookie =
                       "userToken=Bearer " + ";" + expires + "; path=/";
                     dispatch(userLogout());
                     show(error.response.data.message,401)
                     setLoading(false)
+                    }else if(error.message === 'Network Error'){
+                       navigate('/505')
+                    }
+                    else{
+                        alert(error.status)
+                    }
+                    
                   })
             }else{
                 setLoading(false)

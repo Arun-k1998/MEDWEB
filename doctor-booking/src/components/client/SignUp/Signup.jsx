@@ -38,25 +38,28 @@ function Signup() {
   };
 
   const otpSubmit = () => {
-    api.post("/verify_otp", { ...formValues,['id']:id }).then((response) => {
+    api.post("/verify_otp", { ...formValues }).then((response) => {
       if (response.data.status) {
-        navigate("/");
+        navigate("/login");
       }else{
        
         show(res.data.message)
       }
-    });
+    }).catch((error)=>{
+      console.log(error);
+      show(error.response.data.message,error.response.status)
+    })
   };
 
   const resendOTP = () => {
     api
       .post("/resendotp", {
-        phoneNumber: formValues.phoneNumber,
-        country_code: formValues.country_code,
+        email: formValues.email,
+        
       })
       .then((response) => {
         if (response.data.status) {
-          setId(response.data.id)
+          // setId(response.data.id)
           setTimer(60);
         }
       });
@@ -73,7 +76,7 @@ function Signup() {
         .then((response) => {
           if (response.data.status) {
             setOtp(!otp);
-            setId(response.data.id)
+            // setId(response.data.id)
             interValId = setInterval(() => {
               setTimer((preTime) => preTime - 1);
             }, 1000);

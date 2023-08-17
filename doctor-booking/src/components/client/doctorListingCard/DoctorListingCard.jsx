@@ -138,36 +138,36 @@ function DoctorListingCard({ doctors }) {
     //     userId: userId,
     //     session: session,
     //   })
-    console.log(consultaionDetails);
-    api
-    .post("/booking",consultaionDetails)
-      .then((res) => {
-        if (res.data.status) {
-          alert("Hello");
-        }
-      });
+    // console.log(consultaionDetails);
+    // api
+    // .post("/booking",consultaionDetails)
+    //   .then((res) => {
+    //     if (res.data.status) {
+    //       alert("Hello");
+    //     }
+    //   });
   };
 
   const formatTime = (timee) => {
     let time = moment(timee).format("LT");
     return time;
   };
-  useEffect(() => {
-    console.log("limit");
-    console.log(timeSlotes);
-    timeSlotes?.length
-      ? setLimit((pre) => {
-          return [
-            ...timeSlotes.filter((time, index) => {
-              if (index <= nu.end && index >= nu.start) {
-                console.log(nu.end, nu.start);
-                return time;
-              }
-            }),
-          ];
-        })
-      : console.log("nothing");
-  }, [nu]);
+  // useEffect(() => {
+  //   console.log("limit");
+  //   console.log(timeSlotes);
+  //   timeSlotes?.length
+  //     ? setLimit((pre) => {
+  //         return [
+  //           ...timeSlotes.filter((time, index) => {
+  //             if (index <= nu.end && index >= nu.start) {
+  //               console.log(nu.end, nu.start);
+  //               return time;
+  //             }
+  //           }),
+  //         ];
+  //       })
+  //     : console.log("nothing");
+  // }, [nu]);
 
   console.log(timeSlotes);
 
@@ -213,7 +213,7 @@ function DoctorListingCard({ doctors }) {
                   //     </div>
                   //   </div>
                   // </div>
-                  <div className="h-72 w-full  border-r-2 border-b-2 border-r-[#189AB4] border-b-[#189AB4] flex flex-col items-center py-5 ">
+                  <div className="h-72 w-full  border-r-2 border-b-2 border-r-[#189AB4] border-b-[#189AB4] flex flex-col items-center py-5 " key={index}>
                     <div className="w-[40%] h-[60%] rounded-full   ">
                       <img
                         src={`${VITE_SERVER_URL}/images/${doctor?.image}`}

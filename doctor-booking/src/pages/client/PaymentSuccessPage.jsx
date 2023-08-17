@@ -13,7 +13,7 @@ function PaymentSuccessPage() {
       api
         .post("/payment-succes", { booking: jwt, paymentId: session_id })
         .then((res) => {
-          alert("success");
+        
           localStorage.removeItem("myToken");
         });
     }

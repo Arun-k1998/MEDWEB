@@ -170,6 +170,7 @@ function TimeScheduling() {
       let ender = new Date(datee.sessions[index].endingTime).getTime()
       
       for(let i =starter ; i < ender; i=starter){
+        
         starter += datee.duration*60*1000
         count++
         

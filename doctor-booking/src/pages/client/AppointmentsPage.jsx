@@ -5,7 +5,7 @@ import Navbar from "../../components/client/navbar/Navbar";
 import Appointments from "../../components/client/Appointments/Appointments";
 import Footer from "../../components/client/Footer/Footer";
 import UserPresCription from "../../components/client/Prescription/UserPresCription";
-
+import moment from "moment";
 function AppointmentsPage() {
   const [appointments, setAppointments] = useState([{}]);
   const [appointmentsType, setAppointmentsType] = useState("upcoming");
@@ -19,6 +19,12 @@ function AppointmentsPage() {
     // console.log(appointments[index]);
     setPrescriptionState(prev=>!prev)
   }
+
+  const timChecker = (endingTime) => {
+    const timeNow = moment();
+    return timeNow.isAfter(moment(endingTime));
+  };
+
   console.log(userId);
   useEffect(() => {
     if (userId) {

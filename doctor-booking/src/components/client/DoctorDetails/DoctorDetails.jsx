@@ -17,9 +17,12 @@ function DoctorDetails() {
   const scrollableContainerRef = useRef(null);
   const [confirmPopup, setConfirmPopup] = useState(false);
   const [consultaionDetails, setConsultationDetails] = useState({});
-  const userId = useSelector((store) => store.user.id);
+  
   const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
+
+  const userId = useSelector((store) => store.user.id);
+  const wallet = useSelector((store)=> store.user.wallet)
 
   const handleScrollRight = () => {
     if (scrollableContainerRef.current) {
@@ -133,6 +136,17 @@ function DoctorDetails() {
         }
       });
   };
+
+  const timeChecking = (time)=>{
+    console.log('start');
+    let currentTime = moment()
+    let startingTime = moment(time)
+    console.log(currentTime,'currentTime');
+    console.log(startingTime,'startingTime');
+    console.log(startingTime.isBefore(currentTime));
+    return startingTime.isBefore(currentTime)
+  }
+
   useEffect(() => {
     if (doctorId) {
       api.get(`/timeSlotes/${doctorId}`).then((response) => {
@@ -161,6 +175,9 @@ function DoctorDetails() {
       });
     }
   }, [doctorId]);
+
+
+
 
   return (
     <div className="w-full  md:h-[90%] flex flex-col md:flex-row justify-center gap-8 px-5 my-6 ">
@@ -257,7 +274,7 @@ function DoctorDetails() {
                               <div
                                 key={index}
                                 className={`${
-                                  obj.is_Booked ? "pointer-events-none" : ""
+                                  obj.is_Booked ? "pointer-events-none" :""
                                 } cursor-pointer  w-32 md:30 `}
                                 // onClick={() =>{
                                 //   setConfirmPopup(pre => !pre)
@@ -295,12 +312,12 @@ function DoctorDetails() {
                 {/* <span className="w-[.1em] bg-[#fff] rotate-[45deg] h-7"></span>
             <span className=" w-[.1em] bg-[#fff] rotate-[-45deg] h-7" ></span>
             <div className="w-full h-full bg-red-600 "></div> */}
-                <p onClick={() => setConfirmPopup(false)}>close</p>
+                <p className="rotate-45 text-3xl hover:text-red-700" onClick={() => setConfirmPopup(false)}>+</p>
               </div>
               <div>
                 <p>session {consultaionDetails?.session?.session}</p>
               </div>
-              <div>
+              <div className=" flex flex-col gap-4 ">
                 <h1 className="underline underline-offset-4">
                   Consultation Time
                 </h1>
@@ -314,8 +331,13 @@ function DoctorDetails() {
                   <span>{formatTime(consultaionDetails?.slot?.end)}</span>
                 </p>
               </div>
+              <div className="flex gap-2 my-2 text-red-500 font-bold">
+                <p className="font-bold">Your Wallet </p>
+                <p>:</p>
+                <p>{wallet}</p>
+              </div>
               <div className="flex gap-3">
-               {reshedule?'':<><div>
+               {reshedule?'':<><div className="flex justify-center items-center gap-2">
                   <label htmlFor="">Wallet</label>
                   <input
                     type="radio"
@@ -323,20 +345,24 @@ function DoctorDetails() {
                     value="wallet"
                     checked={paymentMethod === "wallet"}
                     onChange={handlePaymentChange}
+                    className="w-4 h-4 "
                   />
                 </div>
-                <div>
+                <div className="flex justify-center items-center gap-2" >
                   <label htmlFor="">Online</label>
+                  
                   <input
                     type="radio"
                     name="pay_method"
                     value="online"
                     checked={paymentMethod === "online"}
                     onChange={handlePaymentChange}
+                    className="w-4 h-4    rounded-full"
                   />
+
                 </div></>}
               </div>
-              <div>
+              <div className="my-4">
                 <button
                   className="p-2 bg-orange-300 text-gray-50"
                   onClick={hadleSlotBooking}

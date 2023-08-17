@@ -1,23 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import api from "../../../helper/axios/userAxios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { userLogin } from "../../../redux/userSlice";
 import validation from "../../../helper/FormValidation";
-import {ToastifyContest} from '../../../helper/contest/ToastifyContest'
+import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 
 function UserLogin() {
   const initialValues = { email: "", password: "" };
-
+  const location = useLocation()
+  const [pathname,setPathName] = useState(location.pathname)
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [submit, setSubmit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-const {show} = useContext(ToastifyContest)
+  const { show } = useContext(ToastifyContest);
   const handleClick = () => {
     setFormErrors(validation(formValues, "login"));
     setSubmit(true);
@@ -28,36 +29,108 @@ const {show} = useContext(ToastifyContest)
 
     setFormValues({ ...formValues, [name]: value });
   };
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
   useEffect(() => {
     if (Object.keys(formErrors).length === 0 && submit) {
-      api.post("/login", formValues).then((response) => {
-        if (response.data.message == "Success") {
-          let date = new Date();
-          date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
-          const expires = "expires=" + date.toUTCString();
-          document.cookie =
-            "userToken=Bearer " +
-            response.data.token +
-            ";" +
-            expires +
-            "; path=/";
-          const { firstName, _id, email } = response.data.user;
-          dispatch(userLogin({ firstName, _id, email }));
-          navigate("/");
-        } else {
-          show(response.data.message);
-        }
-      }).catch((error)=>{
-       
-        show(error.response.data.message,401)
-      })
+      api
+        .post("/login", formValues)
+        .then((response) => {
+          if (response.data.message == "Success") {
+            let date = new Date();
+            date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
+            const expires = "expires=" + date.toUTCString();
+            document.cookie =
+              "userToken=Bearer " +
+              response.data.token +
+              ";" +
+              expires +
+              "; path=/";
+            const { firstName, _id, email } = response.data.user;
+            dispatch(userLogin({ firstName, _id, email }));
+            navigate("/");
+          } else {
+            show(response.data.message);
+          }
+        })
+        .catch((error) => {
+          console.log('loginError',error);
+          show(error.response.data.message, error?.status??400);
+        });
     }
   }, [formErrors, submit]);
+
+  console.log(pathname);
 
   return (
     <div className="flex justify-center items-center h-screen bg-login-signup ">
       <div className="flex flex-col justify-center text-center backdrop-blur-sm bg-white/30 rounded-2xl sm:w-2/5 shadow-lg py-5  px-16 ">
         <h2 className="text-3xl font-serif ">Login</h2>
+        <div className="flex  justify-end max-h-screen">
+        <div className="relative inline-block text-left">
+        <div className="flex flex-col gap-2">
+          <label htmlFor=""> Select Login</label>
+          <button
+            onClick={toggleDropdown}
+            type="button"
+            className="inline-flex justify-center items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            {pathname === '/login' ?'User' :'Doctor'}
+            <svg
+              className="-mr-1 ml-2 h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M6.293 7.293a1 1 0 011.414 0L10 9.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+          </div>
+          {isOpen && (
+            <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div
+                className="py-1"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="options-menu"
+              >
+                <p
+                  href="#"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  role="menuitem"
+                  onClick={()=> {
+                    setIsOpen(!open)
+                    navigate('/login')}}
+                >
+                  User Login
+                </p>
+                <p
+                  href="#"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  role="menuitem"
+                  onClick={()=>{ 
+                    setIsOpen(!open)
+                    navigate('/doctor/login')}}
+                >
+                  Doctor Login
+                </p>
+                
+              </div>
+            </div>
+          )}
+        </div>
+        </div>
+
         <div>
           <input
             type="text"

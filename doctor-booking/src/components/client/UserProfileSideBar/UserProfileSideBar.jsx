@@ -12,14 +12,10 @@ function UserProfileSideBar({ user,edit,setImage }) {
       path: "/profile",
       active: location.pathname === "/profile" ? true : false,
     },
-    {
-      name: "Prescriptions",
-      path: "/prescription",
-      active: location.pathname === "/prescription" ? true : false,
-    },
-    {name:'Consultation History',
-     path:'/consultation History',  
-     active: location.path === '/consultation History' ? true : false 
+   
+    {name:'Payment History',
+     path:'/consultation_history',  
+     active: location.pathname === '/consultation_history' ? true : false 
     }
   ];
 
@@ -51,7 +47,7 @@ function UserProfileSideBar({ user,edit,setImage }) {
       <input type="file" name="image" hidden ref={imageSelection} onChange={handleImageChange} />
       
      { !edit ?'': 
-     <div className="w-full bg-slate-500 h-14">
+     <div className="w-7 h-7 flex justify-center  mx-auto ">
         <button
         className="text-2xl text-center bg-black text-white w-7 h-7 rounded-full "
         onClick={handleProfileImage}
@@ -61,12 +57,16 @@ function UserProfileSideBar({ user,edit,setImage }) {
      </div>
      
      }
-     
+     <div className="w-full flex justify-center gap-3 my-5 text-xl font-serif text-red-500 ">
+      <p>Wallet Amount :</p>
+     <p>{user?.wallet}</p>
+     </div>
      <div className="mt-5">
-     {sidebarContent.map((content) => {
+     {sidebarContent.map((content,index) => {
         return (
           <>
             {" "}
+            <hr className=" border w-full " />
             <div
               className={` ${
                 content.active ? "bg-slate-500 text-white " : ""

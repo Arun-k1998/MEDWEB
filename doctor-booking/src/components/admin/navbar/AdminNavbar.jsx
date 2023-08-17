@@ -14,7 +14,7 @@ function AdminNavbar() {
      
   }
   return (
-    <div className='grid grid-cols-[1fr_7fr] md:grid-cols-[1.5fr_8.5fr] flex items-center z-30'>
+    <div className='grid grid-cols-[1fr_7fr] md:grid-cols-[1.5fr_8.5fr]  items-center sticky top-0 z-10  h-full'>
         <div className='w-full h-full py-4 bg-[#189AB4] px-2 md:px-9 '>
             <img src={icon} alt="" />
         </div>
