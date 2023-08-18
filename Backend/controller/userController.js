@@ -178,10 +178,7 @@ const otpVerification = async (req, res) => {
     } = req.body;
     console.log(req.body);
 
-    // vonage.verify
-    //   .check(id, otp)
-    //   .then(async (resp) => {
-    //     console.log(resp);
+   
     console.log(EmailOtp);
     if (otp == EmailOtp[email]) {
       delete EmailOtp[email];
@@ -207,10 +204,7 @@ const otpVerification = async (req, res) => {
       throw error;
     }
 
-    //   console.log(resp);
-    // })
-
-    // .catch((err) => console.error(err));
+   
   } catch (error) {
     console.log(error.message);
     console.log(error.status);
@@ -222,22 +216,7 @@ const otpVerification = async (req, res) => {
 
 const resendOTP = async (req, res) => {
   try {
-    // const { phoneNumber, country_code } = req.body;
-    // await vonage.verify
-    //   .start({
-    //     number: `917907051954`,
-    //     brand: "Vonage",
-    //   })
-    //   .then((resp) => {
-    //     console.log(resp.request_id);
 
-    //     res.json({
-    //       status: true,
-    //       message: "successfully Successfully send otp",
-    //       id: resp.request_id,
-    //     });
-    //   })
-    //   .catch((err) => console.error(err));
 
     const sendMail = noedeMailerconnect(newUser.email);
     sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {

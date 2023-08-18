@@ -29,7 +29,7 @@ const login = async (req, res) => {
       );
       console.log(comparedPassword);
       if (comparedPassword) {
-        const token = jwt.sign({ id: adminData._id }, "adminSecrectKey123", {
+        const token = jwt.sign({ id: adminData._id }, process.env.ADMIN_SECRET_KEY , {
           expiresIn: "2d",
         });
         res.status(200).json({

@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "../../../helper/axios/userAxios";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import {BsCurrencyRupee} from 'react-icons/bs'
+import {ToastifyContest} from '../../../helper/contest/ToastifyContest'
 function DoctorDetails() {
   const location = useLocation()
   const reshedule = new URLSearchParams(location.search).get('reschedule')
@@ -17,6 +18,7 @@ function DoctorDetails() {
   const scrollableContainerRef = useRef(null);
   const [confirmPopup, setConfirmPopup] = useState(false);
   const [consultaionDetails, setConsultationDetails] = useState({});
+  const {show}  = useContext(ToastifyContest)
   
   const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
@@ -51,6 +53,7 @@ function DoctorDetails() {
   };
 
   const handlePopup = (timeSlot, session) => {
+    if(!userId) return show('Login for Slot Booking',401)
     setConfirmPopup((pre) => !pre);
     let date = moment(timeSlot.start).format("ll");
     setConsultationDetails({
@@ -120,6 +123,7 @@ function DoctorDetails() {
     // alert(paymentMethod)
     // alert(paymentMethod);
     // const requestData = { doctorId: doctorId };
+    
 
     api
       .post("/create-checkout-session", consultaionDetails)

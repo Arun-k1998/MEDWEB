@@ -6,7 +6,7 @@ const adminAuth = async(req,res,next)=>{
         const authorization = req.headers['authorization']
         if(!authorization) throw new Error('Authorization failed')
         const token = authorization.replace('Bearer ',"")
-        const verification = jwt.verify(token,'adminSecrectKey123')
+        const verification = jwt.verify(token,process.env.ADMIN_SECRET_KEY)
         if(!verification) throw new Error("Invalid Token")
         const adminData = await adminModel.findById({_id:verification.id})
         if(!adminData) throw new Error('Admin not found')

@@ -16,14 +16,10 @@ const specializationModel = require("../model/specializationModel");
 const ObjctId = mongoose.Types.ObjectId;
 
 const vonage = new Vonage({
-  apiKey: "a3a8bec7",
-  apiSecret: "GXxHHP0Ql17HlP2p",
+  apiKey: process.env.VONAGE_API_KEY,
+  apiSecret: process.env.VONAGE_API_SECRET ,
 });
-const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SERVICE_SID } =
-  process.env;
-const client = require("twilio")(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, {
-  lazyLoading: true,
-});
+
 
 async function hash(value) {
   const hashData = await bcrypt.hash(value, 10);
@@ -54,24 +50,7 @@ const signup = async (req, res) => {
   if (!doctorEmail) {
     const doctorPhone = await doctor.findOne({ phoneNumber: phoneNumber });
     if (!doctorPhone) {
-      console.log("hello");
-      console.log(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SERVICE_SID);
-      // await client.verify.v2
-      //   .services(TWILIO_SERVICE_SID)
-      //   .verifications.create({
-      //     to: `${country_code}${phoneNumber}`,
-      //     channel: "sms",
-      //   })
-      //   .then((verification) => {
-      //     console.log(verification.status);
-      //     res.json({
-      //         status: true,
-      //         message: "successfully created account",
-      //       });
-      //   })
-      //   .catch((err) =>{
-      //     console.log('err');
-      //     console.log(err.message)});
+      
       vonage.verify
         .start({
           number: `917907051954`,
@@ -277,9 +256,10 @@ const updateDoctorDetails = async (req, res) => {
 const doctorsList = async (req, res) => {
   try {
     const doctorList = await doctor.find({
-      $and: [{ is_Blcoked: false }, { approved: "processing" }],
+      $and: [{ is_Blocked: false }, { approved  : "processing" }],
     });
     if (doctorList) {
+      console.log(doctorList ,"doctorList");
       res.json({
         status: true,
         doctors: doctorList,
@@ -465,6 +445,7 @@ const doctorList = async (req, res) => {
   try {
     const { sid } = req.query;
     const filter = req?.query?.filter || "";
+    const search = req?.query?.search || "";
     let query = {
       approved: "approved",
       is_Blocked: false
@@ -474,18 +455,17 @@ const doctorList = async (req, res) => {
       console.log(splitarray);
       query['specialization'] = {$in:splitarray}
     }
+    
+    if(search){
+      query['$or'] = [
+        { firstName: { $regex: ".*" + search + ".*", $options: "i" } },
+        { approved: "approved" },
+      ]
+    }
 
     const doctorList = await doctor
     .find(query)
     .populate("specialization", "name");   
-      // .find({  
-      //   $and: [
-      //     { specialization: sid },
-      //     { approved: "approved" },
-      //     { is_Blocked: false },
-      //   ],
-      // })
-      // .populate("specialization", "name");
 
     const specilizations = await specializationModel.find(
       { is_delete: false },

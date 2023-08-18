@@ -95,7 +95,7 @@ function Appointments({
           return (
             <button
               className={`${
-                button.active ? "bg-slate-500 text-white" : "bg-slate-300"
+                button.active ? "bg-slate-500 text-white shadow-xl shadow-slate-600 hover:shadow-slate-900 " : "bg-slate-300 hover:shadow-xl hover:shadow-slate-600 shadow-lg shadow-slate-500 "
               } p-2 rounded-lg`}
               onClick={() => handleButtonClick(index)}
             >

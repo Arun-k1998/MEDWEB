@@ -23,6 +23,7 @@ function AdminVerification({ children, accessBy }) {
             const response = await adminApi.get('/token_v');
             if (response.data.status) {
               // console.log(response.data);
+              dispatch(adminLogin(response.data.admin))
               setLoading(false); // Set loading state to false
             } else {
               navigate('/admin/login');

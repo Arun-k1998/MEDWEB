@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../components/client/navbar/Navbar";
 import api from "../../helper/axios/userAxios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DoctorListingCard from "../../components/client/doctorListingCard/DoctorListingCard";
 import SearchBar from "../../components/client/SearchBar/SearchBar";
 import UserSidbar from "../../components/client/SideBar/UserSidbar";
 import Login from "../admin/Login";
 import Footer from "../../components/client/Footer/Footer";
+import { ToastifyContest } from "../../helper/contest/ToastifyContest";
 
 function DoctorList() {
   const { name } = useParams();
@@ -16,6 +17,8 @@ function DoctorList() {
   const [specilization, setSpecilization] = useState([{}]);
   const [filter, setFilter] = useState([name]);
   const [filterState, setFilterState] = useState(false);
+  const {show} = useContext(ToastifyContest)
+  const navigate = useNavigate()
 
   const searchByName = (e) => {
     const search = e.target.value;
@@ -54,20 +57,29 @@ function DoctorList() {
         if (res.data.status) {
           setDoctorsList([...res.data.doctors]);
         }
+      }).catch((error)=>{
+        console.log('error');
+        console.log(error);
+
+        show(error.response.data.messge)
       });
     }, 0);
   };
 
   useEffect(() => {
     if (value) {
-      api.get(`/doctorSearch/${value}`).then((response) => {
+      api.get(`/consult?search=${value}`).then((response) => {
         if (response.data.status) {
           console.log(response.data.doctors);
           setDoctorsList([...response.data.doctors]);
         } else {
           setDoctorsList([]);
         }
-      });
+      }).catch((error)=>{
+        console.log(error);
+
+        show(error.response.data.messge)
+      })
     }
   }, [value]);
 
@@ -86,6 +98,7 @@ function DoctorList() {
     if (name && !value) {
       // console.log(filter,'filter');
       // setFilter(pre=>[...pre,name])
+
       let stringArray = filter.join(",") ? filter : name;
 
       console.log(stringArray, "string");
@@ -108,6 +121,20 @@ function DoctorList() {
           );
           setSpecilization([...updatedSpecilization]);
         }
+      }).catch((error)=>{
+        console.log('error useEffect');
+        console.log(error);
+        if(error.response){
+          console.log('error.response.statusText',error.response.statusText);
+          show(error.response.data.message||error.response.statusText,error.response.status)
+        }else if(error.request){
+
+          navigate('/500')
+        }else{
+
+        }
+
+        console.log(error.config);
       });
     }
   }, [name]);

@@ -62,7 +62,7 @@ export const HomeVerification = ({children})=>{
                     dispatch(userLogout());
                     show(error.response.data.message,401)
                     setLoading(false)
-                    }else if(error.message === 'Network Error'){
+                    }else if(error.request === 'Network Error'){
                        navigate('/505')
                     }
                     else{
