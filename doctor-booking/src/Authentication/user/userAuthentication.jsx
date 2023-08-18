@@ -24,6 +24,7 @@ export const Authorization = ({ children, accessBy }) => {
           // alert('HI')
           setLoading(false);
         } else if (cookie ) {
+          console.log(cookie);
           api
             .get("/token_v")
             .then((response) => {
