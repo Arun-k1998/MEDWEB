@@ -1,5 +1,5 @@
 import React from 'react'
-import Client404Component from '../../components/client/404Error/client404'
+import Client404Component from '../../components/client/404Error/Client404'
 
 function client404() {
   return (
