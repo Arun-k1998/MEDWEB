@@ -11,7 +11,8 @@ import { ToastifyContest } from "../../helper/contest/ToastifyContest";
 export const Authorization = ({ children, accessBy }) => {
   const user = useSelector((state) => state.user.id);
   const dispatch = useDispatch();
-  const cookie = getCookies();
+  // const cookie = getCookies();
+  const cookie = localStorage.getItem('userToken')
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ export const Authorization = ({ children, accessBy }) => {
         if (user) {
           // alert('HI')
           setLoading(false);
-        } else if (cookie && cookie[" userToken"]) {
+        } else if (cookie ) {
           api
             .get("/token_v")
             .then((response) => {
@@ -51,7 +52,7 @@ export const Authorization = ({ children, accessBy }) => {
         if (user) {
           alert("login");
           setLoading(false);
-        } else if (cookie[" userToken"]) {
+        } else if (cookie) {
           api.get("/token_v").then((response) => {
             if (response.data.user) {
               dispatch(userLogin(response.data.user));

@@ -43,6 +43,7 @@ function UserLogin() {
         .then((response) => {
           if (response.data.message == "Success") {
             let date = new Date();
+            localStorage.setItem('userToken',response.data.token)
             date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
             const expires = "expires=" + date.toUTCString();
             document.cookie =
