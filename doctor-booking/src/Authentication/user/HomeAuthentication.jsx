@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom"
 
 
 export const HomeVerification = ({children})=>{
-    // const cookie = getCookies()
-    const cookie = localStorage.getItem('userToken')
+    const cookie = getCookies()
+    // const cookie = localStorage.getItem('userToken')
     const user = useSelector((store)=> store.user)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -42,7 +42,7 @@ export const HomeVerification = ({children})=>{
        
                 return setLoading(false)
             }
-            else if(cookie ){
+            else if(cookie && cookie[' userToken'] ){
                
                 api.get('/token_v').then((response)=>{
                     if(response.data.user){

@@ -6,8 +6,8 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(function (config) {
-  const token = localStorage.getItem('userToken')
-    // const token = getCookies()
+  // const token = localStorage.getItem('userToken')
+    const token = getCookies()
     config.headers.Authorization = token;
     return config;
   }, function (error) {
