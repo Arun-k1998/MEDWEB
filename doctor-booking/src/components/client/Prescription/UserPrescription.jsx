@@ -1,6 +1,6 @@
 import React from 'react'
 import moment from 'moment';
-import icon from '../../../assets/logo/medweblogo.png'
+import icon from "/images/medweblogo.png";
 function UserPresCription({prescription,setPrescriptionState}) {
     
   const formateDate = (date) => {

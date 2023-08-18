@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import Navbar from "../../components/client/navbar/Navbar";
 import Appointments from "../../components/client/Appointments/Appointments";
 import Footer from "../../components/client/Footer/Footer";
-import UserPresCription from "../../components/client/Prescription/UserPresCription";
+import UserPresCription from "../../components/client/Prescription/UserPrescription";
 import moment from "moment";
 function AppointmentsPage() {
   const [appointments, setAppointments] = useState([{}]);
