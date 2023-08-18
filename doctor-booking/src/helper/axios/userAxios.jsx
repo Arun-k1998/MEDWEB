@@ -2,7 +2,7 @@ import axios from 'axios'
 import getCookies from '../getCookie';
 
 const api = axios.create({
-    baseURL:'http://localhost:4001'
+    baseURL:`${import.meta.env.VITE_SERVER_URL}`
 })
 
 api.interceptors.request.use(function (config) {

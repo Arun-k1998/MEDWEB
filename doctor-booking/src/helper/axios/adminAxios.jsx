@@ -2,7 +2,7 @@ import axios from "axios";
 import getCookies from "../getCookie";
 
 export const adminApi = axios.create({
-  baseURL: "http://localhost:4001/admin",
+  baseURL: `${import.meta.env.VITE_SERVER_URL}admin`,
 });
 
 adminApi.interceptors.request.use(

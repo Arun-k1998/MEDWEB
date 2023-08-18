@@ -2,7 +2,7 @@ import axios from 'axios'
 import getCookies from '../getCookie';
 
 export const doctorApi = axios.create({
-    baseURL: 'http://localhost:4001/doctor'
+    baseURL: `${import.meta.env.VITE_SERVER_URL}doctor`
 })
 
 doctorApi.interceptors.request.use(
