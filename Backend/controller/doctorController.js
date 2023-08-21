@@ -17,9 +17,8 @@ const ObjctId = mongoose.Types.ObjectId;
 
 const vonage = new Vonage({
   apiKey: process.env.VONAGE_API_KEY,
-  apiSecret: process.env.VONAGE_API_SECRET ,
+  apiSecret: process.env.VONAGE_API_SECRET,
 });
-
 
 async function hash(value) {
   const hashData = await bcrypt.hash(value, 10);
@@ -37,8 +36,8 @@ const tokenVerification = (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -50,7 +49,6 @@ const signup = async (req, res) => {
   if (!doctorEmail) {
     const doctorPhone = await doctor.findOne({ phoneNumber: phoneNumber });
     if (!doctorPhone) {
-      
       vonage.verify
         .start({
           number: `917907051954`,
@@ -133,8 +131,8 @@ const otpVerification = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -183,8 +181,8 @@ const login = async (req, res) => {
   } catch (error) {
     console.log("error");
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -206,8 +204,8 @@ const doctorDetails = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -248,18 +246,18 @@ const updateDoctorDetails = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
 const doctorsList = async (req, res) => {
   try {
     const doctorList = await doctor.find({
-      $and: [{ is_Blocked: false }, { approved  : "processing" }],
+      $and: [{ is_Blocked: false }, { approved: "processing" }],
     });
     if (doctorList) {
-      console.log(doctorList ,"doctorList");
+      console.log(doctorList, "doctorList");
       res.json({
         status: true,
         doctors: doctorList,
@@ -301,8 +299,8 @@ const doctorApproval = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -363,8 +361,8 @@ const doctorTimeScheduling = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -396,8 +394,8 @@ const timeSlotes = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -406,39 +404,35 @@ const deleteTimeSlote = async (req, res) => {
 
   try {
     const scheduledDate = await timeSloteModel.findById(id);
-  const sessions = scheduledDate.sessions.filter(
-    (obj, index) => obj._id != slotId
-  );
-  console.log(sessions);
-  if (!sessions.length) {
-    console.log("deleted entirelly");
-    await timeSloteModel.deleteOne({ _id: id }).then((response) => {
-      res.json({
-        status: true,
-        message: "Sucessfully Deleted",
-      });
-    });
-  } else {
-    console.log("lor ");
-    await timeSloteModel
-      .findOneAndUpdate({ _id: id }, { sessions: sessions })
-      .then((response) => {
+    const sessions = scheduledDate.sessions.filter(
+      (obj, index) => obj._id != slotId
+    );
+    console.log(sessions);
+    if (!sessions.length) {
+      console.log("deleted entirelly");
+      await timeSloteModel.deleteOne({ _id: id }).then((response) => {
         res.json({
           status: true,
           message: "Sucessfully Deleted",
         });
       });
-  }
-    
+    } else {
+      console.log("lor ");
+      await timeSloteModel
+        .findOneAndUpdate({ _id: id }, { sessions: sessions })
+        .then((response) => {
+          res.json({
+            status: true,
+            message: "Sucessfully Deleted",
+          });
+        });
+    }
   } catch (error) {
     console.log(error.messag);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
-
-
-
 };
 
 const doctorList = async (req, res) => {
@@ -446,26 +440,38 @@ const doctorList = async (req, res) => {
     const { sid } = req.query;
     const filter = req?.query?.filter || "";
     const search = req?.query?.search || "";
+    let pageNo = req.query?.page || 1;
+    let limit = 2;
+    console.log(pageNo,'pageNo');
     let query = {
       approved: "approved",
-      is_Blocked: false
+      is_Blocked: false,
     };
     if (sid) {
-      let splitarray = sid.split(',')
+      let splitarray = sid.split(",");
       console.log(splitarray);
-      query['specialization'] = {$in:splitarray}
-    }
-    
-    if(search){
-      query['$or'] = [
-        { firstName: { $regex: ".*" + search + ".*", $options: "i" } },
-        { approved: "approved" },
-      ]
+      query["specialization"] = { $in: splitarray };
     }
 
+    if (search) {
+      query["$or"] = [
+        { firstName: { $regex: ".*" + search + ".*", $options: "i" } },
+        { approved: "approved" },
+      ];
+    }
+
+    const pagination = await doctor.find(query);
+    console.log(pagination,'pagination');
+
     const doctorList = await doctor
-    .find(query)
-    .populate("specialization", "name");   
+      .find(query)
+      .populate("specialization", "name")
+      .skip(pageNo > 1 ? (pageNo - 1) * limit : 0)
+      .limit(limit);
+      console.log(doctorList,'doctorList');
+    // console.log(pagination.length); 
+    let totalPages = Math.ceil(pagination.length / limit);
+    // console.log(totalPages);
 
     const specilizations = await specializationModel.find(
       { is_delete: false },
@@ -477,6 +483,7 @@ const doctorList = async (req, res) => {
         status: true,
         doctors: doctorList,
         specilizations,
+        totalPages,
       });
     }
   } catch (error) {
@@ -527,8 +534,8 @@ const getProfile = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -568,8 +575,8 @@ const updateProfile = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 // import 'moment-timezone';
@@ -603,8 +610,8 @@ const getAppointments = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -628,8 +635,8 @@ const createPrescription = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -648,8 +655,8 @@ const getPresctipton = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -662,10 +669,10 @@ const consultationFinish = async (req, res) => {
       const timeZone = "Asia/Kolkata";
       let time = moment().tz(timeZone);
       let consultationTime = moment(consulatatonData.startingTime, timeZone);
-      if (time < consultationTime){
+      if (time < consultationTime) {
         const error = new Error("Can't Update consultaton befor the time ");
-        error.status = 400
-        throw error
+        error.status = 400;
+        throw error;
       }
       const consultaionFee = consulatatonData.doctorFee;
       const doctorPayment = (consultaionFee * 80) / 100;
@@ -707,8 +714,8 @@ const patients = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -731,8 +738,8 @@ const getAllConsultation = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -780,8 +787,8 @@ const updateSession = async (req, res) => {
     }
   } catch (error) {
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 
@@ -833,8 +840,8 @@ const deletScheduledDate = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(error.status).json({
-      message:error.message
-    })
+      message: error.message,
+    });
   }
 };
 

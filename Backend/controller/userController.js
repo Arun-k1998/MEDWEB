@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment-timezone");
 const buffer = require("buffer");
 const { v4 } = require("uuid");
-const path = require("path");
+const path = require("path"); 
 //Schema
 const users = require("../model/useModel");
 const banners = require("../model/bannerModel");

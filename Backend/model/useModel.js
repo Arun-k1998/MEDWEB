@@ -27,7 +27,7 @@ const userSchema = mongoose.Schema({
         required:true
     },
     gender:{
-        type:String
+        type:String 
     },
     image:{
         type:String
