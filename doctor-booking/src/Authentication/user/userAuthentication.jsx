@@ -23,7 +23,7 @@ export const Authorization = ({ children, accessBy }) => {
         if (user) {
           // alert('HI')
           setLoading(false);
-        } else if (cookie && cookie["userToken"]) {
+        } else if (cookie && cookie[" userToken"]) {
           api
             .get("/token_v")
             .then((response) => {

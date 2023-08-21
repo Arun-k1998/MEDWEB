@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 import api from "../../../helper/axios/userAxios";
+import "./appointments.css";
 
 function Appointments({
   appointments,
@@ -83,10 +84,8 @@ function Appointments({
     });
   };
 
-  
-
   return (
-    <div className="w-[80%] h-full mx-auto bg-slate-400 py-10  ">
+    <div className=" w-full md:w-[80%] h-full mx-auto bg-slate-400 py-10  ">
       <div className="w-full flex justify-center mb-4 underline underline-offset-8 text-xl">
         <h2>Your Appointments</h2>
       </div>
@@ -95,7 +94,9 @@ function Appointments({
           return (
             <button
               className={`${
-                button.active ? "bg-slate-500 text-white shadow-xl shadow-slate-600 hover:shadow-slate-900 " : "bg-slate-300 hover:shadow-xl hover:shadow-slate-600 shadow-lg shadow-slate-500 "
+                button.active
+                  ? "bg-slate-500 text-white shadow-xl shadow-slate-600 hover:shadow-slate-900 "
+                  : "bg-slate-300 hover:shadow-xl hover:shadow-slate-600 shadow-lg shadow-slate-500 "
               } p-2 rounded-lg`}
               onClick={() => handleButtonClick(index)}
             >
@@ -106,19 +107,19 @@ function Appointments({
         {/* <button className="p-2 bg-slate-300 rounded-lg">Upcoming</button>
         <button className="p-2 bg-slate-300 rounded-lg">Consulted</button> */}
       </div>
-      <div className="w-[95%] h-[85%] mx-auto overflow-y-scroll  ">
+      <div className=" grid grid-cols-2 md:grid-cols-1  p-4 md:p-0  w-full md:w-[95%] h-[85%] mx-auto appointmentsContainer overflow-y-scroll  ">
         {appointments?.map((appointment, index) => {
           return (
             <div
               className={`${
                 timChecker(appointment?.endingTime)
-                  ? 'bg-slate-500'
-                  : 'bg-slate-600'
-              } flex items-center justify-evenly gap-2 w-full h-40 mb-2 text-white`}
+                  ? "bg-slate-500"
+                  : "bg-slate-600"
+              } mx-auto md:mx-auto md:flex flex-col  md:flex-row items-center justify-evenly gap-2 w-40 md:w-full h-auto md:h-40 mb-2 text-white p-1 md:p-0 rounded-lg md:rounded-none`}
               key={index}
             >
-              <div className="w-[30%] p-2 h-full flex ">
-                <div className="w-[50%] h-full">
+              <div className=" w-full  p-2 h-48 md:h-full flex flex-col md:flex-row ">
+                <div className="md:w-[50%] h-36 md:h-full rounded-lg overflow-hidden">
                   <img
                     src={`${import.meta.env.VITE_SERVER_URL}/images/${
                       appointment?.doctorId?.image
@@ -127,7 +128,7 @@ function Appointments({
                     alt=""
                   />
                 </div>
-                <div className="w-[50%] ml-2 flex flex-col justify-around items-center h-full">
+                <div className="md:w-[50%] ml-2 flex flex-col justify-around items-center md:h-full">
                   <p>
                     Dr .
                     {firstLetterUpperCase(appointment?.doctorId?.firstName) +
@@ -136,7 +137,7 @@ function Appointments({
                   </p>
                   {appointment.status === "finish" ? (
                     <div className="w-full flex  justify-center gap-3 items-center">
-                      <div className="w-2 h-2 rounded-full bg-lime-700"></div>
+                      <div className="w-2 h-2 rounded-full bg-lime-200"></div>
                       <p>Consulted</p>
                     </div>
                   ) : (
@@ -144,7 +145,7 @@ function Appointments({
                   )}
                 </div>
               </div>
-              <div>
+              <div className="w-full flex justify-center ">
                 <p>{formateDate(appointment.date)}</p>
               </div>
               {/* <div>
@@ -154,19 +155,35 @@ function Appointments({
                     firstLetterUpperCase(appointment?.doctorId?.lastName)}
                 </p>
               </div> */}
-              <div>
-                <div className="flex ">
-                  <p>Starting Time :</p>
-                  <p>{formatTime(appointment?.startingTime)}</p>
+              <div className="w-full flex flex-col gap-1 items-center justify-center">
+                <div className="flex w-36 md:w-52  ">
+                  <div className=" w-20 md:w-28 flex">
+                    <p>Starting</p>
+                    <span className="hidden md:block ml-1"> Time</span>
+                  </div>
+                  <div className="w-2">
+                    <span>:</span>
+                  </div>
+                  <div className="w-24 md:w-22 ml-1">
+                    <p>{formatTime(appointment?.startingTime)}</p>
+                  </div>
                 </div>
-                <div className="flex ">
-                  <p>Ending Time :</p>
-                  <p>{formatTime(appointment?.endingTime)}</p>
+                <div className="flex w-36  md:w-52  ">
+                  <div className="w-20 md:w-28 flex">
+                    <p>Ending </p>
+                    <span className="hidden md:block ml-1"> Time</span>
+                  </div>
+                  <div className="w-2">
+                    <span>:</span>
+                  </div>
+                  <div className="w-24 md:w-22 ml-1">
+                    <p>{formatTime(appointment?.endingTime)}</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex  gap-2">
+              <div className="flex w-full gap-2">
                 {appointment.status === "finish" ? (
-                  <div className="w-50  h-full flex gap-3 items-center">
+                  <div className="w-full my-3 h-full flex justify-center  gap-3 items-center">
                     <button
                       className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
                       onClick={() =>
@@ -182,15 +199,15 @@ function Appointments({
                       timChecker(appointment?.endingTime)
                         ? "pointer-events-none"
                         : ""
-                    } flex flex-col gap-3 `}
+                    } flex w-full flex-col gap-3 `}
                   >
                     {timChecker(appointment?.endingTime) ? (
-                      <p className="text-white font-bold ">
+                      <p className="text-white font-bold text-center ">
                         You Missed the consultation
                       </p>
                     ) : (
                       <>
-                        <div className="flex gap-3">
+                        <div className="flex flex-col items-center w-full md:flex-row gap-3">
                           <button
                             className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
                             onClick={() =>
@@ -211,9 +228,9 @@ function Appointments({
                             Cancel
                           </button>
                         </div>
-                        <div>
+                        <div className="w-full flex justify-center ">
                           <button
-                            className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-[16.75rem]"
+                            className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32 md:w-[16.75rem]"
                             onClick={() =>
                               navigate(
                                 `/consult/detail/${appointment?.doctorId?._id}?reschedule=${appointment._id}`

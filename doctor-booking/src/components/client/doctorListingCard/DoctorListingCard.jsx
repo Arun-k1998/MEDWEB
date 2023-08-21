@@ -6,9 +6,15 @@ import "./doctorListingCard.css";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-function DoctorListingCard({ doctors }) {
+function DoctorListingCard({
+  doctors,
+  pageNos,
+  setPageNo,
+  pageNo,
+  setPageNos,
+}) {
   const { VITE_SERVER_URL } = import.meta.env;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [timeSlotes, setTimeSlotes] = useState([]);
   const [limit, setLimit] = useState([]);
   const [sessions, setSessions] = useState([]);
@@ -20,7 +26,6 @@ function DoctorListingCard({ doctors }) {
   const scrollableContainerRef = useRef(null);
   const userId = useSelector((store) => store.user.id);
   const [doctorsHide, setDoctorsHide] = useState(false);
- 
 
   const handleScrollRight = () => {
     if (scrollableContainerRef.current) {
@@ -47,8 +52,7 @@ function DoctorListingCard({ doctors }) {
         });
         // console.log(response.data.timeSlotes);
         setTimeSlotes([
-          ...response.data.timeSlotes
-          .filter((date) => {
+          ...response.data.timeSlotes.filter((date) => {
             if (moment(date?.date).format("ll") >= moment().format("ll")) {
               date.sessions = date.sessions.map((session) => {
                 session.slotes = session.slotes.filter((slot) => {
@@ -62,7 +66,7 @@ function DoctorListingCard({ doctors }) {
               return true;
             }
             return false;
-          })
+          }),
         ]);
         setLimit([
           ...response.data.timeSlotes.filter((time, index) => {
@@ -116,12 +120,17 @@ function DoctorListingCard({ doctors }) {
     return result;
   };
 
-  const handlePopup = (timeSlot,session)=>{
-    setConfirmPopup(pre=>!pre)
+  const handlePopup = (timeSlot, session) => {
+    setConfirmPopup((pre) => !pre);
     let date = moment(timeSlot.start).format("ll");
-    setConsultationDetails({ ['doctorId']: doctorId, ['slot']: timeSlot, ['date']: date,['session']: session,['userId']: userId });
-
-  }
+    setConsultationDetails({
+      ["doctorId"]: doctorId,
+      ["slot"]: timeSlot,
+      ["date"]: date,
+      ["session"]: session,
+      ["userId"]: userId,
+    });
+  };
 
   const hadleSlotBooking = () => {
     // console.log(timeSlot);
@@ -171,191 +180,244 @@ function DoctorListingCard({ doctors }) {
 
   console.log(timeSlotes);
 
-  return (
-    <div className={`${doctorsHide? '': 'items-center'} relative  flex   justify-center  w-[80vw]  `}>
-      {!doctorsHide && (
-        <div className=" w-full grid grid-cols-4 h-full">
-          {doctors.length
-            ? doctors.map((doctor, index) => {
-                return (
-                  // <div
-                  //   key={index}
-                  //   className="w-5/6 h-60  p-5  flex justify-center rounded-lg"
-                  // >
-                  //   <div className="flex justify-start w-full">
-                  //     <div className="w-40 flex  h-full rounded-full overflow-hidden p-1 bg-[#0e5c5c]  ">
-                  //       <img
-                  //         src={`${VITE_SERVER_URL}/images/${doctor?.image}`}
-                  //         className="object-cover h-full w-full rounded-full border-2 border-solid border-white "
-                  //       />
-                  //     </div>
-                  //     <div className="ml-4 flex flex-col justify-evenly ">
-                  //       <p>{`${doctor?.firstName} ${doctor?.lastName}`}</p>
-                  //       <p>{doctor?.specialization?.name}</p>
-                  //       <p>Experience : 6years</p>
-                  //       <strong>Consultation Fee: 100</strong>
-                  //     </div>
-                  //   </div>
+  const handlePageNo = (pageNo) => {
+    setPageNos((pre) => {
+      return [
+        ...pre.map((page) => {
+          if (pageNo == page.page) {
+            page.active = true;
+          } else {
+            page.active = false;
+          }
+          console.log(page,'pagee');
+          return { ...page };
+        }),
+      ];
+    });
+    setPageNo(pageNo);
+  };
 
-                  //   <div className=" flex flex-col justify-center">
-                  //     <div className="w-32 mb-4">
-                  //       <button
-                  //         className="bg-[#165C34] hover:bg-[#09381d] text-white p-2 rounded-xl w-full "
-                  //         onClick={() => handleclick(doctor._id)}
-                  //       >
-                  //         Book Slot
-                  //       </button>
-                  //     </div>
-                  //     <div className="w-32">
-                  //       <button className="bg-[#165C34] text-white p-2 rounded-xl w-full ">
-                  //         View Profile
-                  //       </button>
-                  //     </div>
-                  //   </div>
-                  // </div>
-                  <div className="h-72 w-full  border-r-2 border-b-2 border-r-[#189AB4] border-b-[#189AB4] flex flex-col items-center py-5 " key={index}>
-                    <div className="w-[40%] h-[60%] rounded-full   ">
-                      <img
-                        src={`${VITE_SERVER_URL}/images/${doctor?.image}`}
-                        className="object-cover h-full w-full rounded-full border-2 border-solid border-white "
-                      />
-                    </div>
-                    <div className=" w-[60%] p-2 flex flex-col justify-center items-center mt-3 h-[20%]">
-                      <p> {`Dr. ${doctor?.firstName} ${doctor?.lastName}`}</p>
-                      <p className="text-gray-500">
-                        {doctor?.specialization?.name}
-                      </p>
-                      <p className="text-gray-500">
-                        {doctor?.feePerConsultation}
-                      </p>
-                    </div>
-                    <div className="mt-3 p-1 h-[20%]">
-                      <p
-                        className="underline underline-offset-4 cursor-pointer "
-                        // onClick={() => handleclick(doctor._id)}
-                        onClick={() => navigate(`/consult/detail/${doctor._id}`)}
+  return (
+    <div
+      className={`${
+        doctorsHide ? "" : "items-center"
+      } relative  w-full border-t-2 border-t-[#189AB4] md:border-0 `}
+    >
+      {!doctorsHide && (
+        <>
+          <div className=" w-full grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4  h-full">
+            {doctors.length
+              ? doctors.map((doctor, index) => {
+                  return (
+                    // <div
+                    //   key={index}
+                    //   className="w-5/6 h-60  p-5  flex justify-center rounded-lg"
+                    // >
+                    //   <div className="flex justify-start w-full">
+                    //     <div className="w-40 flex  h-full rounded-full overflow-hidden p-1 bg-[#0e5c5c]  ">
+                    //       <img
+                    //         src={`${VITE_SERVER_URL}/images/${doctor?.image}`}
+                    //         className="object-cover h-full w-full rounded-full border-2 border-solid border-white "
+                    //       />
+                    //     </div>
+                    //     <div className="ml-4 flex flex-col justify-evenly ">
+                    //       <p>{`${doctor?.firstName} ${doctor?.lastName}`}</p>
+                    //       <p>{doctor?.specialization?.name}</p>
+                    //       <p>Experience : 6years</p>
+                    //       <strong>Consultation Fee: 100</strong>
+                    //     </div>
+                    //   </div>
+
+                    //   <div className=" flex flex-col justify-center">
+                    //     <div className="w-32 mb-4">
+                    //       <button
+                    //         className="bg-[#165C34] hover:bg-[#09381d] text-white p-2 rounded-xl w-full "
+                    //         onClick={() => handleclick(doctor._id)}
+                    //       >
+                    //         Book Slot
+                    //       </button>
+                    //     </div>
+                    //     <div className="w-32">
+                    //       <button className="bg-[#165C34] text-white p-2 rounded-xl w-full ">
+                    //         View Profile
+                    //       </button>
+                    //     </div>
+                    //   </div>
+                    // </div>
+                    <>
+                      <div
+                        className="h-72 w-full  border-r-2 border-b-2 border-r-[#189AB4] border-b-[#189AB4] flex flex-col items-center py-5 "
+                        key={index}
                       >
-                        Book Now
-                      </p>
-                    </div>
-                  </div>
-                );
-              })
-            : "Sorry. No doctors availabl in this name"}
-        </div>
+                        <div className=" w-28 h-28 md:w-36 md:h-36 rounded-full   ">
+                          <img
+                            src={`${VITE_SERVER_URL}/images/${doctor?.image}`}
+                            className="object-cover h-full w-full rounded-full border-2 border-solid border-white "
+                          />
+                        </div>
+                        <div className=" w-[60%] p-2 flex flex-col justify-center items-center mt-3 h-[20%]">
+                          <p>
+                            {" "}
+                            {`Dr. ${doctor?.firstName} ${doctor?.lastName}`}
+                          </p>
+                          <p className="text-gray-500">
+                            {doctor?.specialization?.name}
+                          </p>
+                          <p className="text-gray-500">
+                            {doctor?.feePerConsultation}
+                          </p>
+                        </div>
+                        <div className="mt-3 p-1 h-[20%]">
+                          <p
+                            className="underline underline-offset-4 cursor-pointer "
+                            // onClick={() => handleclick(doctor._id)}
+                            onClick={() =>
+                              navigate(`/consult/detail/${doctor._id}`)
+                            }
+                          >
+                            Book Now
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })
+              : "Sorry. No doctors availabl in this name"}
+          </div>
+
+          <div className="w-full flex justify-center gap-2">
+            <button className="w-5 h-5 border-2 border-red-900">{"<<"}</button>
+            {pageNos.map((number, index) => {
+              return (
+                <button
+                  className={`${
+                    number.active ? "bg-slate-500" : "bg-slate-300"
+                  } w-5 h-5 border-2 border-red-900`}
+                  key={index}
+                  onClick={() => handlePageNo(number?.page)}
+                >
+                  {number?.page}
+                </button>
+              );
+            })}
+            <button className="w-5 h-5 border-1 border-red-900">{">>"}</button>
+          </div>
+        </>
       )}
 
       {doctorsHide && (
-     <div className={`${
-      timeSlotes.length ? "block w-full md:w-5/6 mt-5" : "hidden"
-    } mx-3 flex flex-col  `}>
-      {/* absolute top-0 left-4 md:left-24 shadow-2xl bg-slate-300 py-10 flex flex-col md:grid md:grid-cols-1 lg:grid-cols-[3fr,7fr] gap-4 px-5 */}
-      <div className="md:w-full lg:w-96 bg-slate-600">
-        <img src="https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_oO6YW1sHTnKxby4GcjCvtypUCWjnQRg5.jpg" alt="" />
-      </div>
-      <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600">
-        <div className="w-full gap-4 items-center flex flex-row justify-evenly">
-          <div
-            className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center"
-            onMouseEnter={handleScrollLeft}
-          >
-            <AiOutlineArrowLeft className="" />
+        <div
+          className={`${
+            timeSlotes.length ? "block w-full md:w-5/6 mt-5" : "hidden"
+          } mx-3 flex flex-col  `}
+        >
+          {/* absolute top-0 left-4 md:left-24 shadow-2xl bg-slate-300 py-10 flex flex-col md:grid md:grid-cols-1 lg:grid-cols-[3fr,7fr] gap-4 px-5 */}
+          <div className="md:w-full lg:w-96 bg-slate-600">
+            <img
+              src="https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_oO6YW1sHTnKxby4GcjCvtypUCWjnQRg5.jpg"
+              alt=""
+            />
           </div>
-          <div
-            className="flex-1 flex flex-row gap-4 overflow-x-auto"
-            ref={scrollableContainerRef}
-          >
-            {timeSlotes?.map((timeSlote, index) => {
-              return (
-                <div
-                  className="p-1 bg-[#509393] text-white min-w-max cursor-pointer"
-                  key={index}
-                  onClick={() => getSlotes(timeSlote)}
-                >
-                  <p className="w-full">{formateDate(timeSlote.date)}</p>
-                </div>
-              );
-            })}
+          <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600">
+            <div className="w-full gap-4 items-center flex flex-row justify-evenly">
+              <div
+                className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center"
+                onMouseEnter={handleScrollLeft}
+              >
+                <AiOutlineArrowLeft className="" />
+              </div>
+              <div
+                className="flex-1 flex flex-row gap-4 overflow-x-auto"
+                ref={scrollableContainerRef}
+              >
+                {timeSlotes?.map((timeSlote, index) => {
+                  return (
+                    <div
+                      className="p-1 bg-[#509393] text-white min-w-max cursor-pointer"
+                      key={index}
+                      onClick={() => getSlotes(timeSlote)}
+                    >
+                      <p className="w-full">{formateDate(timeSlote.date)}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <div
+                className="cursor-pointer w-10 hover:bg-black hover:text-white p-2 flex justify-center"
+                onMouseEnter={handleScrollRight}
+              >
+                <AiOutlineArrowRight className="" />
+              </div>
+            </div>
           </div>
-          <div
-            className="cursor-pointer w-10 hover:bg-black hover:text-white p-2 flex justify-center"
-            onMouseEnter={handleScrollRight}
-          >
-            <AiOutlineArrowRight className="" />
-          </div>
-        </div>
-      </div>
-      <div className="w-full flex flex-col ">
-      {sessions.length
-          ? sessions.map((session, index) => {
-              return (
-                <div
-                  key={index}
-                  className=" mb-1 flex flex-col  w-full "
-                >
-                  <div className="flex gap-2">
-                    <p>Session</p>
+          <div className="w-full flex flex-col ">
+            {sessions.length
+              ? sessions.map((session, index) => {
+                  return (
+                    <div key={index} className=" mb-1 flex flex-col  w-full ">
+                      <div className="flex gap-2">
+                        <p>Session</p>
 
-                    <p>{session.session}</p>
-                  </div>
-                  <div className="grid grid-cols-5 gap-3">
-                    {session.slots.map((obj, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className={`${
-                            obj.is_Booked ? "pointer-events-none" : ""
-                          } cursor-pointer  w-30`}
-                          // onClick={() =>{
-                          //   setConfirmPopup(pre => !pre)
-                          //   // hadleSlotBooking(obj, session)
-                          // } }
-                          onClick={()=> handlePopup(obj,session)}
-                        >
-                          <p className=" flex justify-center bg-stone-300 hover:bg-stone-500 hover:text-white border-solid border-teal-500 p-2">
-                            <span className="ml-1">
-                              {formatTime(obj.start)}
-                            </span>
-                            <span className="ml-1">-</span>
-                            <span>{formatTime(obj.end)}</span>
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        <p>{session.session}</p>
+                      </div>
+                      <div className="grid grid-cols-5 gap-3">
+                        {session.slots.map((obj, index) => {
+                          return (
+                            <div
+                              key={index}
+                              className={`${
+                                obj.is_Booked ? "pointer-events-none" : ""
+                              } cursor-pointer  w-30`}
+                              // onClick={() =>{
+                              //   setConfirmPopup(pre => !pre)
+                              //   // hadleSlotBooking(obj, session)
+                              // } }
+                              onClick={() => handlePopup(obj, session)}
+                            >
+                              <p className=" flex justify-center bg-stone-300 hover:bg-stone-500 hover:text-white border-solid border-teal-500 p-2">
+                                <span className="ml-1">
+                                  {formatTime(obj.start)}
+                                </span>
+                                <span className="ml-1">-</span>
+                                <span>{formatTime(obj.end)}</span>
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
 
-                  <hr className="my-3" />
-                </div>
-              );
-            })
-          : ""}
-      </div>
-      {confirmPopup && (
-        <div className=" absolute top-10 w-5/6 bg-slate-300 px-5 py-8 flex flex-col items-center ">
-          
-          <div>
-            <h2>Booking Details</h2>
+                      <hr className="my-3" />
+                    </div>
+                  );
+                })
+              : ""}
           </div>
-          <div className="absolute top-5 right-10 cursor-pointer w-[2em] h-[1em]">
-            {/* <span className="w-[.1em] bg-[#fff] rotate-[45deg] h-7"></span>
+          {confirmPopup && (
+            <div className=" absolute top-10 w-5/6 bg-slate-300 px-5 py-8 flex flex-col items-center ">
+              <div>
+                <h2>Booking Details</h2>
+              </div>
+              <div className="absolute top-5 right-10 cursor-pointer w-[2em] h-[1em]">
+                {/* <span className="w-[.1em] bg-[#fff] rotate-[45deg] h-7"></span>
             <span className=" w-[.1em] bg-[#fff] rotate-[-45deg] h-7" ></span>
             <div className="w-full h-full bg-red-600 "></div> */}
-            <p onClick={()=>setConfirmPopup(false)} >close</p>
-         
-          </div>
-          <div>
-            <p>{consultaionDetails?.session?.session}</p>
-          </div>
-          
-          <div>
-            <button className="p-2 bg-orange-300 text-gray-50" onClick={hadleSlotBooking}>Confirm Appointment</button>
-          </div>
-        </div>
-      )}
-      
+                <p onClick={() => setConfirmPopup(false)}>close</p>
+              </div>
+              <div>
+                <p>{consultaionDetails?.session?.session}</p>
+              </div>
 
-    </div>
-    
+              <div>
+                <button
+                  className="p-2 bg-orange-300 text-gray-50"
+                  onClick={hadleSlotBooking}
+                >
+                  Confirm Appointment
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
       {/* <div
         className={`${timeSlotes.length ? " block w-5/6 mt-5 " : " hidden "} `}

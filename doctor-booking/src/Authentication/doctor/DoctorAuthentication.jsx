@@ -26,6 +26,8 @@ function DoctorAuthentication({children,accessBy}){
                         dispatch(doctorLogin(response.data.doctor))
                         setLoading(false)
                     }
+                }else{
+                    window.location.href = '/doctor/login'
                 }
                 
             }else if(accessBy = 'non-Authorized'){
@@ -40,16 +42,20 @@ function DoctorAuthentication({children,accessBy}){
             }
         }
         verification()
-    },[])
+    },[loading])
 
-    if(accessBy === "Authorized" && loading){
-        return null
+    if(accessBy === "Authorized" && !loading){
+        // return navigate('/doctor/login')
+        return children
     }
     else if(accessBy === "non-Authorized" && !loading ){
         return navigate('/doctor/dashboard')
     }
+    else if(accessBy === 'non-Authorized' && loading){
+        return children
+    }
 
-    return children
+    return null
 
 }
 

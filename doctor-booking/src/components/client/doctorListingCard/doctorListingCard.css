@@ -1,4 +1,4 @@
-::-webkit-scrollbar {
+.doctorListContainer::-webkit-scrollbar {
     display: none;
   }
   .scrollable-container {

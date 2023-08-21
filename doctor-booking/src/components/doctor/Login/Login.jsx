@@ -54,7 +54,7 @@ function Login() {
             "; path=/doctor";
          
           dispatch(doctorLogin(response.data.doctor))
-          navigate("/doctor/dashboard");
+         window.location.href = "/doctor/dashboard"
         } else {
           alert(response.data.message);
         }

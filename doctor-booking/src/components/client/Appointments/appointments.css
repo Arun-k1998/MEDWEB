@@ -1,0 +1,20 @@
+.appointmentsContainer::-webkit-scrollbar {
+
+    width: 10px; /* Width of the scrollbar */
+    border-radius: 5px; /* Rounded corners */
+
+}
+
+.appointmentsContainer::-webkit-scrollbar-thumb{
+    background-color: #189AB4; /* Color of the thumb */
+    border-radius: 5px;
+}
+.appointmentsContainer::-webkit-scrollbar-thumb:hover {
+    background-color: #62d0e7; /* Color of the thumb on hover */
+  }
+  
+
+.appointmentsContainer::-webkit-scrollbar-track{
+    background-color: #0a8199; /* Color of the track */
+    border-radius: 5px;
+}

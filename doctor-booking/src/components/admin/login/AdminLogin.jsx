@@ -23,7 +23,8 @@ function AdminLogin() {
           let expires = 'expires='+date.toUTCString()
           document.cookie = "adminToken=Bearer "+response.data.token+';'+expires+'; path=/admin'
           dispatch(adminLogin(response.data.admin))
-          navigate('/admin/dashboard')
+          // navigate('/admin/dashboard')
+          window.location.href = '/admin/dashboard'
         }
        
     }).catch(({response})=>{

@@ -10,11 +10,12 @@ function AdminNavbar() {
     // Thu, 01 Jan 1970 00:00:01 GMT
     document.cookie =
     "adminToken=Bearer"+";" + expires + "; path=/admin";;
-        navigate('/admin/login')
+
+        window.location.href =  '/admin/login'
      
   }
   return (
-    <div className='grid grid-cols-[1fr_7fr] md:grid-cols-[1.5fr_8.5fr]  items-center sticky top-0 z-10  h-full'>
+    <div className='grid grid-cols-[1fr_7fr] md:grid-cols-[1.5fr_8.5fr]  items-center sticky top-0 z-10  h-[12vh]'>
         <div className='w-full h-full py-4 bg-[#189AB4] px-2 md:px-9 '>
             <img src={icon} alt="" />
         </div>

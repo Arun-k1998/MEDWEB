@@ -12,14 +12,17 @@ function AdminVerification({ children, accessBy }) {
   const {id} = useSelector(store => store.admin)
 
   useEffect(() => {
+   
     const verifyToken = async () => {
       const cookie = getCookies();
       if (accessBy === 'Authorized') {
         if(id){
+         
           setLoading(false)
         }
-         else if (cookie['adminToken']) {
+         else if (cookie && cookie['adminToken']) {
           try {
+           
             const response = await adminApi.get('/token_v');
             if (response.data.status) {
               // console.log(response.data);
@@ -33,14 +36,18 @@ function AdminVerification({ children, accessBy }) {
             setLoading(false); // Set loading state to false
           }
          
-        } else {
+        }
+         else {
           window.location.href = '/admin/login';
         }
       } else if (accessBy === 'non-Authorized') {
+       
         if(id){
+          
           setLoading(false)
         }
         else if (cookie['adminToken']) {
+          
           const response = await adminApi.get('/token_v');
             if (response.data.status) {
               dispatch(adminLogin(response.data.admin))
@@ -52,17 +59,19 @@ function AdminVerification({ children, accessBy }) {
     };
 
     verifyToken();
-  }, []);
+  }, [loading]);
 
-  if( accessBy === 'Authorized' && loading ) {
-   console.log('1');
-    return null; // or a loading indicator if desired
+  if( accessBy === 'Authorized' && !loading ) {
+ 
+    return children; // or a loading indicator if desired
   }
   else if( accessBy === 'non-Authorized' && !loading ){
     return navigate('/admin/dashboard')
+  } else if( accessBy === 'non-Authorized' && loading ){
+    return children
   }
-console.log('2');
-  return children;
+ 
+  return null ;
 }
 
 export default AdminVerification

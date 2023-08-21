@@ -51,7 +51,7 @@ function Sidebar() {
 
   const [sideBar, setSideBar] = useState(sidebarContent);
   return (
-    <div className="h-[88vh] w-full bg-[#189AB4] py-4 pt-16  font-serif sticky top-[12v] ">
+    <div className="h-[88vh] w-full bg-[#189AB4] py-4 pt-16  font-serif sticky top-[12vh] ">
       {sideBar.map((content) => {
         return (
           <div
