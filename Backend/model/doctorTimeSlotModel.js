@@ -45,7 +45,11 @@ const timeSlotSchema = mongoose.Schema({
                 type:mongoose.Schema.Types.ObjectId
             }
         }]
-    }]
+    }],
+    view:{
+        type:Boolean,
+        default:true
+    }
 
 },{timestamps:true})
 

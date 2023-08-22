@@ -376,11 +376,24 @@ const timeSlotes = async (req, res) => {
     // const dateSlotes = await timeModle.findOne({$and:[{doctorId:id},{date:formattedDate}]})
     // console.log(dateSlotes);
     // console.log('finish');
+
+    
+
     const { id } = req.query;
+    const edit = req.query.edit||false
+    let query ={doctorId:id,view:true}
+    if(!edit){ 
+      console.log('sdfsf');
+      query['date'] ={$gte:new Date()}
+      console.log(query);
+    }
     const timeSchedules = await timeModle.find(
-      { doctorId: id },
-      { date: 1, duration: 1, sessions: 1 }
+      query,
+      { date: 1, duration: 1, sessions: 1 },
     );
+
+    console.log(timeSchedules); 
+
     if (timeSchedules) {
       res.json({
         status: true,
@@ -448,6 +461,7 @@ const doctorList = async (req, res) => {
       is_Blocked: false,
     };
     if (sid) {
+      console.log(sid);
       let splitarray = sid.split(",");
       console.log(splitarray);
       query["specialization"] = { $in: splitarray };
@@ -461,14 +475,15 @@ const doctorList = async (req, res) => {
     }
 
     const pagination = await doctor.find(query);
-    console.log(pagination,'pagination');
+    // console.log(pagination,'pagination');
 
+    console.log(query);
     const doctorList = await doctor
       .find(query)
       .populate("specialization", "name")
       .skip(pageNo > 1 ? (pageNo - 1) * limit : 0)
       .limit(limit);
-      console.log(doctorList,'doctorList');
+      // console.log(doctorList,'doctorList');
     // console.log(pagination.length); 
     let totalPages = Math.ceil(pagination.length / limit);
     // console.log(totalPages);
@@ -845,6 +860,14 @@ const deletScheduledDate = async (req, res) => {
   }
 };
 
+const cancelViewInSchedule = async(req,res)=>{
+  const {id} = req.query
+  const schedule =  await timeSloteModel.findByIdAndUpdate(id,{view:false})
+  if(schedule){
+    res.json({status:true})
+  }
+}
+
 const dashBoard = async (req, res) => {
   try {
     const weekStart = moment.tz("Asia/Kolkata").startOf("week");
@@ -968,4 +991,5 @@ module.exports = {
   getPresctipton,
   getAllConsultation,
   dashBoard,
+  cancelViewInSchedule
 };
