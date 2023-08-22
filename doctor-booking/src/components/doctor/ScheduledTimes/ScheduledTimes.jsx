@@ -5,11 +5,12 @@ import DeleteButton from "../../../container/deleteButton/DeleteButton";
 import DatePicker from "react-datepicker";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
-function ScheduledTimes({ scheduledDates }) {
+function ScheduledTimes({ scheduledDates,setRefresh }) {
   const [schedulePopup, setSchedulePopUp] = useState(false);
   const [editScheduledTime, setEditScheduledTime] = useState({});
   const [date, setDate] = useState({});
   const [today, setToday] = useState(moment());
+  
 
   const { show } = useContext(ToastifyContest);
 
@@ -72,7 +73,9 @@ function ScheduledTimes({ scheduledDates }) {
 
   const handleTime = (e, index) => {
     // alert("hi");
+    // alert(index)
     const { name, value } = e.target;
+    // alert(name)
     const selectedDate = date.date;
     const combinedDate = selectedDate + " " + value;
 
@@ -92,12 +95,12 @@ function ScheduledTimes({ scheduledDates }) {
     let newarray = timeChange.sessions;
     // console.log("index " + index);
     timeChange.sessions[index][name] = convert;
-
+    // alert(convert)
     if (name === "startingTime") {
       for (let i = 0; i < index; i++) {
         if (
-          convert >= newarray[i].startingTime &&
-          convert <= newarray[i].endingTime
+          convert >= moment(newarray[i].startingTime).toDate() &&
+          convert <= moment(newarray[i].endingTime).toDate()
         ) {
           alert("already selected");
           timeChange.sessions[index][name] = null;
@@ -109,12 +112,20 @@ function ScheduledTimes({ scheduledDates }) {
         }
       }
     } else if (name === "endingTime") {
+      
       for (let i = 0; i < index; i++) {
+        console.log(newarray[index].startingTime);
+      console.log( moment(newarray[i].startingTime).toDate() );
+      console.log(moment(newarray[i].endingTime).toDate());
+      console.log(convert);
         if (
-          convert >= newarray[i].startingTime &&
-          convert <= newarray[i].endingTime
+          (convert >= moment(newarray[i].startingTime).toDate() &&
+            convert <= moment(newarray[i].endingTime).toDate()) ||
+          (newarray[index].startingTime < moment(newarray[i].startingTime).toDate() &&
+            moment(newarray[i].endingTime).toDate() < convert)
         ) {
           alert("already selected");
+          alert('endingTime')
           timeChange.sessions[index][name] = null;
         } else {
           console.log("here");
@@ -177,30 +188,38 @@ function ScheduledTimes({ scheduledDates }) {
     const sessionDetails = date.sessions[index];
     console.log(sessionDetails);
 
-    doctorApi.post("/updateSlot", {
-      startingTime: sessionDetails.startingTime,
-      endingTime: sessionDetails.endingTime,
-      scheduleId: date._id,
-      index,
-      duration: date.duration,
-    }).then((res)=>{
-      if(res.data.status){
-        show(res.data.message)
-        setSchedulePopUp(prev=>!prev)
-      }
-    })
+    doctorApi
+      .post("/updateSlot", {
+        startingTime: sessionDetails.startingTime,
+        endingTime: sessionDetails.endingTime,
+        scheduleId: date._id,
+        index,
+        duration: date.duration,
+      })
+      .then((res) => {
+        if (res.data.status) {
+          show(res.data.message);
+          setSchedulePopUp((prev) => !prev);
+        }
+      });
   };
 
-  const handleDateDelete = (scheduleId)=>{
+  const handleDateDelete = (scheduleId) => {
     // const addedDate = moment(date).add(3, 'days')
     // alert(addedDate)
-    doctorApi.post('/deleteDate',{dateId:scheduleId}).then((res)=>{
+    doctorApi.post("/deleteDate", { dateId: scheduleId }).then((res) => {
+      if (res.data.status) {
+        show(res.data.message);
+      }
+    });
+  };
+
+  const handlRemove =(schedulId)=>{
+    doctorApi.put(`/cancel_view_shcedul?id=${schedulId}`).then((res)=>{
       if(res.data.status){
-        show(res.data.message)
+        setRefresh(pre=>!pre)
       }
     })
-
-
   }
 
   return (
@@ -244,7 +263,7 @@ function ScheduledTimes({ scheduledDates }) {
                     <td className="px-6 py-4">{schedule?.duration}</td>
 
                     <td className="px-6 py-4 flex flex-col">
-                      {schedule?.sessions?.map((session, index) => {
+                      {schedule?.sessions?.map((session, index1) => {
                         return (
                           <>
                             <p>{session?.session}</p>
@@ -255,7 +274,7 @@ function ScheduledTimes({ scheduledDates }) {
                     </td>
 
                     <td className="px-6 py-4 cursor-pointer gap-3">
-                      {schedule?.sessions?.map((session, index) => {
+                      {schedule?.sessions?.map((session, index2) => {
                         return (
                           <>
                             <p className="">
@@ -267,7 +286,7 @@ function ScheduledTimes({ scheduledDates }) {
                       })}
                     </td>
                     <td className="px-6 py-4 cursor-pointer ">
-                      {schedule?.sessions?.map((session, index1) => {
+                      {schedule?.sessions?.map((session, index3) => {
                         return (
                           <>
                             <p>{formatTime(session?.endingTime)}</p>
@@ -277,7 +296,7 @@ function ScheduledTimes({ scheduledDates }) {
                       })}
                     </td>
                     <td className="flex gap-2">
-                      {today <= moment(schedule.date) ? (
+                      {today < moment(schedule.date) ? (
                         <button
                           className="p-2 bg-black text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg"
                           onClick={() => {
@@ -292,14 +311,14 @@ function ScheduledTimes({ scheduledDates }) {
                           can't edit
                         </p>
                       )}
-                      <button
+                     { today <= moment(schedule.date)? <button
                         className="p-2 bg-black text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg"
                         onClick={() => {
-                          handleDateDelete(schedule._id)
+                          handleDateDelete(schedule._id);
                         }}
                       >
                         Delete
-                      </button>
+                      </button>: <button className="p-2 bg-red-400 text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg" onClick={()=>handlRemove(schedule._id)} >Remove</button>}
                     </td>
                   </tr>
                 </React.Fragment>

@@ -239,7 +239,7 @@ function DoctorDetails() {
               {/* absolute top-0 left-4 md:left-24 shadow-2xl bg-slate-300 py-10 flex flex-col md:grid md:grid-cols-1 lg:grid-cols-[3fr,7fr] gap-4 px-5 */}
               <p>Available Slotes</p>
 
-              <div className="w-full mt-5 md:w-full flex  justify-center sticky top-0 bg-slate-600 p-2 rounded-lg ">
+              <div className="w-full mt-5 md:w-full flex  justify-center sticky top-0 bg-slate-500  p-2 rounded-lg ">
                 <div className="w-full gap-4 items-center flex flex-row justify-evenly">
                   <div
                     className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center "
@@ -248,7 +248,7 @@ function DoctorDetails() {
                     <AiOutlineArrowLeft className="" />
                   </div>
                   <div
-                    className="flex-1 flex flex-row gap-4 overflow-x-auto"
+                    className="flex-1 flex flex-row gap-4 overflow-x-auto datesContainer"
                     ref={scrollableContainerRef}
                   >
                     {timeSlotes?.map((timeSlote, index) => {

@@ -9,13 +9,14 @@ import ScheduledTimes from "../../components/doctor/ScheduledTimes/ScheduledTime
 function ScheduledPage() {
     const doctorId = useSelector(store => store.doctor.id)
     const [scheduledDates,setScheduledDates] = useState([])
+    const [refresh,setRefresh] = useState(false)
     useEffect(()=>{
-        doctorApi.get(`/timeSlotes?id=${doctorId}`).then((response)=>{
+        doctorApi.get(`/timeSlotes?id=${doctorId}&edit=${true}`).then((response)=>{
             if(response.data.status){
                 setScheduledDates([...response.data.slotes])
             }
         })
-    },[])
+    },[refresh])
   return (
     <div>
       <div className="sticky top-0 z-10">
@@ -26,7 +27,7 @@ function ScheduledPage() {
         <Sidebar />
         {
             scheduledDates.length?(
-                <ScheduledTimes scheduledDates={scheduledDates} />
+                <ScheduledTimes scheduledDates={scheduledDates} setRefresh={setRefresh} />
                 
             ) : (<p>
 

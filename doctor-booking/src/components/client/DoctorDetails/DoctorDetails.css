@@ -98,3 +98,7 @@
     background-color: #032b32; /* Color of the track */
     border-radius: 5px; /* Rounded corners */
   }
+
+  .datesContainer::-webkit-scrollbar{
+    display:none;
+  }

@@ -110,8 +110,6 @@ const formateDate  = (date)=>{
       </div>
       <div>
       <ReactApexChart options={lineChartOptions} series={lineChartSeries} type="line" height={350} />
-
-    
       </div>
     </div>
   );

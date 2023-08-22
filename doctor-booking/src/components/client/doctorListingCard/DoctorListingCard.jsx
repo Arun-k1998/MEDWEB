@@ -318,8 +318,8 @@ function DoctorListingCard({
               alt=""
             />
           </div>
-          <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600">
-            <div className="w-full gap-4 items-center flex flex-row justify-evenly">
+          <div className="w-full mt-5  md:w-full flex  justify-center bg-slate-600 ">
+            <div className="w-full gap-4 items-center flex flex-row justify-evenly ">
               <div
                 className="cursor-pointer w-10 p-2 hover:bg-black hover:text-white flex justify-center"
                 onMouseEnter={handleScrollLeft}
