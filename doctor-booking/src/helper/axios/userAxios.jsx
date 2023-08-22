@@ -8,7 +8,7 @@ const api = axios.create({
 api.interceptors.request.use(function (config) {
   // const token = localStorage.getItem('userToken')
     const token = getCookies()
-    config.headers.Authorization = token[' userToken'];
+    config.headers.Authorization = token['userToken'];
     return config;
   }, function (error) {
     return Promise.reject(error);

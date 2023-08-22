@@ -271,6 +271,108 @@ function TimeScheduling() {
     }
   };
 
+  // const handleTime = (value,name,index) => {
+  //   // alert(value)
+  //   // const { name, value } = e.target;
+  //   const { date } = datee;
+
+  //   const timeNows = moment().format('LLL');
+  //   const timeNow = moment(timeNows).toDate()
+  //   const combinedDate = date + " " + moment(value).format('LT');
+    
+  //   const selectedTime = moment(value).format("LT");
+  //   const convert = moment(combinedDate, "YYYY-MM-DD HH:mm ").toDate();
+  //   alert(timeNow)
+  //   alert(convert);
+   
+  //   alert(timeNow>convert)
+  //   if (timeNow.isAfter(convert)) {
+  //     return alert("select a time as valid");
+  //   }
+  //   // console.log(convert)
+  //   const convertedDate = moment(convert).format("LT"); // Modify the format as per your needs
+
+  //   // console.log("new "+convertedDate)
+  //   console.log("times");
+  //   console.log(convert);
+  //   // console.log(selectedTime)
+
+  //   const timeChange = { ...datee };
+  //   // console.log(timeChange);
+  //   let newarray = timeChange.sessions;
+  //   // console.log("index " + index);
+  //   timeChange.sessions[index][name] = convert;
+  //   if (name === "startingTime") {
+  //     for (let i = 0; i < index; i++) {
+  //       if (
+  //         convert >= newarray[i].startingTime &&
+  //         convert <= newarray[i].endingTime
+  //       ) {
+  //         alert("already selected");
+  //         timeChange.sessions[index][name] = null;
+  //       } else {
+  //         console.log("hereeeeee");
+  //         timeChange.sessions[index][name] = convert;
+
+  //         // setDatee({ ...timeChange });
+  //       }
+  //     }
+  //   } else if (name === "endingTime") {
+  //     for (let i = 0; i < index; i++) {
+  //       if (
+  //         convert >= newarray[i].startingTime &&
+  //         convert <= newarray[i].endingTime
+  //       ) {
+  //         alert("already selected");
+  //         timeChange.sessions[index][name] = null;
+  //       } else {
+  //         console.log("here");
+  //         timeChange.sessions[index][name] = convert;
+  //         // setDatee({ ...timeChange });
+  //       }
+  //     }
+  //   }
+  //   const starting = datee.sessions[index].startingTime;
+  //   const ending = datee.sessions[index].endingTime;
+  //   // if((starting || ending) && (||ending.isBefore(starting) )) alert('select a valid time')
+  //   if (ending && moment(starting).isAfter(ending)) {
+      
+  //     return alert("Starting date should less than ending Date");
+
+  //   }
+  //   if (starting && moment(ending).isBefore(starting)) {
+  //     return alert("hi");
+  //   }
+  //   console.log(timeChange,'timeChange');
+  //   setDatee({ ...timeChange });
+
+  //   if (
+  //     datee.sessions[index].startingTime &&
+  //     datee.sessions[index].endingTime
+  //   ) {
+  //     let count = 0;
+  //     let starter = new Date(datee.sessions[index].startingTime).getTime();
+  //     let ender = new Date(datee.sessions[index].endingTime).getTime();
+
+  //     for (let i = starter; i < ender; i = starter) {
+  //       starter += datee.duration * 60 * 1000;
+  //       count++;
+  //     }
+  //     // datee.sessions[index].token = count
+  //     setDatee((pre) => {
+  //       return {
+  //         ...pre,
+  //         ["sessions"]: pre["sessions"].map((ele, num) => {
+  //           if (num === index) {
+  //             return { ...ele, ["totalTokens"]: count };
+  //           } else return { ...ele };
+  //         }),
+  //       };
+  //     });
+  //   }
+  // };
+
+
   const dayHandler = (index, day) => {
     const today = moment().format("dddd").toUpperCase();
     const todayindex = days.indexOf(today);
@@ -423,7 +525,7 @@ function TimeScheduling() {
               <label htmlFor="">Select the date</label>
             </div>
             <div className="w-52 flex flex-col">
-              <div className="w-full h-full border-2 bg-slate-200">
+              <div className="w-44 h-full border-2 p-2 overflow-hidden bg-slate-200">
                 <DatePicker
                   selected={datee.datePicker}
                   onChange={(date) => handleDate(date)}
@@ -526,15 +628,15 @@ function TimeScheduling() {
                     onChange={(e) => handleTime(e, index)}
                     className="p-1 text-center bg-slate-500 w-full rounded-lg"
                   />
-                  <DatePicker
+                  {/* <DatePicker
                     selected={new Date(slot.startingTime)}
-                    onChange={(date) => setStartDate(date)}
+                    onChange={(date) => handleTime(date,'startingTime',index)}
                     showTimeSelect
                     showTimeSelectOnly
                     timeIntervals={15}
                     timeCaption="Time"
                     dateFormat="h:mm aa"
-                  />
+                  /> */}
                 </div>
                 <div className="flex flex-col my-3 w-1/4">
                   <label htmlFor="">Ending Time</label>
@@ -554,6 +656,15 @@ function TimeScheduling() {
                     className="p-1 text-center  bg-slate-200 w-full rounded-lg"
                     disabled
                   />
+                  {/* <DatePicker
+                    selected={new Date(slot.endingTime)}
+                    onChange={(date) => handleTime(date,'endingTime',index)}
+                    showTimeSelect
+                    showTimeSelectOnly
+                    timeIntervals={15}
+                    timeCaption="Time"
+                    dateFormat="h:mm aa"
+                  /> */}
                 </div>
                 <div className="flex flex-col  w-1/6 my-3 pt-4 justify-center items-center">
                   <DeleteButton

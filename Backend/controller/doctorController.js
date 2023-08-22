@@ -608,9 +608,9 @@ const getAppointments = async (req, res) => {
           { doctorId: id },
           { status: "pending" },
 
-          // {
-          //   startingTime: { $gt: currentTimeIST.toDate() },
-          // },
+          {
+            startingTime: { $gt: currentTimeIST.toDate() },
+          },
         ],
       })
       .populate("doctorId")

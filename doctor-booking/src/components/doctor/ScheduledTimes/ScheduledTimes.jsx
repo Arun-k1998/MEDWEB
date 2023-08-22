@@ -9,7 +9,7 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
   const [schedulePopup, setSchedulePopUp] = useState(false);
   const [editScheduledTime, setEditScheduledTime] = useState({});
   const [date, setDate] = useState({});
-  const [today, setToday] = useState(moment());
+  const [today, setToday] = useState(moment().add(1, 'days'))
   
 
   const { show } = useContext(ToastifyContest);
