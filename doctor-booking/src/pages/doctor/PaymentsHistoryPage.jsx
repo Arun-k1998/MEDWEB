@@ -7,18 +7,29 @@ import { doctorApi } from "../../helper/axios/doctorAxios";
 
 function PaymentsHistoryPage() {
   const [bookings, setBookings] = useState([]);
-    const {id} = useSelector(store => store.doctor)
+  const { id } = useSelector((store) => store.doctor);
 
-  useEffect(()=>{
-if(id){
-    doctorApi.get(`/allConsultation/${id}`).then((res)=>{
-        if(res.data.status){
+  useEffect(() => {
+    if (id) {
+      doctorApi
+        .get(`/allConsultation/${id}`)
+        .then((res) => {
+          if (res.data.status) {
             console.log(res.data.bookings);
-            setBookings([...res.data.bookings])
-        }
-    })
-}
-  },[])
+            setBookings([...res.data.bookings]);
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            show(error.response.data.message, error.response.status);
+          } else if (error.request) {
+            navigate("/500");
+          } else {
+            console.log(error);
+          }
+        });
+    }
+  }, []);
   return (
     <div>
       <div className="sticky top-0 z-10">

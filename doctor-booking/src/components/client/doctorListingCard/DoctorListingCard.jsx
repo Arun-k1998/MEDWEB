@@ -285,14 +285,15 @@ function DoctorListingCard({
               : "Sorry. No doctors availabl in this name"}
           </div>
 
-          <div className="w-full flex justify-center gap-2">
+          <div className="w-full flex justify-center gap-2 mt-2 ">
             <button className="w-5 h-5 border-2 border-red-900">{"<<"}</button>
             {pageNos.map((number, index) => {
               return (
+                
                 <button
                   className={`${
-                    number.active ? "bg-slate-500" : "bg-slate-300"
-                  } w-5 h-5 border-2 border-red-900`}
+                    number.active ? "bg-[#189AB4]" : " bg-[#7fdaeb]"
+                  } w-6 h-6 text-white border-2 border-red-900`}
                   key={index}
                   onClick={() => handlePageNo(number?.page)}
                 >

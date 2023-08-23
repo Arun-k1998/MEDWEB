@@ -13,14 +13,23 @@ function PaymentSuccessPage() {
       api
         .post("/payment-succes", { booking: jwt, paymentId: session_id })
         .then((res) => {
-        
           localStorage.removeItem("myToken");
+        })
+        .catch((error) => {
+          if (error.response) {
+            show(error.response.data.message, error.response.status);
+          } else if (error.request) {
+            navigate("/500");
+          } else {
+            console.log(error);
+          }
         });
     }
   }, [session_id]);
   return (
     <div className="w-full h-[100vh] flex flex-col justify-center items-center">
       <h1 className="text-xl"> Success</h1>
+      <div></div>
       <button
         className=" p-2 text-white bg-lime-600 mt-6"
         onClick={() => navigate("/")}

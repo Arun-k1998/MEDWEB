@@ -1,22 +1,31 @@
-import React, { useEffect,useState } from 'react'
-import Navbar from '../../components/client/navbar/Navbar'
-import Banner from '../../components/client/Banner/Banner'
-import Cards from '../../components/client/Cards/Cards'
-import Footer from '../../components/client/Footer/Footer'
-import api from '../../helper/axios/userAxios'
-
+import React, { useEffect, useState } from "react";
+import Navbar from "../../components/client/navbar/Navbar";
+import Banner from "../../components/client/Banner/Banner";
+import Cards from "../../components/client/Cards/Cards";
+import Footer from "../../components/client/Footer/Footer";
+import api from "../../helper/axios/userAxios";
 
 function Home() {
-  const [specialization,setSpecialization] = useState([])
-  useEffect(()=>{
-    api.get('/').then((response)=>{
-      if(response.data.status){
-        console.log(response.data.specialization);
-        setSpecialization([...response.data.specialization])
-
-      }
-    })
-  },[])
+  const [specialization, setSpecialization] = useState([]);
+  useEffect(() => {
+    api
+      .get("/")
+      .then((response) => {
+        if (response.data.status) {
+          console.log(response.data.specialization);
+          setSpecialization([...response.data.specialization]);
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          show(error.response.data.message, error.response.status);
+        } else if (error.request) {
+          navigate("/500");
+        } else {
+          console.log(error);
+        }
+      });
+  }, []);
   return (
     <div>
       <Navbar />
@@ -24,7 +33,7 @@ function Home() {
       <Cards specialization={specialization} />
       <Footer />
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;

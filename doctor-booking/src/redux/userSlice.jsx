@@ -16,10 +16,11 @@ const userSlice = createSlice({
     reducers:{
         userLogin(state,actions){
             const userDetails = actions.payload
+            const notifications = userDetails.notifications.filter((notification)=> notification.view === true)
             state.name = userDetails.firstName
             state.id = userDetails._id
             state.email = userDetails.email
-            state.notifications = userDetails.notifications
+            state.notifications = notifications
             state.wallet = userDetails.wallet
         },
         userLogout(state,actions){

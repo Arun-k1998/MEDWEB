@@ -52,8 +52,8 @@ function UserLogin() {
               ";" +
               expires +
               "; path=/";
-            const { firstName, _id, email } = response.data.user;
-            dispatch(userLogin({ firstName, _id, email }));
+            
+            dispatch(userLogin(response.data.user));
             navigate("/");
           } else {
             show(response.data.message);

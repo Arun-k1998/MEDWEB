@@ -52,5 +52,6 @@ doctor_Route.get('/patients/:doctorId',doctorAuth,doctorController.patients)
 doctor_Route.get('/allConsultation/:doctorId',doctorAuth,doctorController.getAllConsultation)
 doctor_Route.get('/token_v',doctorAuth,doctorController.tokenVerification)
 doctor_Route.get('/dashBoard/:doctorId',doctorAuth,doctorController.dashBoard)
+doctor_Route.patch('/cancelConsultation',doctorAuth,doctorController.cancelConsultation)
 
 module.exports = doctor_Route

@@ -40,7 +40,10 @@ function Signup() {
   const otpSubmit = () => {
     api.post("/verify_otp", { ...formValues }).then((response) => {
       if (response.data.status) {
+        console.log(response.data.message);
+        show(response.data.message)
         navigate("/login");
+       
       }else{
        
         show(res.data.message)
@@ -59,6 +62,7 @@ function Signup() {
       })
       .then((response) => {
         if (response.data.status) {
+          show("Resend otp successfully")
           // setId(response.data.id)
           setTimer(60);
         }
@@ -86,7 +90,11 @@ function Signup() {
           }
         })
         .catch((error) => {
-          console.log(error.message);
+         if(error.response){
+          alert(error.data.response.message)
+         }else if(error.request){
+          navigate('/500')
+         }
         });
     }
 

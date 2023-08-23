@@ -12,7 +12,7 @@ import { CgProfile } from "react-icons/cg";
 import { userLogout } from "../../../redux/userSlice";
 
 const navigation = [
-  { name: " Doctors", href: "#", current: true },
+  { name: " Doctors", href: "/consult", current: true },
   { name: "Specilizations", href: "#", current: false },
   { name: "Appointments", href: "/appointments", current: false  },
 ];
@@ -37,7 +37,7 @@ function Navbar() {
   useEffect(() => {
     if (notifications[0]?.message) {
       notifications.forEach((notification) => {
-        if (!notification.view) {
+        if (notification.view) {
           setNotificatonCount((prev) => prev + 1);
         }
       });

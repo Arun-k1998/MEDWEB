@@ -26,7 +26,7 @@ function user() {
         <Route element={ <HomeVerification > <Home /> </ HomeVerification>} path='/' />
         <Route element={<Authorization accessBy={'non-Authorized'}> <UserLogin /> </ Authorization>} path='/login' />
         <Route element={<Authorization accessBy={'non-Authorized'}> <Register /></ Authorization>} path='/signup' />
-        <Route element={ <HomeVerification >  <DoctorList /> </ HomeVerification>} path='/consult/:name' />
+        <Route element={ <HomeVerification >  <DoctorList /> </ HomeVerification>} path='/consult' />
         <Route element={<Authorization accessBy={'Authorized'} ><UserProfilePage /></Authorization>} path='/profile/:id' />
         <Route element={ <HomeVerification ><DoctorSinglePage /></HomeVerification> } path='/consult/detail/:doctorId' />
         <Route element={<Authorization accessBy={'Authorized'} ><AppointmentsPage /></Authorization>} path='/appointments' />

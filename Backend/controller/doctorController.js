@@ -307,10 +307,14 @@ const doctorApproval = async (req, res) => {
 const doctorTimeScheduling = async (req, res) => {
   try {
     const { _id, schedule, duration } = req.body;
-    // console.log(_id);
-    // console.log("duration ", duration);
-    // console.log(schedule);
-    console.log(schedule);
+
+    const alreadyExit = await timeModle.findOne({ date: schedule.date });
+    if (alreadyExit) {
+      const error = new Error("already Scheduled in this date");
+      error.status = 401;
+      throw error;
+    }
+
     if (!schedule.duration) schedule.duration = 10;
     let obj1 = schedule.sessions.map((obj) => {
       console.log("object");
@@ -377,22 +381,21 @@ const timeSlotes = async (req, res) => {
     // console.log(dateSlotes);
     // console.log('finish');
 
-    
-
     const { id } = req.query;
-    const edit = req.query.edit||false
-    let query ={doctorId:id,view:true}
-    if(!edit){ 
-      console.log('sdfsf');
-      query['date'] ={$gte:new Date()}
+    const edit = req.query.edit || false;
+    let query = { doctorId: id, view: true };
+    if (!edit) {
+      console.log("sdfsf");
+      query["date"] = { $gte: new Date() };
       console.log(query);
     }
-    const timeSchedules = await timeModle.find(
-      query,
-      { date: 1, duration: 1, sessions: 1 },
-    );
+    const timeSchedules = await timeModle.find(query, {
+      date: 1,
+      duration: 1,
+      sessions: 1,
+    });
 
-    console.log(timeSchedules); 
+    console.log(timeSchedules);
 
     if (timeSchedules) {
       res.json({
@@ -450,41 +453,43 @@ const deleteTimeSlote = async (req, res) => {
 
 const doctorList = async (req, res) => {
   try {
-    const { sid } = req.query;
+    console.log("start");
+    const sid = req.query.sid || "";
     const filter = req?.query?.filter || "";
     const search = req?.query?.search || "";
     let pageNo = req.query?.page || 1;
     let limit = 2;
-    console.log(pageNo,'pageNo');
+
     let query = {
       approved: "approved",
       is_Blocked: false,
     };
-    if (sid) {
-      console.log(sid);
-      let splitarray = sid.split(",");
-      console.log(splitarray);
-      query["specialization"] = { $in: splitarray };
+    if (sid.trim() !== "null") {
+      console.log(sid, "sid");
+      if (sid.trim()) {
+        let splitarray = sid.split(",");
+        query["specialization"] = { $in: splitarray };
+      }
     }
 
     if (search) {
       query["$or"] = [
         { firstName: { $regex: ".*" + search + ".*", $options: "i" } },
-        { approved: "approved" },
       ];
     }
 
     const pagination = await doctor.find(query);
     // console.log(pagination,'pagination');
 
-    console.log(query);
+    console.log(query, "query");
+    console.log("end");
     const doctorList = await doctor
       .find(query)
       .populate("specialization", "name")
       .skip(pageNo > 1 ? (pageNo - 1) * limit : 0)
       .limit(limit);
-      // console.log(doctorList,'doctorList');
-    // console.log(pagination.length); 
+    // console.log(doctorList,'doctorList');
+    // console.log(pagination.length);
     let totalPages = Math.ceil(pagination.length / limit);
     // console.log(totalPages);
 
@@ -609,7 +614,7 @@ const getAppointments = async (req, res) => {
           { status: "pending" },
 
           {
-            startingTime: { $gt: currentTimeIST.toDate() },
+            endingTime: { $gt: currentTimeIST.toDate() },
           },
         ],
       })
@@ -860,13 +865,43 @@ const deletScheduledDate = async (req, res) => {
   }
 };
 
-const cancelViewInSchedule = async(req,res)=>{
-  const {id} = req.query
-  const schedule =  await timeSloteModel.findByIdAndUpdate(id,{view:false})
-  if(schedule){
-    res.json({status:true})
+const cancelViewInSchedule = async (req, res) => {
+  const { id } = req.query;
+  const schedule = await timeSloteModel.findByIdAndUpdate(id, { view: false });
+  if (schedule) {
+    res.json({ status: true });
   }
-}
+};
+
+const cancelConsultation = async (req, res) => {
+  const { cId } = req.body;
+  console.log(cId, "ci");
+  const updatedConsultation = await consultationModel.findOneAndUpdate(
+    { _id: cId },
+    { $set: { status: "canceled" } },
+    { new: true } // This option returns the updated document
+  );
+  console.log(updatedConsultation, "asdfsdf");
+  const userId = updatedConsultation.userId;
+  const message = "your consultation cancelled by doctor inconvinence";
+  const userNotification = await userModel.findByIdAndUpdate(userId, {
+    $push: {
+      notifications: {
+        message: message,
+      },
+    },
+    $inc: {
+      wallet: updatedConsultation.doctorFee,
+    },
+  });
+
+  if (userNotification) {
+    res.json({
+      status: true,
+      message: "successfully cancelled",
+    });
+  }
+};
 
 const dashBoard = async (req, res) => {
   try {
@@ -991,5 +1026,6 @@ module.exports = {
   getPresctipton,
   getAllConsultation,
   dashBoard,
-  cancelViewInSchedule
+  cancelViewInSchedule,
+  cancelConsultation,
 };

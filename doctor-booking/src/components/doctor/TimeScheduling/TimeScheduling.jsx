@@ -152,6 +152,7 @@ function TimeScheduling() {
           };
         }),
       });
+     
     } else {
       console.log(datee);
       setDatee((prev) => ({
@@ -160,6 +161,7 @@ function TimeScheduling() {
         datePicker: moment(value).toDate(),
         sessions: [{ startingTime: null, endingTime: null, session: 1 }],
       }));
+      
     }
     setSchedulePopup(true);
     // doctorApi.get(`/timeSlotes?id=${id}&date=${value}`).then((response) => {
@@ -235,7 +237,7 @@ function TimeScheduling() {
     const ending = datee.sessions[index].endingTime;
     // if((starting || ending) && (||ending.isBefore(starting) )) alert('select a valid time')
     if (ending && moment(starting).isAfter(ending)) {
-      
+
       return alert("Starting date should less than ending Date");
 
     }
@@ -271,24 +273,18 @@ function TimeScheduling() {
     }
   };
 
-  // const handleTime = (value,name,index) => {
+  // const handleTime = (value, name, index) => {
   //   // alert(value)
   //   // const { name, value } = e.target;
   //   const { date } = datee;
 
-  //   const timeNows = moment().format('LLL');
-  //   const timeNow = moment(timeNows).toDate()
-  //   const combinedDate = date + " " + moment(value).format('LT');
-    
+  //   const timeNows = moment().format("LLL");
+  //   const timeNow = moment(timeNows).toDate();
+  //   const combinedDate = date + " " + moment(value).format("LT");
+
   //   const selectedTime = moment(value).format("LT");
   //   const convert = moment(combinedDate, "YYYY-MM-DD HH:mm ").toDate();
-  //   alert(timeNow)
-  //   alert(convert);
-   
-  //   alert(timeNow>convert)
-  //   if (timeNow.isAfter(convert)) {
-  //     return alert("select a time as valid");
-  //   }
+
   //   // console.log(convert)
   //   const convertedDate = moment(convert).format("LT"); // Modify the format as per your needs
 
@@ -336,14 +332,12 @@ function TimeScheduling() {
   //   const ending = datee.sessions[index].endingTime;
   //   // if((starting || ending) && (||ending.isBefore(starting) )) alert('select a valid time')
   //   if (ending && moment(starting).isAfter(ending)) {
-      
   //     return alert("Starting date should less than ending Date");
-
   //   }
   //   if (starting && moment(ending).isBefore(starting)) {
   //     return alert("hi");
   //   }
-  //   console.log(timeChange,'timeChange');
+  //   console.log(timeChange, "timeChange");
   //   setDatee({ ...timeChange });
 
   //   if (
@@ -372,7 +366,6 @@ function TimeScheduling() {
   //   }
   // };
 
-
   const dayHandler = (index, day) => {
     const today = moment().format("dddd").toUpperCase();
     const todayindex = days.indexOf(today);
@@ -397,7 +390,10 @@ function TimeScheduling() {
           setCreated((pre) => !pre);
           setSchedulePopup((prev) => !prev);
         }
-      });
+      }).catch((error)=>{
+        console.log(error,'already Exit');
+        show(error.response.data.message,error.response.status)
+      })
   };
 
   const formattedTime = (timeValue) => {
@@ -465,8 +461,9 @@ function TimeScheduling() {
     });
   }, [created]);
 
-  const [startDate, setStartDate] = useState(new Date());
-
+  // const [startDate, setStartDate] = useState(new Date());
+  // const [minTime, setMinTime] = useState(moment().toDate());
+  // const [maxTime, setMaxTime] = useState(moment().endOf("day").toDate());
   return (
     <div className="flex flex-col items-center w-full bg-sky-50 pt-20  relative ">
       <div className="w-full absolute top-3 right-6 bg-slate-500">
@@ -504,21 +501,6 @@ function TimeScheduling() {
           </div>
         </div>
 
-        {/* <div className="flex w-full gap-4 flex-wrap ">
-          {days.map((day, index) => (
-            <div
-              key={index}
-              onClick={() => dayHandler(index, day)}
-              className={`${
-                active.label.toLowerCase() === day.toLowerCase()
-                  ? "bg-red-400"
-                  : "bg-slate-500"
-              } p-2 text-white cursor-pointer`}
-            >
-              {day}
-            </div>
-          ))}
-        </div> */}
         <div className="flex flex-col">
           <div className="flex  mb-3 items-center">
             <div className="w-52">
@@ -630,12 +612,14 @@ function TimeScheduling() {
                   />
                   {/* <DatePicker
                     selected={new Date(slot.startingTime)}
-                    onChange={(date) => handleTime(date,'startingTime',index)}
+                    onChange={(date) => handleTime(date, "startingTime", index)}
                     showTimeSelect
                     showTimeSelectOnly
-                    timeIntervals={15}
+                    timeIntervals={30}
                     timeCaption="Time"
                     dateFormat="h:mm aa"
+                    minTime={minTime}
+                    maxTime={maxTime}
                   /> */}
                 </div>
                 <div className="flex flex-col my-3 w-1/4">

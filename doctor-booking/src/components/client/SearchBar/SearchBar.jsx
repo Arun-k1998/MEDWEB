@@ -21,7 +21,7 @@ function SearchBar({ search, value, specilizations, handleCheckBoxChange }) {
               <div className="flex gap-2 ">
                 <div className="w-5 h-5 flex justify-center items-center  rounded-full border-2 border-[#189AB4]">
                 <input
-                  checked={specilization.checked}
+                  checked={specilization?.checked}
                   type="checkbox"
                   value={specilization?._id}
                   name="specilization"

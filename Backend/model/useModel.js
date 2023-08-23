@@ -40,7 +40,11 @@ const userSchema = mongoose.Schema({
         },
         view:{
             type:Boolean,
-            default:false
+            default:true
+        },
+        createdAt:{
+            type:Date,
+            default:new Date()
         }
     }],
     documents:[{

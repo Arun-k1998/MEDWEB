@@ -140,7 +140,15 @@ function Dashboard() {
           setLineChartTo(res.data.lineChartTo)
         }
       })
-      .catch(()=>{});
+      .catch((error)=>{
+        if(error.response){
+          show(error.response.data.message,error.response.status)
+        }else if(error.request){
+          navigate('/500')
+        }else{
+          console.log(error);
+        }
+      })
   }, []);
   // console.log(pieChartSeriesDoctor,'pieChartSeriesDoctorrrrr');
   // console.log(pieChartOptionsDoctor,'pieChartOptionsDoctor');

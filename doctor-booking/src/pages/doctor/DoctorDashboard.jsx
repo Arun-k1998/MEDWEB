@@ -53,69 +53,74 @@ function DoctorDashboardPage() {
       },
     },
     xaxis: {
-      categories: [
-       
-      ],
+      categories: [],
     },
   });
 
-  useEffect(() => {
+  useEffect(() => { //filling dashboard datas
     if (id) {
-      doctorApi.get(`/dashBoard/${id}`).then((res) => {
-        if (res.data.status) {
-          setWeeklyPatientCount(res.data.weeklyPatientCount);
-          setMonthlyPatientCount(res.data.monthlyPatientCount);
-          setYearlyPatientCount(res.data.YearlyPatientCount);
-          setTotalCounsultationDetails({
-            count: res.data.totalCounsultation[0].count,
-            totalAmount: res.data.totalCounsultation[0].totalAmount,
-          });
-          setStartinDate(res.data.weeklyReportStartingDate);
-          setEndingDate(res.data.weeklyReportEndingDate);
+      doctorApi
+        .get(`/dashBoard/${id}`)
+        .then((res) => {
+          if (res.data.status) {
+            setWeeklyPatientCount(res.data.weeklyPatientCount);
+            setMonthlyPatientCount(res.data.monthlyPatientCount);
+            setYearlyPatientCount(res.data.YearlyPatientCount);
+            setTotalCounsultationDetails({
+              count: res.data.totalCounsultation[0].count,
+              totalAmount: res.data.totalCounsultation[0].totalAmount,
+            });
+            setStartinDate(res.data.weeklyReportStartingDate);
+            setEndingDate(res.data.weeklyReportEndingDate);
 
-          let dateArray = []
-          let start = moment(res.data.weeklyReportStartingDate).valueOf()
-          let end = moment(res.data.weeklyReportEndingDate).valueOf()
-          console.log(start);
-          console.log(end);
-          // Your loop to generate dateArray
-for (let i = end; i <= start; i += 24 * 60 * 60 * 1000) {
-  let date = moment(i).toDate();
-  console.log(date);
-  dateArray.push(date);
-}
-console.log(dateArray);
-const dateStrings = dateArray.map(date => date.toISOString());
-console.log(dateStrings);
+            let dateArray = [];
+            let start = moment(res.data.weeklyReportStartingDate).valueOf();
+            let end = moment(res.data.weeklyReportEndingDate).valueOf();
+            console.log(start);
+            console.log(end);
+            // Your loop to generate dateArray
+            for (let i = end; i <= start; i += 24 * 60 * 60 * 1000) {
+              let date = moment(i).toDate();
+              console.log(date);
+              dateArray.push(date);
+            }
+            console.log(dateArray);
+            const dateStrings = dateArray.map((date) => date.toISOString());
+            console.log(dateStrings);
 
-// Assuming res.data.weeklyReport is the array you want to process
-let dateToAmountMap = new Map();
-res.data.weeklyReport.forEach((date) => {
-  dateToAmountMap.set(moment(date._id).toDate().toISOString(), date.totalAmount);
-});
-console.log(dateToAmountMap);
-// Creating the seriesArray based on dateArray and dateToAmountMap
-let seriesArray = dateStrings.map((date) => {
-  if (dateToAmountMap.has(date)) {
-    return dateToAmountMap.get(date);
-  } else {
-    return null;
-  }
-});
+            // Assuming res.data.weeklyReport is the array you want to process
+            let dateToAmountMap = new Map();
+            res.data.weeklyReport.forEach((date) => {
+              dateToAmountMap.set(
+                moment(date._id).toDate().toISOString(),
+                date.totalAmount
+              );
+            });
+            console.log(dateToAmountMap);
+            // Creating the seriesArray based on dateArray and dateToAmountMap
+            let seriesArray = dateStrings.map((date) => {
+              if (dateToAmountMap.has(date)) {
+                return dateToAmountMap.get(date);
+              } else {
+                return null;
+              }
+            });
 
-console.log(seriesArray);
+            console.log(seriesArray);
 
+            console.log("seriesArray", seriesArray);
 
-          console.log('seriesArray' , seriesArray);
-
-          // let secondTimeOutId = setTimeout(()=>{
-          //   lineChartOptions.xaxis.categories.forEach((date)=>{
-          //     if()
-          //   })
-          // },0) 
-          
-        }
-      });
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            show(error.response.data.message, error.response.status);
+          } else if (error.request) {
+            navigate("/500");
+          } else {
+            console.log(error);
+          }
+        });
     }
   }, [id]);
 

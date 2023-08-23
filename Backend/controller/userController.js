@@ -112,7 +112,7 @@ const signup = async (req, res) => {
         //     <h1 style='font-weight:bold;'> OTP from MEDWEB is ${otp}</h1>`, // html body
         // };
         const sendMail = noedeMailerconnect(newUser.email);
-        console.log(EmailOtp);
+        console.log(EmailOtp); 
 
         sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
           if (error) {
@@ -129,21 +129,7 @@ const signup = async (req, res) => {
           // res.render("otppage", { status: "false" });
         });
 
-        // vonage.verify
-        //   .start({
-        //     number: `917907051954`,
-        //     brand: "Vonage",
-        //   })
-        //   .then((resp) => {
-        //     console.log(resp.request_id);
-
-        //     // res.json({
-        //     //   status: true,
-        //     //   message: "successfully created account",
-        //     //   id: resp.request_id,
-        //     // });
-        //   })
-        //   .catch((err) => console.error(err));
+      
       } else {
         res.json({
           status: false,
@@ -191,11 +177,11 @@ const otpVerification = async (req, res) => {
         phoneNumber: phoneNumber,
         password: spassword,
         countryCode: country_code,
-      });
+      }); 
       const userData = await user.save();
       res.json({
-        status: true,
-        message: "User Created",
+        status: true, 
+        message: "Successfully Created Account.Please Login",
         user: userData,
       });
     } else {
@@ -216,9 +202,9 @@ const otpVerification = async (req, res) => {
 
 const resendOTP = async (req, res) => {
   try {
-
-
-    const sendMail = noedeMailerconnect(newUser.email);
+    const {email} = req.body
+console.log('start');
+    const sendMail = noedeMailerconnect(email);
     sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
       if (error) {
         console.log(error);
@@ -977,6 +963,30 @@ const paymentHistory = async (req, res) => {
   }
 };
 
+const reomvenotification = async(req,res)=>{
+  const notificationId = req.body.id
+  const {userId} = req.body
+  console.log(notificationId);
+
+  const notificationDelete = await users.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        [`notifications.${notificationId}.view`]: false
+      }
+    },
+    { new: true })
+
+    console.log(notificationDelete);
+  if(notificationDelete){
+    res.json({
+      status:true,
+      message:'notification deleted successfully',
+      index:notificationId
+    })
+  }
+}
+
 module.exports = {
   signup,
   login,
@@ -997,4 +1007,5 @@ module.exports = {
   getPrescription,
   updateUserJoin,
   paymentHistory,
+  reomvenotification
 };

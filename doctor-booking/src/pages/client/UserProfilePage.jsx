@@ -10,41 +10,53 @@ function UserProfilePage() {
   const userId = useSelector((store) => store.user.id);
   const [user, setUser] = useState({});
   const [edit, setEdit] = useState(false);
-  const [image,setImage] = useState('')
-  
+  const [image, setImage] = useState("");
+
   console.log(userId);
 
-  const handleSave = ()=>{
-    const form = new FormData()
-    form.append('user',JSON.stringify(user))
-    form.append('userId',userId)
-    if(image){
-      console.log(';dfdfd');
-      form.append('image',image)
+  const handleSave = () => {
+    const form = new FormData();
+    form.append("user", JSON.stringify(user));
+    form.append("userId", userId);
+    if (image) {
+      console.log(";dfdfd");
+      form.append("image", image);
     }
-   console.log(form.get('image'));
-    api.post(`/profile/${userId}`,form,{
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    }).then((res)=>{
-      if(res.data.status){
-        setEdit(prev=>!prev)
-      }
-    })
-  }
+    console.log(form.get("image"));
+    api
+      .post(`/profile/${userId}`, form, {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        if (res.data.status) {
+          setEdit((prev) => !prev);
+        }
+      });
+  };
 
   useEffect(() => {
     if (userId) {
-      
-      api.get(`/profile/${userId}`).then((res) => {
-        if (res.data.status) {
-          console.log(res.data.user);
-          setUser({ ...res.data.user });
-        }
-      });
+      api
+        .get(`/profile/${userId}`)
+        .then((res) => {
+          if (res.data.status) {
+            console.log(res.data.user);
+            setUser({ ...res.data.user });
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            show(error.response.data.message, error.response.status);
+          } else if (error.request) {
+            navigate("/500");
+          } else {
+            console.log(error);
+          }
+        });
     }
-  }, [userId,edit]);
+  }, [userId, edit]);
   return (
     <div>
       <div className="h-[10vh]">
@@ -56,7 +68,13 @@ function UserProfilePage() {
           <UserProfileSideBar edit={edit} user={user} setImage={setImage} />
         </div>
         <div className="w-full h-full my-auto ">
-          <UserProfileDetails user={user} edit={edit} setEdit={setEdit} setUser={setUser} handleSave={handleSave} />
+          <UserProfileDetails
+            user={user}
+            edit={edit}
+            setEdit={setEdit}
+            setUser={setUser}
+            handleSave={handleSave}
+          />
         </div>
       </div>
     </div>
