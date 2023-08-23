@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const moment = require("moment-timezone");
 const buffer = require("buffer");
 const { v4 } = require("uuid");
-const path = require("path"); 
+const path = require("path");
 //Schema
 const users = require("../model/useModel");
 const banners = require("../model/bannerModel");
@@ -56,18 +56,8 @@ const noedeMailerconnect = (email) => {
   return sendMail;
 };
 
-const { Vonage } = require("@vonage/server-sdk");
-const vonage = new Vonage({
-  apiKey: process.env.VONAGE_API_KEY,
-  apiSecret: process.env.VONAGE_API_SECRET,
-});
-
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST_KEY);
 const { CLIENT_URL } = process.env;
-// const admin = require('../model/adminModel')
-
-// const {TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_SERVICE_SID} = process.env
-// const client = require('twilio')(TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,{lazyLoading: true})
 
 async function hash(value) {
   const hashData = await bcrypt.hash(value, 10);
@@ -103,16 +93,8 @@ const signup = async (req, res) => {
         phoneNumber: phoneNumber,
       });
       if (!phoneNumberChecking) {
-        // var mailOptions = {
-        //   from: "medwebdoctors@gmail.com",
-        //   to: newUser.email,
-        //   subject: "Otp for registration is: ",
-        //   html:
-        //     `<h3>OTP for account verification  </h3>" '<hr />'
-        //     <h1 style='font-weight:bold;'> OTP from MEDWEB is ${otp}</h1>`, // html body
-        // };
         const sendMail = noedeMailerconnect(newUser.email);
-        console.log(EmailOtp); 
+        console.log(EmailOtp);
 
         sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
           if (error) {
@@ -126,10 +108,7 @@ const signup = async (req, res) => {
             console.log(info);
             res.json({ status: true, message: "successfully Send the email" });
           }
-          // res.render("otppage", { status: "false" });
         });
-
-      
       } else {
         res.json({
           status: false,
@@ -162,13 +141,8 @@ const otpVerification = async (req, res) => {
       otp,
       id,
     } = req.body;
-    console.log(req.body);
 
-   
-    console.log(EmailOtp);
     if (otp == EmailOtp[email]) {
-      delete EmailOtp[email];
-
       const spassword = await hash(password);
       const user = new users({
         firstName: firstName,
@@ -177,10 +151,11 @@ const otpVerification = async (req, res) => {
         phoneNumber: phoneNumber,
         password: spassword,
         countryCode: country_code,
-      }); 
+      });
       const userData = await user.save();
+      delete EmailOtp[email];
       res.json({
-        status: true, 
+        status: true,
         message: "Successfully Created Account.Please Login",
         user: userData,
       });
@@ -189,8 +164,6 @@ const otpVerification = async (req, res) => {
       error.status = 401;
       throw error;
     }
-
-   
   } catch (error) {
     console.log(error.message);
     console.log(error.status);
@@ -202,8 +175,8 @@ const otpVerification = async (req, res) => {
 
 const resendOTP = async (req, res) => {
   try {
-    const {email} = req.body
-console.log('start');
+    const { email } = req.body;
+    console.log("start");
     const sendMail = noedeMailerconnect(email);
     sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
       if (error) {
@@ -305,106 +278,6 @@ const searchDoctor = async (req, res) => {
     });
   }
 };
-
-// const slotBooking = async (req, res) => {
-//   // console.log(req.body);
-//   // await doctorModel.findById({_id:req.body.doctorId}).then((res)=>{
-//   //   console.log(res);
-//   // })
-//   // console.log(req.body.session.dateId);
-
-//   // const id = req.body.session.dateId;
-//   // const { doctorId, slot, date, userId, session } = req.body;
-//   const payload = req.rawBody.toString();
-//   const rawBody = JSON.parse(payload);
-//   console.log("payload---------------------", rawBody);
-//   try {
-//     const event = req.body;
-//     // console.log(req);
-//     console.log(rawBody);
-//     let b = Object.keys(rawBody.data.object.metadata);
-//     // Verify the event to ensure it's from Stripe
-//     console.log("-----------------b--------------", b);
-//     if (b.length) {
-//       const signature = req.headers["stripe-signature"];
-//       console.log("signature---------------------------------", signature);
-//       const sperateSignature = signature.split(",");
-//       const originalSignature = sperateSignature.shift();
-//       let c = sperateSignature.join(",");
-//       const webhookSecret = process.env.WEB_SOCKET;
-//       console.log(webhookSecret); // Replace with your actual webhook secret
-
-//       let stringRaw = rawBody.toString();
-
-//       const eventVerified = stripe.webhooks.constructEvent(
-//         stringRaw,
-//         signature,
-//         webhookSecret
-//       );
-//       console.log(
-//         "eventVerified----------------------------------",
-//         eventVerified
-//       );
-
-//       if (eventVerified.type === "checkout.session.completed") {
-//         console.log(" insideif in event verfied-------------------------");
-//         // Payment successfully completed
-//         const sessionId = eventVerified.data.object.id;
-//         console.log(" session id ----------------------", sessionId);
-//         // Now you can retrieve the session details from Stripe
-//         const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-//         // Extract metadata from the session
-//         const metadata = session.metadata;
-//         const doctorId = metadata.doctorId;
-//         const patientName = metadata.slot;
-//         console.log(doctorId);
-//         console.log(patientName);
-//         console.log("successsssssss");
-//       }
-//     }
-//   } catch (error) {
-//     console.log(
-//       "------error-----------------------------------------------------",
-//       error.message
-//     );
-//   }
-
-//   // const consultation = new consultationModel({
-//   //   userId: userId,
-//   //   doctorId: doctorId,
-//   //   status: "pending",
-//   //   date: new Date(date),
-//   //   sessionNo: session.session,
-//   //   tokenNo: slot.tokenNo,
-//   //   dateId: session.dateId,
-//   //   startingTime: new Date(slot.start),
-//   //   endingTime:new Date(slot.end),
-//   // });
-//   // const bookedConsultaion = await consultation.save();
-//   // console.log(new Date(bookedConsultaion.startingTime).toLocaleString());
-//   // console.log(new Date(bookedConsultaion.endingTime).toLocaleString());
-
-//   // if (bookedConsultaion) {
-//   //   const newDate = await timeSloteModel.findOne({ _id: id });
-//   //   newDate.sessions.forEach((session) => {
-//   //     if (session.session === req.body.session.session) {
-//   //       session.slotes.forEach((slot) => {
-//   //         if (slot.tokenNo === req.body.slot.tokenNo) {
-//   //           slot.is_Booked = true;
-//   //         }
-//   //       });
-//   //     }
-//   //   });
-//   //  const updatedSlot=  await newDate.save();
-//   //  if(updatedSlot){
-//   //   res.json({
-//   //     status: true,
-//   //   });
-//   //  }
-
-//   // }
-// };
 
 const checkoutSession = async (req, res) => {
   const { doctorId, slot, date, userId, sessions, paymentMethod } = req.body;
@@ -639,8 +512,6 @@ const testHook = (req, res) => {
 };
 
 const slotBookingWithJwt = async (req, res) => {
-  // console.log(req.body.booking);
-
   try {
     const { paymentId } = req.body;
     const paymentChecking = await stripe.checkout.sessions.retrieve(paymentId);
@@ -654,35 +525,25 @@ const slotBookingWithJwt = async (req, res) => {
     const doctorData = await doctorModel.findById(doctorId);
 
     if (paymentChecking.payment_status === "paid") {
-      console.log(consultationDetails);
-
-      console.log("doctorData", doctorData);
-
-      // const DoctorData = await doctorModel.findOne({_id:doctorId})
-      // const userData = await users.findOne({_id:userId})
-      ("------------------------");
-      // if(!userData) throw new Error('JWT token is mismatching')
       const videoCallId = v4();
       console.log("--------uuid----", videoCallId);
       const consultation = new consultationModel({
         userId: userId,
         doctorId: doctorId,
         status: "pending",
-        // date: new Date(date),
+
         date: moment(date).tz("Asia/Kolkata").toDate(),
         sessionNo: sessions.session,
         tokenNo: slot.tokenNo,
         dateId: sessions.dateId,
-        // startingTime: new Date(slot.start),
+
         startingTime: moment(slot.start).tz("Asia/Kolkata").toDate(),
         endingTime: moment(slot.end).tz("Asia/Kolkata").toDate(),
-        // endingTime: new Date(slot.end),
+
         videoCallId: videoCallId,
         doctorFee: doctorData.feePerConsultation,
       });
       const bookedConsultaion = await consultation.save();
-      // console.log(new Date(bookedConsultaion.startingTime).toLocaleString());
-      // console.log(new Date(bookedConsultaion.endingTime).toLocaleString());
       console.log(bookedConsultaion);
       if (bookedConsultaion) {
         const newDate = await timeSloteModel.findOne({ _id: sessions.dateId });
@@ -720,7 +581,7 @@ const getAppointments = async (req, res) => {
     if (type === "upcoming") query = "pending";
     else if (type === "consulted") query = "finish";
     const currentTimeIST = moment().tz("Asia/Kolkata");
-    console.log(currentTimeIST.toDate());
+
     const appointmentsList = await consultationModel
       .find({
         $and: [
@@ -737,7 +598,6 @@ const getAppointments = async (req, res) => {
       .sort({ date: 1 });
 
     if (appointmentsList) {
-      // console.log(app);
       res.status(202).json({
         status: true,
         appointments: appointmentsList,
@@ -759,7 +619,6 @@ const meetingId = async (req, res) => {
       .findById(id)
       .populate("userId")
       .populate("doctorId");
-    console.log(consultaion);
     if (consultaion) {
       res.json({ status: true, meetingId: consultaion });
     }
@@ -773,7 +632,6 @@ const meetingId = async (req, res) => {
 
 const updateUserJoin = async (req, res) => {
   const { consulatationId } = req.body;
-  console.log("userJoinUpdate", consulatationId);
   try {
     const userJoin = await consultationModel.findByIdAndUpdate(
       consulatationId,
@@ -795,7 +653,6 @@ const updateUserJoin = async (req, res) => {
 const cancelConsultation = async (req, res) => {
   try {
     const appointmentId = req.params.id;
-    console.log(appointmentId);
     const consultationData = await consultationModel.findOne({
       _id: appointmentId,
     });
@@ -819,8 +676,6 @@ const cancelConsultation = async (req, res) => {
     });
     const doctorData = await doctorModel.findById(doctorId);
     const { feePerConsultation } = doctorData;
-    console.log(feePerConsultation);
-    console.log(userId);
     const walletAmount = await users.findOneAndUpdate(
       { _id: userId },
       {
@@ -830,7 +685,6 @@ const cancelConsultation = async (req, res) => {
       },
       { new: true }
     );
-    console.log(walletAmount);
 
     if (updatedSlot) {
       res.json({
@@ -851,8 +705,6 @@ const getProfile = async (req, res) => {
   try {
     const userId = req.params.id;
     const userData = await users.findById(userId, { password: 0 });
-    console.log(userData);
-
     if (req.user) {
       res.json({
         status: true,
@@ -869,16 +721,14 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    console.log(req.body);
     const { userId, user } = req.body;
-    console.log(user);
+
     const parsedData = JSON.parse(user);
-    console.log(parsedData);
+
     const profileImage = req?.file?.filename;
-    // console.log(req.file);
-    // console.log(profileImage);
+
     const userData = await users.findById(userId);
-    // console.log(userData,userId);
+
     if (profileImage) {
       await users.findByIdAndUpdate(userId, {
         image: profileImage,
@@ -914,8 +764,6 @@ const updateProfile = async (req, res) => {
 
 const getPrescription = async (req, res) => {
   const { userId } = req.params;
-  console.log(userId);
-
   try {
     const consultationData = await consultationModel
       .find({ userId: userId })
@@ -963,29 +811,26 @@ const paymentHistory = async (req, res) => {
   }
 };
 
-const reomvenotification = async(req,res)=>{
-  const notificationId = req.body.id
-  const {userId} = req.body
-  console.log(notificationId);
-
+const reomvenotification = async (req, res) => {
+  const notificationId = req.body.id;
+  const { userId } = req.body;
   const notificationDelete = await users.findByIdAndUpdate(
     userId,
     {
       $set: {
-        [`notifications.${notificationId}.view`]: false
-      }
+        [`notifications.${notificationId}.view`]: false,
+      },
     },
-    { new: true })
-
-    console.log(notificationDelete);
-  if(notificationDelete){
+    { new: true }
+  );
+  if (notificationDelete) {
     res.json({
-      status:true,
-      message:'notification deleted successfully',
-      index:notificationId
-    })
+      status: true,
+      message: "notification deleted successfully",
+      index: notificationId,
+    });
   }
-}
+};
 
 module.exports = {
   signup,
@@ -1007,5 +852,5 @@ module.exports = {
   getPrescription,
   updateUserJoin,
   paymentHistory,
-  reomvenotification
+  reomvenotification,
 };

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import validation from "../../../helper/FormValidation";
 import { useNavigate } from "react-router-dom";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
+import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 
 function DoctorSignup() {
   const initialValues = {
@@ -21,6 +22,7 @@ function DoctorSignup() {
   const [timer, setTimer] = useState(60);
   const [otpId,setOtpId] = useState('')
   const navigate = useNavigate();
+  const {show} = useContext(ToastifyContest)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +38,16 @@ function DoctorSignup() {
   const otpSubmit = () => {
     doctorApi.post("verify_otp", { ...formValues,['otpId']:otpId }).then((response) => {
       if (response.data.status) {
-        navigate("/doctor/dashboard");
+        show(response.data.message)
+        navigate("/doctor/login");
+      }
+    }).catch((error) => {
+      if (error.response) {
+        show(error.response.data.message, error.response.status);
+      } else if (error.request) {
+        navigate("/500");
+      } else {
+        console.log(error);
       }
     });
   };
@@ -44,11 +55,11 @@ function DoctorSignup() {
   const resendOTP = () => {
     doctorApi
       .post("/resendotp", {
-        phoneNumber: formValues.phoneNumber,
-        country_code: formValues.country_code,
+       email:formValues.email
       })
       .then((response) => {
         if (response.data.status) {
+          show(res.data.message)
           setOtpId(response.data.id)
           setTimer(60);
         }

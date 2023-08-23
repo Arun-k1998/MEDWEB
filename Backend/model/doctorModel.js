@@ -24,7 +24,6 @@ const doctorSchema = mongoose.Schema({
     ,
     registerNumber:{
         type:String,
-        unique:true
     },
     councilName:{
         type:String,

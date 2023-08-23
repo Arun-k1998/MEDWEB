@@ -14,16 +14,56 @@ const userModel = require("../model/useModel");
 const moment = require("moment-timezone");
 const specializationModel = require("../model/specializationModel");
 const ObjctId = mongoose.Types.ObjectId;
-
-const vonage = new Vonage({
-  apiKey: process.env.VONAGE_API_KEY,
-  apiSecret: process.env.VONAGE_API_SECRET,
-});
+const nodeMailer = require("nodemailer");
 
 async function hash(value) {
   const hashData = await bcrypt.hash(value, 10);
   return hashData;
 }
+
+// -------email verification-------
+
+const otpGenerator = () => {
+  const otp = Math.floor(Math.random() * 1000000);
+  return otp;
+};
+
+const EmailOtp = {};
+
+const noedeMailerconnect = (email) => {
+  const otp = otpGenerator();
+  EmailOtp[email] = otp;
+
+  const transporter = nodeMailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+
+    service: "gmail",
+    auth: {
+      user: process.env.USER_EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+    secure: false,
+
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
+  });
+  var mailOptions = {
+    from: process.env.USER_EMAIL,
+    to: email,
+    subject: "Otp for registration is: ",
+    html: `<h3>OTP for account verification  </h3>" '<hr />'
+      <h1 style='font-weight:bold;'> OTP from MEDWEB is ${otp}</h1>`, // html body
+  };
+
+  const sendMail = { transporter, mailOptions };
+
+  return sendMail;
+};
+
+// -----------------------------------
 
 const tokenVerification = (req, res) => {
   try {
@@ -43,42 +83,43 @@ const tokenVerification = (req, res) => {
 
 const signup = async (req, res) => {
   const { country_code, phoneNumber, email } = req.body;
-  console.log("doctorSignup");
-  console.log(country_code, phoneNumber);
-  const doctorEmail = await doctor.findOne({ email: email });
-  if (!doctorEmail) {
-    const doctorPhone = await doctor.findOne({ phoneNumber: phoneNumber });
-    if (!doctorPhone) {
-      vonage.verify
-        .start({
-          number: `917907051954`,
-          brand: "Vonage",
-        })
-        .then((resp) => {
-          console.log(resp.request_id);
 
-          res.json({
-            status: true,
-            message: "successfully created account",
-            id: resp.request_id,
-          });
-        })
-        .catch((err) => console.error(err));
+  try {
+    const doctorEmail = await doctor.findOne({ email: email });
+    if (!doctorEmail) {
+      const doctorPhone = await doctor.findOne({ phoneNumber: phoneNumber });
+      if (!doctorPhone) {
+        const sendMail = noedeMailerconnect(email);
+        sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
+          if (error) {
+            console.log(error);
+            res.json({
+              status: false,
+              message: "otp creation fail",
+            });
+          } else {
+            console.log("success");
+            console.log(info);
+            res.json({ status: true, message: "successfully Send the email" });
+          }
+        });
+      } else {
+        res.json({
+          status: false,
+          message: "User Already in this phone Number",
+        });
+      }
     } else {
       res.json({
         status: false,
-        message: "User Already in this phone Number",
+        message: "Account already with this email",
       });
     }
-  } else {
-    res.json({
-      status: false,
-      message: "Account already with this email",
-    });
-  }
-  try {
   } catch (error) {
     console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
   }
 };
 const otpVerification = async (req, res) => {
@@ -94,14 +135,8 @@ const otpVerification = async (req, res) => {
       id,
     } = req.body;
 
-    // const verifiedMessage = await client.verify.v2
-    //   .services(TWILIO_SERVICE_SID)
-    //   .verificationChecks.create({
-    //     to: `+${country_code}${phoneNumber}`,
-    //     code: otp,
-    //   });
-
-    vonage.verify.check(id, otp).then(async (response) => {
+    if (otp == EmailOtp[email]) {
+      console.log("otp verificaitosusccses");
       const spassword = await hash(password);
       const newDoctor = new doctor({
         firstName: firstName,
@@ -114,10 +149,11 @@ const otpVerification = async (req, res) => {
       newDoctor
         .save()
         .then((doctor) => {
+          delete EmailOtp[email];
           console.log("Saved");
           res.json({
             status: true,
-            message: "Successfully Created the User",
+            message: "Successfully Created the account",
           });
         })
         .catch((error) => {
@@ -127,6 +163,37 @@ const otpVerification = async (req, res) => {
             message: "server error",
           });
         });
+    } else {
+      const error = new Error("Wrong OTP");
+      error.status = 400;
+      throw error;
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.status).json({
+      message: error.message,
+    });
+  }
+};
+
+const resendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("start");
+    const sendMail = noedeMailerconnect(email);
+    sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        res.json({
+          status: false,
+          message: "otp creation fail",
+        });
+      } else {
+        console.log("success");
+        console.log(info);
+        res.json({ status: true, message: "Successfully resend OTP" });
+      }
+      // res.render("otppage", { status: "false" });
     });
   } catch (error) {
     console.log(error.message);
@@ -1004,6 +1071,7 @@ const dashBoard = async (req, res) => {
 module.exports = {
   signup,
   otpVerification,
+  resendOTP,
   login,
   doctorDetails,
   updateDoctorDetails,
