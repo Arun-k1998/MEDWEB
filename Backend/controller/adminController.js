@@ -44,7 +44,7 @@ const login = async (req, res) => {
     } else {
       res.status(404).json({ status: false, message: "Admin Not Found" });
     }
-  } catch (error) {
+  } catch (error) { 
     console.log(error.message);
     res.status(error.status).json({ status: false, message: error.message });
   }

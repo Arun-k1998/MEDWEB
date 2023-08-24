@@ -782,14 +782,16 @@ const getAllConsultation = async (req, res) => {
 
 const updateSession = async (req, res) => {
   try {
+    console.log("start");
     const { startingTime, endingTime, scheduleId, index, duration } = req.body;
     const scheduleData = await timeSloteModel.findById(scheduleId);
+    console.log(scheduleData);
     // Set the time zone to Asia/Kolkata
     const timeZone = "Asia/Kolkata";
-
+    console.log("edit");
     let start = moment.tz(startingTime, timeZone).valueOf();
     let end = moment.tz(endingTime, timeZone).valueOf();
-
+    console.log(new Date(end).toLocaleTimeString());
     let array = [];
     let count = 0;
     let eachSlot = {};
@@ -803,15 +805,27 @@ const updateSession = async (req, res) => {
       array[count] = eachSlot;
       count++;
     }
-    console.log(array);
-    scheduleData.sessions[index].startingTime = startingTime;
-    scheduleData.sessions[index].endingTime = endingTime;
-    scheduleData.sessions[index].slotes = array;
-    scheduleData.sessions[index].totalTokens = array.length;
-    scheduleData.sessions[index].session = index + 1;
+    let obj = {
+      startingTime: startingTime,
+      endingTime: endingTime,
+      slotes: array,
+      totalTokens: array.length,
+      session: index + 1,
+    };
+    
+    
+      if(index <= scheduleData.sessions.length-1 ){
+        scheduleData.sessions.forEach((session,index1)=>{
+          if(index1 === index){
+            session = obj
+          }
+        })
+      }else{
+        scheduleData.sessions.push(obj);
+      }
+    
+  
     const updatedScheduleTime = await scheduleData.save();
-
-    console.log(updatedScheduleTime);
     if (updatedScheduleTime) {
       res.json({
         status: true,
@@ -819,6 +833,7 @@ const updateSession = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error.message);
     res.status(error.status).json({
       message: error.message,
     });
@@ -972,22 +987,23 @@ const dashBoard = async (req, res) => {
         },
       },
     ]);
-    
-   const profit=  await consultationModel.aggregate([{
-      $match:{
-        status:'finish',
-        doctorId:doctorObjectId
+
+    const profit = await consultationModel.aggregate([
+      {
+        $match: {
+          status: "finish",
+          doctorId: doctorObjectId,
+        },
       },
-      
-    },{
-      $group:{
-        _id:null,
-        doctorTotal:{$sum:'$doctorPayment'},
-        adminTotal:{$sum:'$adminPayment'}
-      }
-    }
-  ])
-  console.log(profit);
+      {
+        $group: {
+          _id: null,
+          doctorTotal: { $sum: "$doctorPayment" },
+          adminTotal: { $sum: "$adminPayment" },
+        },
+      },
+    ]);
+    console.log(profit);
     const currentTime = moment.tz("Asia/Kolkata");
     const sevenDaysAgo = currentTime.clone().subtract(7, "days");
     const weeklyReport = await consultationModel.aggregate([
@@ -1015,7 +1031,7 @@ const dashBoard = async (req, res) => {
       weeklyReportStartingDate: currentTime,
       weeklyReportEndingDate: sevenDaysAgo,
       weeklyReport: weeklyReport,
-      profit
+      profit,
     });
   } catch (error) {
     console.log(error.message);
