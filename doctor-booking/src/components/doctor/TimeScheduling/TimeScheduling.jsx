@@ -466,7 +466,7 @@ function TimeScheduling() {
   // const [maxTime, setMaxTime] = useState(moment().endOf("day").toDate());
   return (
     <div className="flex flex-col items-center w-full bg-sky-50 pt-20  relative ">
-      <div className="w-full absolute top-3 right-6 bg-slate-500">
+      <div className="w-full absolute top-3 right-6 bg-slate-500 text-white">
         <button
           className=" p-2 rounded-lg absolute top-3 right-6 bg-slate-500"
           onClick={() => navigate("/doctor/scheduled_slotes")}

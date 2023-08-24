@@ -5,12 +5,11 @@ import DeleteButton from "../../../container/deleteButton/DeleteButton";
 import DatePicker from "react-datepicker";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
-function ScheduledTimes({ scheduledDates,setRefresh }) {
+function ScheduledTimes({ scheduledDates, setRefresh }) {
   const [schedulePopup, setSchedulePopUp] = useState(false);
   const [editScheduledTime, setEditScheduledTime] = useState({});
   const [date, setDate] = useState({});
-  const [today, setToday] = useState(moment().add(1, 'days'))
-  
+  const [today, setToday] = useState(moment().add(1, "days"));
 
   const { show } = useContext(ToastifyContest);
 
@@ -112,20 +111,20 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
         }
       }
     } else if (name === "endingTime") {
-      
       for (let i = 0; i < index; i++) {
         console.log(newarray[index].startingTime);
-      console.log( moment(newarray[i].startingTime).toDate() );
-      console.log(moment(newarray[i].endingTime).toDate());
-      console.log(convert);
+        console.log(moment(newarray[i].startingTime).toDate());
+        console.log(moment(newarray[i].endingTime).toDate());
+        console.log(convert);
         if (
           (convert >= moment(newarray[i].startingTime).toDate() &&
             convert <= moment(newarray[i].endingTime).toDate()) ||
-          (newarray[index].startingTime < moment(newarray[i].startingTime).toDate() &&
+          (newarray[index].startingTime <
+            moment(newarray[i].startingTime).toDate() &&
             moment(newarray[i].endingTime).toDate() < convert)
         ) {
           alert("already selected");
-          alert('endingTime')
+          alert("endingTime");
           timeChange.sessions[index][name] = null;
         } else {
           console.log("here");
@@ -140,7 +139,7 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
 
     // if((starting || ending) && (||ending.isBefore(starting) )) alert('select a valid time')
     if (ending && moment(starting).isAfter(ending)) {
-      return alert("hell");
+      return alert("select valid time format");
     }
     if (starting && moment(ending).isBefore(starting)) {
       return alert("hi");
@@ -152,12 +151,12 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
       let ender = new Date(date.sessions[index].endingTime).getTime();
       console.log("statrer", starter);
       console.log("ender", ender);
-      alert(date.duration);
+      
       for (let i = starter; i < ender; i = starter) {
         starter += date.duration * 60 * 1000;
         count++;
       }
-      alert("count", count);
+      
       // datee.sessions[index].token = count
       setDate((pre) => {
         return {
@@ -189,7 +188,7 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
     console.log(sessionDetails);
 
     doctorApi
-      .post("/updateSlot", {
+      .patch("/updateSlot", {
         startingTime: sessionDetails.startingTime,
         endingTime: sessionDetails.endingTime,
         scheduleId: date._id,
@@ -200,6 +199,15 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
         if (res.data.status) {
           show(res.data.message);
           setSchedulePopUp((prev) => !prev);
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          show(error.response.data.message, error.response.status);
+        } else if (error.request) {
+          navigate("/500");
+        } else {
+          console.log(error);
         }
       });
   };
@@ -214,13 +222,13 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
     });
   };
 
-  const handlRemove =(schedulId)=>{
-    doctorApi.put(`/cancel_view_shcedul?id=${schedulId}`).then((res)=>{
-      if(res.data.status){
-        setRefresh(pre=>!pre)
+  const handlRemove = (schedulId) => {
+    doctorApi.put(`/cancel_view_shcedul?id=${schedulId}`).then((res) => {
+      if (res.data.status) {
+        setRefresh((pre) => !pre);
       }
-    })
-  }
+    });
+  };
 
   return (
     <div className="w-[90%] h-full mx-auto  py-10  ">
@@ -307,18 +315,33 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
                           Edit
                         </button>
                       ) : (
-                        <p className="p-2 w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg">
-                          can't edit
-                        </p>
+                        <button
+                          className="p-2 bg-black text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg"
+                          onClick={() => {
+                            handleEdit(index);
+                            setDate({ ...schedule });
+                          }}
+                        >
+                          Edit
+                        </button>
                       )}
-                     { today <= moment(schedule.date)? <button
-                        className="p-2 bg-black text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg"
-                        onClick={() => {
-                          handleDateDelete(schedule._id);
-                        }}
-                      >
-                        Delete
-                      </button>: <button className="p-2 bg-red-400 text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg" onClick={()=>handlRemove(schedule._id)} >Remove</button>}
+                      {today <= moment(schedule.date) ? (
+                        <button
+                          className="p-2 bg-black text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg"
+                          onClick={() => {
+                            handleDateDelete(schedule._id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        <button
+                          className="p-2 bg-red-400 text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg"
+                          onClick={() => handlRemove(schedule._id)}
+                        >
+                          Remove
+                        </button>
+                      )}
                     </td>
                   </tr>
                 </React.Fragment>
@@ -355,15 +378,6 @@ function ScheduledTimes({ scheduledDates,setRefresh }) {
               >
                 <div className="flex flex-col my-3 w-1/5">
                   <label htmlFor="">Starting time : </label>
-                  {/* <DatePicker
-                    selected={new Date(slot.startingTime)}
-                    onChange={(date) =>  handleTime('startingTime',date, index)}
-                    showTimeSelect
-                    showTimeSelectOnly
-                    timeIntervals={15}
-                    timeCaption="Time"
-                    dateFormat="h:mm aa"
-                  /> */}
 
                   <input
                     type="time"

@@ -15,7 +15,7 @@ import SpecializationUpdation from '../pages/admin/SpecializationUpdation'
 import UserManagementPage from '../pages/admin/UserManagementPage'
 import DoctorConsultaionPage from '../pages/doctor/DoctorConsultaionPage'
 import DoctorMangementPage from '../pages/admin/DoctorMangementPage'
-
+import Client404 from '../pages/client/client404Component'
 
 function AdminRoute() {
   return (
@@ -34,6 +34,7 @@ function AdminRoute() {
         <Route element={<AdminVerification accessBy={'Authorized'}><UserManagementPage /></AdminVerification>} path='/users' />
         <Route element={<DoctorMangementPage /> } path='/doctors' />
         {/* <Route element={<Client404Page/>} path='/*' /> */}
+        <Route element={<Client404 role={'admin'}  />} path='/*' />
       </Routes>
     </>
   )

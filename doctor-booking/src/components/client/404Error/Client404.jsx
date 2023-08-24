@@ -2,8 +2,18 @@ import React from "react";
 import './Client404.css'
 import { useNavigate } from "react-router-dom";
 
-function client404Component() {
+function client404Component({role}) {
     const navigate = useNavigate()
+    const handleClick = () =>{
+      if(role === 'user'){
+        navigate('/')
+      }else if(role === 'admin'){
+        navigate('/admin/login')
+      }else{
+        
+        navigate('/doctor/login')
+      }
+    }
   return (
     <div className="w-full flex flex-col justify-center gap-8 items-center h-[100vh] ">
         <div className="w-full flex justify-center gap-4 ">
@@ -18,7 +28,7 @@ function client404Component() {
 
         </div>
         <div>
-            <button className="bg-red-400 text-white p-2 w-32 text-xl rounded-lg cursor-pointer hover:shadow-lg hover:shadow-red-500  client404button" onClick={()=> navigate('/')}> Go Home</button>
+            <button className="bg-red-400 text-white p-2 w-32 text-xl rounded-lg cursor-pointer hover:shadow-lg hover:shadow-red-500  client404button" onClick={handleClick}> Go Home</button>
         </div>
      
     </div>

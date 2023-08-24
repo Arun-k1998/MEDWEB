@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import api from "../../../helper/axios/userAxios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { adminLogin } from "../../../redux/adminSlice";
+import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 
 function AdminLogin() {
   const initialValues = { email: "", password: "" };
   const [formValues, setFormValues] = useState(initialValues);
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const {show}  = useContext(ToastifyContest)
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -27,9 +31,15 @@ function AdminLogin() {
           window.location.href = '/admin/dashboard'
         }
        
-    }).catch(({response})=>{
-        console.log(response.data.message);
-    })
+    }).catch((error) => {
+      if (error.response) {
+        show(error.response.data.message, error.response.status);
+      } else if (error.request) {
+        navigate("/500");
+      } else {
+        console.log(error);
+      }
+    });
   };
 
   return (

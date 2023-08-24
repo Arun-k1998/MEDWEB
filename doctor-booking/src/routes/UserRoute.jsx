@@ -38,7 +38,7 @@ function user() {
         <Route element={<Authorization accessBy={'Authorized'} ><UserNotificationPage /></Authorization>} path='/notifications' />
         <Route element={<Authorization accessBy={'Authorized'} ><PaymentHistory /></Authorization>} path='/consultation_history' />
         <Route element={<Client500Page />} path='/500' />
-        <Route element={<Client404 />} path='/*' />
+        <Route element={<Client404 role={'user'}  />} path='/*' />
       </Routes>
       </div>
   )

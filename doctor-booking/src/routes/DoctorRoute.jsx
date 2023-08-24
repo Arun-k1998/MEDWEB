@@ -14,7 +14,7 @@ import AlreadyScheduledPage from '../pages/doctor/AlreadyScheduledPage'
 import ScheduledPage from '../pages/doctor/ScheduledPage'
 import Prescription from '../pages/doctor/Prescription'
 import PaymentsHistoryPage from '../pages/doctor/PaymentsHistoryPage'
-
+import Client404 from '../pages/client/client404Component'
 
 function DoctorRoute() {
   return (
@@ -33,6 +33,7 @@ function DoctorRoute() {
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><Prescription /></DoctorAuthentication>} path='/prescription/:consultationid' />
         <Route element={<DoctorAuthentication accessBy={'Authorized'} ><Prescription /></DoctorAuthentication>} path='/prescription/:consultationid/update' />
         <Route element={<DoctorAuthentication accessBy={'Authorized'}><PaymentsHistoryPage /> </DoctorAuthentication>} path='/payments' />
+        <Route element={<Client404 role={'doctor'}  />} path='/*' />
       </Routes>
     </div>
   )
