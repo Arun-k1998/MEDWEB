@@ -36,11 +36,12 @@ function Appointments({
 
   const handleStartMeeting = (starting, ending, id) => {
     const timeNow = moment();
-    if (timeNow.isBefore(moment(starting))) {
-      show("You can join only at the given time", 303);
-    } else if (timeNow.isAfter(moment(ending))) {
-      show("Your time ended", 303);
-    } else navigate(`/meet/${id}`);
+    // if (timeNow.isBefore(moment(starting))) {
+    //   show("You can join only at the given time", 303);
+    // } else if (timeNow.isAfter(moment(ending))) {
+    //   show("Your time ended", 303);
+    // } else
+     navigate(`/meet/${id}`);
   };
 
   const timChecker = (endingTime) => {
