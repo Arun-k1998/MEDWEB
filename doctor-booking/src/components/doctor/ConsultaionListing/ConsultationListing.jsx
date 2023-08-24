@@ -64,7 +64,7 @@ function ConsultationListing() {
 
   const handleStart = (consultaionId)=>{
     navigate(`/doctor/meet/${consultaionId}`)
-    const url = `http://localhost:5173/doctor/prescription/${consultaionId}`
+    const url = `${import.meta.env.VITE_SERVER_URL}/doctor/prescription/${consultaionId}`
     window.open(url, '_blank');
   }
 
