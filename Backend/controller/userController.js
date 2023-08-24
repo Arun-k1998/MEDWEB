@@ -84,17 +84,16 @@ const home = async (req, res) => {
 const signup = async (req, res) => {
   try {
     const newUser = req.body;
-    console.log(newUser.email);
+
     const userInEmail = await users.findOne({ email: newUser.email });
     const { phoneNumber, country_code } = req.body;
-    console.log(phoneNumber, country_code);
+
     if (!userInEmail) {
       const phoneNumberChecking = await users.findOne({
         phoneNumber: phoneNumber,
       });
       if (!phoneNumberChecking) {
         const sendMail = noedeMailerconnect(newUser.email);
-        console.log(EmailOtp);
 
         sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
           if (error) {
@@ -104,8 +103,6 @@ const signup = async (req, res) => {
               message: "otp creation fail",
             });
           } else {
-            console.log("success");
-            console.log(info);
             res.json({ status: true, message: "successfully Send the email" });
           }
         });
@@ -176,7 +173,6 @@ const otpVerification = async (req, res) => {
 const resendOTP = async (req, res) => {
   try {
     const { email } = req.body;
-    console.log("start");
     const sendMail = noedeMailerconnect(email);
     sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
       if (error) {
@@ -186,11 +182,8 @@ const resendOTP = async (req, res) => {
           message: "otp creation fail",
         });
       } else {
-        console.log("success");
-        console.log(info);
         res.json({ status: true, message: "Successfully resend OTP" });
       }
-      // res.render("otppage", { status: "false" });
     });
   } catch (error) {
     console.log(error.message);
@@ -202,7 +195,6 @@ const resendOTP = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email);
   try {
     const user = await users.findOne({ email: email });
     if (user) {
@@ -286,23 +278,18 @@ const checkoutSession = async (req, res) => {
     const doctorData = await doctorModel.findOne({ _id: doctorId });
     const consultationFee = doctorData.feePerConsultation;
 
-    console.log("-----paymentMethod-----", paymentMethod);
-
     if (paymentMethod === "wallet") {
       const userData = await users.findById(userId);
-      console.log(userData);
-      console.log(userData.wallet);
-      console.log(consultationFee);
+     
       if (userData.wallet < consultationFee) {
         console.log("fail");
         res.json({
           status: false,
           message: "Your Account doesn't have enough balance",
         });
-        console.log("kkkk");
+        
       } else {
         const videoCallId = v4();
-        console.log("--------uuid----", videoCallId);
         const consultation = new consultationModel({
           userId: userId,
           doctorId: doctorId,
@@ -322,14 +309,10 @@ const checkoutSession = async (req, res) => {
             wallet: userData.wallet - consultationFee,
           },
         });
-        // console.log(new Date(bookedConsultaion.startingTime).toLocaleString());
-        // console.log(new Date(bookedConsultaion.endingTime).toLocaleString());
-        console.log(bookedConsultaion);
         if (bookedConsultaion) {
           const newDate = await timeSloteModel.findOne({
             _id: sessions.dateId,
           });
-          console.log("---------------newData-----", newDate);
           newDate.sessions.forEach((session) => {
             if (session.session === sessions.session) {
               session.slotes.forEach((updateSlot) => {
@@ -350,7 +333,6 @@ const checkoutSession = async (req, res) => {
         }
       }
     } else if (paymentMethod == "reschedule") {
-      console.log("reschduling started");
       const { consultationId } = req.body;
       const consulatatonData = await consultationModel.findOne({
         $and: [{ _id: consultationId }, { status: "pending" }],
@@ -360,8 +342,6 @@ const checkoutSession = async (req, res) => {
         error.status = 404;
         throw error;
       }
-      console.log(slot.start);
-      console.log(req.body);
       const formattedDate = slot.start.replace(/\.\d{3}Z$/, "Z");
       const formattedStartingTime = slot.start.replace(/\.\d{3}Z$/, "Z");
       const formattedEndingTime = slot.end.replace(/\.\d{3}Z$/, "Z");
@@ -403,7 +383,7 @@ const checkoutSession = async (req, res) => {
         const newDate = await timeSloteModel.findOne({
           _id: sessions.dateId,
         });
-        console.log("---------------newData-----", newDate);
+        
         newDate.sessions.forEach((session) => {
           if (session.session === sessions.session) {
             session.slotes.forEach((updateSlot) => {
@@ -415,11 +395,11 @@ const checkoutSession = async (req, res) => {
         });
         const updatedSlot = await newDate.save();
 
-        console.log("rescheduling ended");
+       
         res.json({ status: true, message: "Successfully Rescheduled " });
       }
     } else {
-      console.log("----------online--------");
+      
       if (doctorData) {
         const token = await jwt.sign(
           {
@@ -433,7 +413,7 @@ const checkoutSession = async (req, res) => {
           { expiresIn: "1d" }
         );
 
-        // console.log('----------------------token----------------',token);
+       
 
         const session = await stripe.checkout.sessions.create({
           line_items: [
@@ -471,13 +451,13 @@ const checkoutSession = async (req, res) => {
 };
 
 const testHook = (req, res) => {
-  console.log("sdfsdf");
+  
   let rawBody = req.rawBody;
-  console.log(rawBody);
+ 
   const webhookSecret =
     "whsec_bfccc588a42a61ca9a15a5ed30aa4d6634c5cdeff40916df85cab057229ec29e";
   const sig = req.headers["stripe-signature"];
-  console.log(sig);
+  
   let event;
 
   let payload;
@@ -515,8 +495,6 @@ const slotBookingWithJwt = async (req, res) => {
   try {
     const { paymentId } = req.body;
     const paymentChecking = await stripe.checkout.sessions.retrieve(paymentId);
-    console.log(paymentChecking);
-    console.log(paymentChecking.payment_status);
     const consultationDetails = jwt.verify(
       req.body.booking,
       process.env.JSON_SECRET_KEY
@@ -544,7 +522,6 @@ const slotBookingWithJwt = async (req, res) => {
         doctorFee: doctorData.feePerConsultation,
       });
       const bookedConsultaion = await consultation.save();
-      console.log(bookedConsultaion);
       if (bookedConsultaion) {
         const newDate = await timeSloteModel.findOne({ _id: sessions.dateId });
         console.log("---------------newData-----", newDate);
@@ -588,9 +565,9 @@ const getAppointments = async (req, res) => {
           { userId: userId },
           { status: query },
           { is_delete: false },
-          // {
-          //   startingTime: { $gt: currentTimeIST.toDate() },
-          // },
+          {
+            endingTime: { $gt: currentTimeIST.toDate() },
+          },
         ],
       })
       .populate("doctorId")
@@ -613,7 +590,6 @@ const getAppointments = async (req, res) => {
 
 const meetingId = async (req, res) => {
   const { id } = req.params;
-  console.log("----meetingId======", id);
   try {
     const consultaion = await consultationModel
       .findById(id)
@@ -656,7 +632,6 @@ const cancelConsultation = async (req, res) => {
     const consultationData = await consultationModel.findOne({
       _id: appointmentId,
     });
-    console.log("----------consultationDetails--------", consultationData);
     const { sessionNo, tokenNo, doctorId, userId, dateId } = consultationData;
     await consultationModel.updateOne(
       { _id: appointmentId },
@@ -722,11 +697,8 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { userId, user } = req.body;
-
     const parsedData = JSON.parse(user);
-
     const profileImage = req?.file?.filename;
-
     const userData = await users.findById(userId);
 
     if (profileImage) {

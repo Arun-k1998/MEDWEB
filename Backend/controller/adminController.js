@@ -27,7 +27,7 @@ const login = async (req, res) => {
         password,
         adminData.password
       );
-      console.log(comparedPassword);
+      
       if (comparedPassword) {
         const token = jwt.sign({ id: adminData._id }, process.env.ADMIN_SECRET_KEY , {
           expiresIn: "2d",
@@ -53,7 +53,7 @@ const login = async (req, res) => {
 const bannerUpload = async (req, res) => {
   try {
     const { name, description } = req.body;
-    console.log(name, description);
+    
     const newBanner = new banner({
       name,
       description,
@@ -139,7 +139,7 @@ const updateBanner = async (req, res) => {
 
 const specilizations = async (req, res) => {
   try {
-    console.log("spec");
+   
     const specializationData = await specialization.find({});
 
     res.json({
@@ -245,7 +245,7 @@ const doctorDetails = async (req, res) => {
 const getAllUser = async (req, res) => {
   try {
     const userList = await userModel.find({});
-    console.log(userList);
+   
     res.json({
       status: true,
       userList: userList,
@@ -259,11 +259,11 @@ const getAllUser = async (req, res) => {
 const userBlockAndUnblock = async (req, res) => {
   try {
     const { action, userId } = req.params;
-    console.log(action, userId);
+   
     let actionBoolean;
     if (action === "block") actionBoolean = true;
     else if (action === "unBlock") actionBoolean = false;
-    console.log(actionBoolean);
+    
     const userData = await userModel.findByIdAndUpdate(
       { _id: userId },
       {
@@ -303,11 +303,11 @@ const getAllDoctors = async (req, res) => {
 const doctorBlockAndUnBlock = async (req, res) => {
   try {
     const { action, doctorId } = req.params;
-    console.log(action, doctorId);
+   
     let actionBoolean;
     if (action === "block") actionBoolean = true;
     else if (action === "unBlock") actionBoolean = false;
-    console.log(actionBoolean);
+   
     const userData = await doctorModel.findByIdAndUpdate(
       { _id: doctorId },
       {
@@ -424,9 +424,6 @@ const dashBoard = async (req, res) => {
     //     },
     //   },
     // ]);
-
-    console.log(specilalizaionWise);
-    console.log(weeklySalesReport);
 
     Promise.all([userCount, doctorCount, consultationCount])
       .then(

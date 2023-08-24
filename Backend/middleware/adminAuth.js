@@ -14,6 +14,9 @@ const adminAuth = async(req,res,next)=>{
         next()
     } catch (error) {
         console.log(error.message);
+        res.status(error.status).json({
+            message:error.message
+        })
     }
 }
 

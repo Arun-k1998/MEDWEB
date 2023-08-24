@@ -59,7 +59,7 @@ function BannerCreatoin() {
           className="p-2 mt-4 bg-sky-400 w-2/4 rounded-3xl mx-auto"
           onClick={handleSubmit}
         >
-          Upload
+          Create
         </button>
       </div>
       <div className="flex flex-col md:col-span-2 ">

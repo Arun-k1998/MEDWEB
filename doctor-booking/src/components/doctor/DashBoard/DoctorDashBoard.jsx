@@ -17,7 +17,9 @@ function DoctorDashBoard({
   setStartinDate,
   setEndingDate,
   lineChartSeries,
-  lineChartOptions
+  lineChartOptions,
+  pieChartOptions,
+  pieChartSeries
 }) {
   let date = "2023-08-13T18:30:00.000+00:00";
 
@@ -79,34 +81,20 @@ const formateDate  = (date)=>{
           </div>
         </div>
       </div>
-      <div className="w-full flex  h-[25rem] bg-slate-500 my-10">
-        <div>
-          <label htmlFor="">
-            From
-            <ReactDatePicker
-              selected={formateDate(startingDate)}
-              onChange={(date) => setStartinDate(date)}
-              onCalendarClose={handleCalendarClose}
-              onCalendarOpen={handleCalendarOpen}
-            />
-          </label>
+      <div className="w-full flex flex-col items-center justify-center  h-[25rem] shadow-xl  my-10">
+        <div className="w-full flex justify-center text-xl font-bold underline underline-offset-8" >
+          <p>Profit Share</p>
         </div>
-        <div>
-          <label htmlFor="">
-            To
-            <ReactDatePicker
-              selected={formateDate(endingDate)}
-              onChange={(date) => setEndingDate(date)}
-              onCalendarClose={handleCalendarClose}
-              onCalendarOpen={handleCalendarOpen}
-            />
-          </label>
+        <div className="w-full h-full flex items-center ml-10 justify-center">
+        <ReactApexChart
+              options={pieChartOptions}
+              series={pieChartSeries}
+              type="pie"
+              width={380}
+            />    
         </div>
-        <div>
-          <button className="bg-slate-900 text-white p-2 mx-10 rounded-lg">
-            Submit
-          </button>
-        </div>
+      
+       
       </div>
       <div>
       <ReactApexChart options={lineChartOptions} series={lineChartSeries} type="line" height={350} />

@@ -93,7 +93,7 @@ const signup = async (req, res) => {
         sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
           if (error) {
             console.log(error);
-            res.json({
+            res.status(error.status).json({
               status: false,
               message: "otp creation fail",
             });
@@ -104,13 +104,13 @@ const signup = async (req, res) => {
           }
         });
       } else {
-        res.json({
+        res.status(400).json({
           status: false,
           message: "User Already in this phone Number",
         });
       }
     } else {
-      res.json({
+      res.status(400).json({
         status: false,
         message: "Account already with this email",
       });
@@ -136,7 +136,6 @@ const otpVerification = async (req, res) => {
     } = req.body;
 
     if (otp == EmailOtp[email]) {
-      console.log("otp verificaitosusccses");
       const spassword = await hash(password);
       const newDoctor = new doctor({
         firstName: firstName,
@@ -179,21 +178,18 @@ const otpVerification = async (req, res) => {
 const resendOTP = async (req, res) => {
   try {
     const { email } = req.body;
-    console.log("start");
+
     const sendMail = noedeMailerconnect(email);
     sendMail.transporter.sendMail(sendMail.mailOptions, (error, info) => {
       if (error) {
         console.log(error);
-        res.json({
+        res.status(error.status).json({
           status: false,
           message: "otp creation fail",
         });
       } else {
-        console.log("success");
-        console.log(info);
         res.json({ status: true, message: "Successfully resend OTP" });
       }
-      // res.render("otppage", { status: "false" });
     });
   } catch (error) {
     console.log(error.message);
@@ -205,23 +201,18 @@ const resendOTP = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("doctor Login" + email);
+
   try {
     const doctorEmailCheck = await doctor.findOne({ email: email });
-    console.log(doctorEmailCheck);
-    if (doctorEmailCheck) {
-      console.log(1);
-      if (!doctorEmailCheck.is_Blocked) {
-        console.log(1);
 
+    if (doctorEmailCheck) {
+      if (!doctorEmailCheck.is_Blocked) {
         const comparedPassword = await bcrypt.compare(
           password,
           doctorEmailCheck.password
         );
-        console.log(comparedPassword);
-        if (comparedPassword) {
-          console.log(1);
 
+        if (comparedPassword) {
           const token = await jwt.sign(
             { id: doctorEmailCheck._id },
             process.env.JSON_SECRET_KEY,
@@ -234,13 +225,15 @@ const login = async (req, res) => {
             doctor: doctorEmailCheck,
           });
         } else {
-          res.json({ status: false, message: "Password didn't match" });
+          res
+            .status(401)
+            .json({ status: false, message: "Password didn't match" });
         }
       } else {
-        res.json({ status: false, message: "Account get blocked" });
+        res.status(401).json({ status: false, message: "Account get blocked" });
       }
     } else {
-      res.json({
+      res.status(400).json({
         status: false,
         message: "email not exit",
       });
@@ -255,10 +248,7 @@ const login = async (req, res) => {
 
 const doctorDetails = async (req, res) => {
   try {
-    console.log("registeration get");
-    // console.log(req);
     const id = req.query.id;
-    // console.log(id)
     const doctorData = await doctor.findById({ _id: id });
     const specializatonData = await specialization.find({});
     if (doctorData) {
@@ -343,7 +333,6 @@ const doctorsList = async (req, res) => {
 const doctorApproval = async (req, res) => {
   try {
     const { id } = req.params;
-
     await doctor
       .findByIdAndUpdate(
         { _id: id },
@@ -384,14 +373,12 @@ const doctorTimeScheduling = async (req, res) => {
 
     if (!schedule.duration) schedule.duration = 10;
     let obj1 = schedule.sessions.map((obj) => {
-      console.log("object");
-      console.log(obj.startingTime);
       return {
         start: new Date(obj.startingTime).getTime(),
         end: new Date(obj.endingTime).getTime(),
       };
     });
-    // console.log(obj1);
+
     let array;
     let starting = obj1[0].start;
     let count;
@@ -411,7 +398,7 @@ const doctorTimeScheduling = async (req, res) => {
         array[count] = eachSlot;
         count++;
       }
-      // console.log(array);
+
       schedule.sessions[j].slotes = array;
     }
 
@@ -439,30 +426,17 @@ const doctorTimeScheduling = async (req, res) => {
 
 const timeSlotes = async (req, res) => {
   try {
-    // const {id,date }= req.query
-    // console.log("id ",id);
-    // const datee = new Date(date);
-    // const formattedDate = datee.toISOString();
-    // console.log(formattedDate);
-    // const dateSlotes = await timeModle.findOne({$and:[{doctorId:id},{date:formattedDate}]})
-    // console.log(dateSlotes);
-    // console.log('finish');
-
     const { id } = req.query;
     const edit = req.query.edit || false;
     let query = { doctorId: id, view: true };
     if (!edit) {
-      console.log("sdfsf");
       query["date"] = { $gte: new Date() };
-      console.log(query);
     }
     const timeSchedules = await timeModle.find(query, {
       date: 1,
       duration: 1,
       sessions: 1,
     });
-
-    console.log(timeSchedules);
 
     if (timeSchedules) {
       res.json({
@@ -490,9 +464,8 @@ const deleteTimeSlote = async (req, res) => {
     const sessions = scheduledDate.sessions.filter(
       (obj, index) => obj._id != slotId
     );
-    console.log(sessions);
+
     if (!sessions.length) {
-      console.log("deleted entirelly");
       await timeSloteModel.deleteOne({ _id: id }).then((response) => {
         res.json({
           status: true,
@@ -500,7 +473,6 @@ const deleteTimeSlote = async (req, res) => {
         });
       });
     } else {
-      console.log("lor ");
       await timeSloteModel
         .findOneAndUpdate({ _id: id }, { sessions: sessions })
         .then((response) => {
@@ -520,7 +492,6 @@ const deleteTimeSlote = async (req, res) => {
 
 const doctorList = async (req, res) => {
   try {
-    console.log("start");
     const sid = req.query.sid || "";
     const filter = req?.query?.filter || "";
     const search = req?.query?.search || "";
@@ -532,7 +503,6 @@ const doctorList = async (req, res) => {
       is_Blocked: false,
     };
     if (sid.trim() !== "null") {
-      console.log(sid, "sid");
       if (sid.trim()) {
         let splitarray = sid.split(",");
         query["specialization"] = { $in: splitarray };
@@ -546,7 +516,6 @@ const doctorList = async (req, res) => {
     }
 
     const pagination = await doctor.find(query);
-    // console.log(pagination,'pagination');
 
     console.log(query, "query");
     console.log("end");
@@ -555,11 +524,7 @@ const doctorList = async (req, res) => {
       .populate("specialization", "name")
       .skip(pageNo > 1 ? (pageNo - 1) * limit : 0)
       .limit(limit);
-    // console.log(doctorList,'doctorList');
-    // console.log(pagination.length);
     let totalPages = Math.ceil(pagination.length / limit);
-    // console.log(totalPages);
-
     const specilizations = await specializationModel.find(
       { is_delete: false },
       { name: 1 }
@@ -584,14 +549,12 @@ const doctorList = async (req, res) => {
 const sss = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const timeSlotes = await timeSloteModel
       .find({ doctorId: id })
       .sort({ date: 1 });
     const doctorData = await doctor.findById(id).populate("specialization");
-    console.log(timeSlotes);
+
     if (timeSlotes) {
-      console.log("successfull");
       res.status(200).json({
         status: true,
         message: "sucess",
@@ -610,7 +573,6 @@ const sss = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const doctorData = await doctor.findById({ _id: id });
     if (doctorData) {
       res.json({
@@ -629,7 +591,6 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { id, doctorData } = req.body;
-    console.log(JSON.parse(doctorData));
     let newData = JSON.parse(doctorData);
     const doctorDta = await doctor.findById({ _id: id });
     if (doctorDta) {
@@ -649,9 +610,7 @@ const updateProfile = async (req, res) => {
         );
         if (oldImage) fs.unlinkSync(newPath);
       } else {
-        console.log("hiiiii");
         savedUserData = await doctor.findByIdAndUpdate(id, { ...newData });
-        console.log("-----------------", savedUserData);
       }
       res.json({
         status: true,
@@ -670,7 +629,6 @@ const updateProfile = async (req, res) => {
 
 const getAppointments = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   try {
     const currentTimeIST = moment().tz("Asia/Kolkata");
     console.log(currentTimeIST.toDate());
@@ -689,7 +647,7 @@ const getAppointments = async (req, res) => {
       .populate("userId")
       .sort({ date: 1 })
       .sort({ startingTime: 1 });
-    console.log(consultationList, "----------------");
+
     res.json({
       status: true,
       conslutationList: consultationList,
@@ -705,10 +663,6 @@ const getAppointments = async (req, res) => {
 const createPrescription = async (req, res) => {
   try {
     const { meetId, medicines } = req.body;
-    console.log("--------------presctiption--------------");
-    console.log(meetId);
-    console.log(medicines);
-    console.log("------end-----------");
     const updatedConsultation = await consultationModel.findByIdAndUpdate(
       meetId,
       { prescription: medicines }
@@ -731,7 +685,6 @@ const getPresctipton = async (req, res) => {
   try {
     const { consultationId } = req.params;
     const consultationData = await consultationModel.findById(consultationId);
-    console.log("-----pres==========", consultationData);
     if (consultationData) {
       res.json({
         status: true,
@@ -750,7 +703,7 @@ const getPresctipton = async (req, res) => {
 const consultationFinish = async (req, res) => {
   try {
     const { consultationId } = req.params;
-    console.log(consultationId);
+
     if (consultationId) {
       const consulatatonData = await consultationModel.findById(consultationId);
       const timeZone = "Asia/Kolkata";
@@ -786,14 +739,13 @@ const consultationFinish = async (req, res) => {
 const patients = async (req, res) => {
   try {
     const { doctorId } = req.params;
-    console.log(doctorId);
 
     const patientsList = await consultationModel
       .find({ $and: [{ status: "finish" }, { doctorId: doctorId }] })
       .populate("userId")
       .populate("doctorId")
       .sort({ createdAt: -1 });
-    console.log(patientsList);
+
     res.json({
       status: true,
       patients: patientsList,
@@ -809,14 +761,12 @@ const patients = async (req, res) => {
 const getAllConsultation = async (req, res) => {
   try {
     const { doctorId } = req.params;
-    console.log(doctorId);
     const consultation = await consultationModel
       .find({ doctorId: doctorId, status: "finish" })
       .populate("doctorId")
       .populate("userId")
       .populate("dateId");
     if (consultation) {
-      console.log("consultation", consultation);
       res.json({
         status: true,
         bookings: consultation,
@@ -834,10 +784,6 @@ const updateSession = async (req, res) => {
   try {
     const { startingTime, endingTime, scheduleId, index, duration } = req.body;
     const scheduleData = await timeSloteModel.findById(scheduleId);
-    console.log(scheduleData);
-    console.log(scheduleData.sessions[index], "----------------");
-    // ---------------------------------------------------------------------------------
-
     // Set the time zone to Asia/Kolkata
     const timeZone = "Asia/Kolkata";
 
@@ -942,13 +888,13 @@ const cancelViewInSchedule = async (req, res) => {
 
 const cancelConsultation = async (req, res) => {
   const { cId } = req.body;
-  console.log(cId, "ci");
+
   const updatedConsultation = await consultationModel.findOneAndUpdate(
     { _id: cId },
     { $set: { status: "canceled" } },
     { new: true } // This option returns the updated document
   );
-  console.log(updatedConsultation, "asdfsdf");
+
   const userId = updatedConsultation.userId;
   const message = "your consultation cancelled by doctor inconvinence";
   const userNotification = await userModel.findByIdAndUpdate(userId, {
@@ -980,7 +926,7 @@ const dashBoard = async (req, res) => {
     const yearEnd = moment.tz("Asia/Kolkata").endOf("year");
 
     const { doctorId } = req.params;
-    console.log(doctorId);
+
     const weekPatientCount = await consultationModel
       .find({
         $and: [
@@ -1014,7 +960,6 @@ const dashBoard = async (req, res) => {
       })
       .countDocuments();
 
-    // const totalPatients = await consultationModel.find({$and:[{doctorId:doctorId},{status:'finish'}]})
     let doctorObjectId = new ObjctId(doctorId);
 
     const totalConsultationDetails = await consultationModel.aggregate([
@@ -1027,12 +972,24 @@ const dashBoard = async (req, res) => {
         },
       },
     ]);
-    // console.log(totalConsultationDetails,'totalPatients');
-
+    
+   const profit=  await consultationModel.aggregate([{
+      $match:{
+        status:'finish',
+        doctorId:doctorObjectId
+      },
+      
+    },{
+      $group:{
+        _id:null,
+        doctorTotal:{$sum:'$doctorPayment'},
+        adminTotal:{$sum:'$adminPayment'}
+      }
+    }
+  ])
+  console.log(profit);
     const currentTime = moment.tz("Asia/Kolkata");
     const sevenDaysAgo = currentTime.clone().subtract(7, "days");
-    console.log(currentTime, sevenDaysAgo);
-
     const weeklyReport = await consultationModel.aggregate([
       {
         $match: {
@@ -1049,7 +1006,6 @@ const dashBoard = async (req, res) => {
       },
     ]);
 
-    console.log("durationData", weeklyReport);
     res.json({
       status: true,
       weeklyPatientCount: weekPatientCount,
@@ -1059,6 +1015,7 @@ const dashBoard = async (req, res) => {
       weeklyReportStartingDate: currentTime,
       weeklyReportEndingDate: sevenDaysAgo,
       weeklyReport: weeklyReport,
+      profit
     });
   } catch (error) {
     console.log(error.message);

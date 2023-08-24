@@ -57,6 +57,31 @@ function DoctorDashboardPage() {
     },
   });
 
+
+  const pieChartSeriesInitial = [];
+  const pieChartOptionsInitial = {
+    chart: {
+      width: 380,
+      type: "pie",
+    },
+    labels: ["Your","Admin"],
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200,
+          },
+          legend: {
+            position: "bottom",
+          },
+        },
+      },
+    ],
+  };
+
+  const [pieChartSeries, setPieChartseries] = useState(pieChartSeriesInitial);
+  const [pieChartOptions, setPieChartOptions] = useState(pieChartOptionsInitial);
   useEffect(() => { //filling dashboard datas
     if (id) {
       doctorApi
@@ -106,9 +131,7 @@ function DoctorDashboardPage() {
               }
             });
 
-            console.log(seriesArray);
-
-            console.log("seriesArray", seriesArray);
+            setPieChartseries([res.data.profit[0].doctorTotal,res.data.profit[0].adminTotal])
 
           }
         })
@@ -142,6 +165,8 @@ function DoctorDashboardPage() {
               setEndingDate={setEndingDate}
               lineChartOptions={lineChartOptions}
               lineChartSeries={lineChartSeries}
+              pieChartSeries={pieChartSeries}
+              pieChartOptions={pieChartOptions}
             />
           ) : (
             <BeforeRegister />
