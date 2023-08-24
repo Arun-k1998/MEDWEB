@@ -64,7 +64,7 @@ function ConsultationListing() {
 
   const handleStart = (consultaionId)=>{
     navigate(`/doctor/meet/${consultaionId}`)
-    const url = `${import.meta.env.VITE_SERVER_URL}/doctor/prescription/${consultaionId}`
+    const url = `https://medwebheal.vercel.app/doctor/prescription/${consultaionId}`
     window.open(url, '_blank');
   }
 
