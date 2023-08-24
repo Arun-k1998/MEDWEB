@@ -315,15 +315,7 @@ function ScheduledTimes({ scheduledDates, setRefresh }) {
                           Edit
                         </button>
                       ) : (
-                        <button
-                          className="p-2 bg-black text-white w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg"
-                          onClick={() => {
-                            handleEdit(index);
-                            setDate({ ...schedule });
-                          }}
-                        >
-                          Edit
-                        </button>
+                        <button className="p-2  w-28 hover:shadow-xl hover:shadow-red-400 rounded-lg">Can't edit</button>
                       )}
                       {today <= moment(schedule.date) ? (
                         <button
