@@ -21,7 +21,7 @@ function Footer() {
           </div>
         </div>
         <div className="flex justify-center items-start">
-          <p>hai</p>
+          <p className="underline underline-offset-8" >Contact Us</p>
         </div>
       </div>
       <div className="w-full flex justify-center mt-2">

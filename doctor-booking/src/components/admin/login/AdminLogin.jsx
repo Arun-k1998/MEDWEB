@@ -29,6 +29,8 @@ function AdminLogin() {
           dispatch(adminLogin(response.data.admin))
           // navigate('/admin/dashboard')
           window.location.href = '/admin/dashboard'
+        }else{
+          show(response.data.message)
         }
        
     }).catch((error) => {
