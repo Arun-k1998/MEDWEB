@@ -8,6 +8,7 @@ import validation from "../../../helper/FormValidation";
 import { doctorApi } from "../../../helper/axios/doctorAxios";
 import { doctorContext } from "../../../helper/contest/DoctorContext";
 import { doctorLogin } from "../../../redux/doctorSlice";
+import { ToastifyContest } from "../../../helper/contest/ToastifyContest";
 
 function Login() {
   
@@ -21,6 +22,7 @@ function Login() {
   const dispatch = useDispatch();
   const location = useLocation()
   const [pathname,setPathName] = useState(location.pathname)
+  const {show} = useContext(ToastifyContest)
 
   const handleClick = () => {
     setFormErrors(validation(formValues, "login"));
@@ -58,7 +60,17 @@ function Login() {
         } else {
           alert(response.data.message);
         }
-      });
+      })
+      .catch((error) => {
+        
+                if (error.response) {
+                  show(error.response.data.message, error.response.status);
+                } else if (error.request) {
+                  navigate("/500");
+                } else {
+                  console.log(error);
+                }
+              });;
     }
   }, [formErrors,submit]);
 
