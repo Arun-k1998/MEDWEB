@@ -19,7 +19,7 @@ function Chat() {
   const socket = useRef();
 
   useEffect(() => {
-    socket.current = io(`${socketURL}`);
+    socket.current = io(`${serverUrl}`);
     socket.current.emit("new-user-add", userId);
     socket.current.on("get-users", (users) => setOnlineUsers(users));
     return () => {
@@ -27,7 +27,6 @@ function Chat() {
       if (socket) {
         socket.current.emit('disconnected',userId)
         socket.current.on("get-users", (users) => setOnlineUsers(users));
-        
       }
     };
   }, [userId]);
@@ -35,8 +34,6 @@ function Chat() {
   useEffect(() => {
     const getUser = async () => {
       api.get(`/chat/${userId}`).then((res) => {
-        //userchats
-        // console.log(res.data)
         setChats([...res.data]);
       });
     };

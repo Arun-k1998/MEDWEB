@@ -99,7 +99,7 @@ const signup = async (req, res) => {
             });
           } else {
             console.log("success");
-            console.log(info);
+          
             res.json({ status: true, message: "successfully Send the email" });
           }
         });
@@ -314,7 +314,7 @@ const doctorsList = async (req, res) => {
       $and: [{ is_Blocked: false }, { approved: "processing" }],
     });
     if (doctorList) {
-      console.log(doctorList, "doctorList");
+      
       res.json({
         status: true,
         doctors: doctorList,
@@ -717,7 +717,7 @@ const consultationFinish = async (req, res) => {
       const consultaionFee = consulatatonData.doctorFee;
       const doctorPayment = (consultaionFee * 80) / 100;
       const adminPayment = (consultaionFee * 20) / 100;
-      console.log(doctorPayment, adminPayment);
+
       const updatedConsultation = await consultationModel.findByIdAndUpdate(
         consultationId,
         { status: "finish", doctorPayment, adminPayment }
@@ -859,7 +859,7 @@ const deletScheduledDate = async (req, res) => {
       const userIds = scheduledConsultations.map(
         (consultation) => consultation.userId
       );
-      console.log(userIds);
+     
       const notificationMessage = `user consultation with doctor ${doctorData.firstName} wil be cancelled due to the in convienience of doctor. paid amount ${doctorData.feePerConsultation} is added to your wallet.`;
       const userNotification = await userModel.updateMany(
         {
@@ -877,7 +877,7 @@ const deletScheduledDate = async (req, res) => {
           },
         }
       );
-      console.log(userNotification);
+      
       if (deletedScheduleTime) {
         res.json({
           status: true,
@@ -1003,7 +1003,7 @@ const dashBoard = async (req, res) => {
         },
       },
     ]);
-    console.log(profit);
+    
     const currentTime = moment.tz("Asia/Kolkata");
     const sevenDaysAgo = currentTime.clone().subtract(7, "days");
     const weeklyReport = await consultationModel.aggregate([

@@ -113,7 +113,7 @@ const signup = async (req, res) => {
         });
       }
     } else {
-      console.log(userInEmail);
+     
       res.json({
         message: "Email already exits",
       });
@@ -252,7 +252,7 @@ const searchDoctor = async (req, res) => {
       })
       .populate("specialization");
     if (doctors.length) {
-      console.log(doctors);
+     
       res.json({
         status: true,
         doctors: doctors,
@@ -524,7 +524,7 @@ const slotBookingWithJwt = async (req, res) => {
       const bookedConsultaion = await consultation.save();
       if (bookedConsultaion) {
         const newDate = await timeSloteModel.findOne({ _id: sessions.dateId });
-        console.log("---------------newData-----", newDate);
+        
         newDate.sessions.forEach((session) => {
           if (session.session === sessions.session) {
             session.slotes.forEach((updateSlot) => {

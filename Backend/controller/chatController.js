@@ -2,10 +2,10 @@ const chatModel = require("../model/chatModel");
 const doctorModel = require("../model/doctorModel");
 const userModel = require('../model/useModel')
 const createChat = async (req, res) => {
-  console.log(req.body);
   const newChat = new chatModel({
     members: [req.body.senderId, req.body.receiverId],
   });
+  console.log('chat creation');
 
   try {
     const result = await newChat.save();
@@ -24,7 +24,6 @@ const userChats = async (req, res) => {
     const chat = await chatModel.find({
       members: { $in: [req.params.userId] },
     });
-    console.log(chat);
     res.json(chat);
   } catch (error) {
     console.log(error.message);
@@ -65,7 +64,6 @@ const userDetails = async (req, res) => {
   console.log( userId);
   try {
     const doctorDetails = await userModel.findById( userId, { password: 0 });
-    console.log(doctorDetails);
     res.json(doctorDetails);
   } catch (error) {
     console.log(error);
