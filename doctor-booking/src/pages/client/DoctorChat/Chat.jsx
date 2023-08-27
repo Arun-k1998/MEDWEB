@@ -14,13 +14,13 @@ function Chat() {
   const [sendMessage, setSendMessage] = useState(null);
   const [recieveMessage,setRecieveMessage] = useState(null)
   const userId = useSelector((store) => store.doctor.id);
-  const socketURL = import.meta.env.SOCKET_URL;
+  const socketURL = import.meta.env.VITE_SOCKET_URL;
   const serverUrl = import.meta.env.VITE_SERVER_URL;
 
   const socket = useRef();
 
   useEffect(() => {
-    socket.current = io(`http://localhost:8000`);
+    socket.current = io(`${socketURL}`);
     socket.current.emit("new-user-add", userId);
     socket.current.on("get-users", (users) => setOnlineUsers(users));
 
