@@ -19,7 +19,7 @@ function Chat() {
   const socket = useRef();
 
   useEffect(() => {
-    socket.current = io(`${serverUrl}`);
+    socket.current = io(`${socketURL}`);
     socket.current.emit("new-user-add", userId);
     socket.current.on("get-users", (users) => setOnlineUsers(users));
     return () => {
