@@ -5,7 +5,7 @@ const specialization = require("../model/specializationModel");
 const { response } = require("express");
 const timeModle = require("../model/doctorTimeSlotModel");
 const mongoose = require("mongoose");
-const timeSloteModel = require("../model/doctorTimeSlotModel");
+const timeSloteModel = require("../model/doctorTimeSlotModel"); 
 const { Vonage } = require("@vonage/server-sdk");
 const fs = require("fs");
 const path = require("path");
@@ -18,7 +18,7 @@ const nodeMailer = require("nodemailer");
 
 async function hash(value) {
   const hashData = await bcrypt.hash(value, 10);
-  return hashData;
+  return hashData; 
 }
 
 // -------email verification-------
@@ -75,7 +75,7 @@ const tokenVerification = (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -117,7 +117,7 @@ const signup = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -169,7 +169,7 @@ const otpVerification = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -193,7 +193,7 @@ const resendOTP = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -240,7 +240,7 @@ const login = async (req, res) => {
     }
   } catch (error) {
     console.log("error");
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -260,7 +260,7 @@ const doctorDetails = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -302,7 +302,7 @@ const updateDoctorDetails = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -354,7 +354,7 @@ const doctorApproval = async (req, res) => {
       });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -418,7 +418,7 @@ const doctorTimeScheduling = async (req, res) => {
       });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -450,7 +450,7 @@ const timeSlotes = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -484,7 +484,7 @@ const deleteTimeSlote = async (req, res) => {
     }
   } catch (error) {
     console.log(error.messag);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -540,7 +540,7 @@ const doctorList = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -564,7 +564,7 @@ const sss = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -582,7 +582,7 @@ const getProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -620,7 +620,7 @@ const updateProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -654,7 +654,7 @@ const getAppointments = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -675,7 +675,7 @@ const createPrescription = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -694,7 +694,7 @@ const getPresctipton = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -730,7 +730,7 @@ const consultationFinish = async (req, res) => {
       }
     }
   } catch (error) {
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -752,7 +752,7 @@ const patients = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -774,7 +774,7 @@ const getAllConsultation = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -834,7 +834,7 @@ const updateSession = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -887,7 +887,7 @@ const deletScheduledDate = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -1035,7 +1035,7 @@ const dashBoard = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }

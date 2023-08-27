@@ -17,6 +17,7 @@ import UserNotificationPage from '../pages/client/UserNotificationPage'
 import PaymentHistory from '../pages/client/paymentHistoryPage'
 import Client404 from '../pages/client/client404Component'
 import Client500Page from '../pages/client/client500Page'
+import Chat from '../pages/client/Chat/Chat'
 
 
 function user() {
@@ -37,6 +38,7 @@ function user() {
         <Route element={ <Authorization accessBy={'Authorized'} > <UserPrescriptionPage /> </Authorization>  } path='/prescription' />
         <Route element={<Authorization accessBy={'Authorized'} ><UserNotificationPage /></Authorization>} path='/notifications' />
         <Route element={<Authorization accessBy={'Authorized'} ><PaymentHistory /></Authorization>} path='/consultation_history' />
+        <Route element={<Authorization accessBy={'Authorized'}><Chat /></Authorization>} path='/chat' />
         <Route element={<Client500Page />} path='/500' />
         <Route element={<Client404 role={'user'}  />} path='/*' />
       </Routes>

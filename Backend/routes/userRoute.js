@@ -58,6 +58,20 @@ user_Route.get('/prescription/:userId',userAuth,userController.getPrescription)
 user_Route.get('/paymentHistory/:userId',userAuth,userController.paymentHistory)
 user_Route.patch('/deleteNotification',userAuth,userController.reomvenotification)
 
+// ---------chat----
+const chatController = require('../controller/chatController')
+user_Route.post('/chat',userAuth,chatController.createChat)
+user_Route.get('/chat/:userId',userAuth,chatController.userChats) //to get the all chats of a user
+user_Route.get('/chat/find/:firstId/:secondId',userAuth,chatController.findChat) // finding the specific chat with specific person
+user_Route.get('/chat/doctor/:doctorId',userAuth,chatController.doctorDetails)
+
+// ----------message-----
+const messageController = require('../controller/messageController')
+
+user_Route.post('/message',userAuth,messageController.addMessage) // to add new Message
+user_Route.get('/message/:chatId',userAuth,messageController.getMessages)
+
+
 
 user_Route.get('/token_v',userAuth,userController.tokenVerification)
 

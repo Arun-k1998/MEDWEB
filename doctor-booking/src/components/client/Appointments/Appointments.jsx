@@ -183,7 +183,7 @@ function Appointments({
               </div>
               <div className="flex w-full gap-2">
                 {appointment.status === "finish" ? (
-                  <div className="w-full my-3 h-full flex justify-center  gap-3 items-center">
+                  <div className="w-full my-3 h-full flex flex-col justify-center  gap-3 items-center">
                     <button
                       className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
                       onClick={() =>
@@ -191,6 +191,12 @@ function Appointments({
                       }
                     >
                       Prescripton
+                    </button>
+                    <button
+                      className="bg-slate-800 hover:bg-slate-950 text-white p-2 rounded-md w-32"
+                      onClick={() => navigate("/chat")}
+                    >
+                      Chat
                     </button>
                   </div>
                 ) : (

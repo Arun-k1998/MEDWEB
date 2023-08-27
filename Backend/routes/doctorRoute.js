@@ -55,4 +55,20 @@ doctor_Route.get('/token_v',doctorAuth,doctorController.tokenVerification)
 doctor_Route.get('/dashBoard/:doctorId',doctorAuth,doctorController.dashBoard)
 doctor_Route.patch('/cancelConsultation',doctorAuth,doctorController.cancelConsultation)
 
+// --------chat----------
+
+const chatController = require('../controller/chatController')
+
+doctor_Route.post('/chat',doctorAuth,chatController.createChat)
+doctor_Route.get('/chat/:userId',doctorAuth,chatController.userChats) //to get the all chats of a user
+doctor_Route.get('/chat/find/:firstId/:secondId',doctorAuth,chatController.findChat) // finding the specific chat with specific person
+doctor_Route.get('/chat/user/:userId',doctorAuth,chatController.userDetails)
+
+// ----------message---------
+
+const messageController = require('../controller/messageController')
+
+doctor_Route.post('/message',doctorAuth,messageController.addMessage) // to add new Message
+doctor_Route.get('/message/:chatId',doctorAuth,messageController.getMessages)
+
 module.exports = doctor_Route

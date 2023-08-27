@@ -1,0 +1,13 @@
+.chatBox::-webkit-scrollbar{
+    width: 2px;
+    border-radius: 8px;
+}
+.chatBox::-webkit-scrollbar-thumb{
+    background-color:darkgreen;
+    border-radius: 8px;
+}
+
+.chatBox::-webkit-scrollbar-track{
+    background-color: rgb(106, 202, 202);
+    border-radius: 8px;
+}

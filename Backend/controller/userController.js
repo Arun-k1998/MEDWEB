@@ -75,7 +75,7 @@ const home = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -120,7 +120,7 @@ const signup = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -164,7 +164,7 @@ const otpVerification = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     console.log(error.status);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -187,7 +187,7 @@ const resendOTP = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -233,7 +233,7 @@ const tokenVerification = async (req, res) => {
     res.json({ status: true, user: req.user });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -265,7 +265,7 @@ const searchDoctor = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -444,7 +444,7 @@ const checkoutSession = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -545,7 +545,7 @@ const slotBookingWithJwt = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -565,12 +565,12 @@ const getAppointments = async (req, res) => {
           { userId: userId },
           { status: query },
           { is_delete: false },
-          {
-            endingTime: { $gt: currentTimeIST.toDate() },
-          },
+          // {
+          //   endingTime: { $gt: currentTimeIST.toDate() },
+          // },
         ],
       })
-      .populate("doctorId")
+      .populate("doctorId")   
       .populate("userId")
       .sort({ date: 1 });
 
@@ -582,7 +582,7 @@ const getAppointments = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -600,7 +600,7 @@ const meetingId = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -620,7 +620,7 @@ const updateUserJoin = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -670,7 +670,7 @@ const cancelConsultation = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -688,7 +688,7 @@ const getProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -728,7 +728,7 @@ const updateProfile = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -746,7 +746,7 @@ const getPrescription = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }
@@ -777,7 +777,7 @@ const paymentHistory = async (req, res) => {
     );
   } catch (error) {
     console.log(error.message);
-    res.status(error.status).json({
+    res.json({
       message: error.message,
     });
   }

@@ -46,6 +46,12 @@ function Sidebar() {
       symbol: <RiCalendarTodoFill className="mr-1" />,
       active:  location.pathname ==="/doctor/consultation"  ? true : false
     },
+    {
+      name: "Chat",
+      path: "/doctor/chat",
+      symbol: <RiCalendarTodoFill className="mr-1" />,
+      active:  location.pathname ==="/doctor/chat"  ? true : false
+    }
   ];
 
   const navigate = useNavigate();

@@ -23,7 +23,7 @@ export const Authorization = ({ children, accessBy }) => {
         if (user) {
           // alert('HI')
           setLoading(false);
-        } else if (cookie && cookie["userToken"]) {
+        } else if (cookie && cookie[" userToken"]) {
           api
             .get("/token_v")
             .then((response) => {
@@ -52,7 +52,7 @@ export const Authorization = ({ children, accessBy }) => {
         if (user) {
           alert("login");
           setLoading(false);
-        } else if (cookie["userToken"]) {
+        } else if (cookie[" userToken"]) {
           api.get("/token_v").then((response) => {
             if (response.data.user) {
               dispatch(userLogin(response.data.user));
