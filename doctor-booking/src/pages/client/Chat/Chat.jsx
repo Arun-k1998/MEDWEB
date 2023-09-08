@@ -82,7 +82,7 @@ function Chat() {
             <p>Doctors</p>
             <hr className="h-1 bg-slate-400" />
           </div>
-          <div className=" w-full h-full  flex flex-col gap-4">
+          <div className=" w-full h-full  flex flex-col gap-4 overflow-y-scroll ">
             {chats.map((chat, index) => (
               <div
                 className="w-full h-28 flex items-center bg-white p-4 my-4 rounded-lg hover:bg-slate-300 "

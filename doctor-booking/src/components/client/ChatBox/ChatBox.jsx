@@ -150,7 +150,7 @@ function ChatBox({ chat, currentUserId, setSendMessage, recieveMessage,online })
             </div>
 
             <button
-              className="w-28 h-10 rounded-lg bg-fuchsia-400 text-white p-1"
+              className="w-28 h-10 rounded-lg bg-[#28707f] text-white p-1"
               onClick={handleSend}
             >
               Send

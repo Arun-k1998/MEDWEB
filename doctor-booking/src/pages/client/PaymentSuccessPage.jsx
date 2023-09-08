@@ -28,8 +28,10 @@ function PaymentSuccessPage() {
   }, [session_id]);
   return (
     <div className="w-full h-[100vh] flex flex-col justify-center items-center">
-      <h1 className="text-xl"> Success</h1>
-      <div></div>
+      <h1 className="text-3xl "> Success</h1>
+      <div className="my-10">
+        <p className="text-xl">Thank you for the Booking </p>
+      </div>
       <button
         className=" p-2 text-white bg-lime-600 mt-6"
         onClick={() => navigate("/")}

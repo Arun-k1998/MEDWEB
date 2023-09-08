@@ -73,7 +73,7 @@ function DoctorDetails() {
     });
   };
   const getSlotes = (obj) => {
-    console.log(obj);
+   
     let sessions = obj.sessions.map((session) => {
       // return {
       //   dateId:session._id,
@@ -141,7 +141,7 @@ function DoctorDetails() {
           localStorage.setItem("myToken", response.data.token);
           window.location.href = response.data.url;
         } else {
-          alert(response.data.message);
+          show(response.data.message);
         }
       });
   };

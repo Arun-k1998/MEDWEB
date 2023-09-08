@@ -15,6 +15,8 @@ function AppointmentsPage() {
   const [presView, setPresView] = useState(false);
   const [prescription,setPrescription] = useState({})
   const [prescriptionState,setPrescriptionState] = useState(false)
+  const [loading,setLoading] = useState(true)
+  const [reFetching,setReFetching] = useState(false)
   const {show} = useContext(ToastifyContest)
   const navigate = useNavigate()
   const handlePrescriptionButton = (appointmentId,index)=>{
@@ -38,7 +40,9 @@ function AppointmentsPage() {
           if (response.data.status) {
             console.log(response.data.appointments);
             setAppointments([...response.data.appointments]);
+            setLoading(false)
           }
+
         }).catch((error)=>{
           if(error.response){
             show(error.response.data.message,error.response.status)
@@ -49,7 +53,7 @@ function AppointmentsPage() {
           }
         })
     }
-  }, [appointmentsType]);
+  }, [appointmentsType,reFetching]);
   return (
     <div>
       <div className="h-[10vh] sticky top-0 z-10 ">
@@ -61,6 +65,8 @@ function AppointmentsPage() {
           appointments={appointments}
           setAppointmentsType={setAppointmentsType}
           handlePrescriptionButton={handlePrescriptionButton}
+          loading={loading}
+          setReFetching={setReFetching}
         />
       </div>}
       {prescriptionState &&<div className="w-full bg-slate-100 h-[90vh] flex items-center">
