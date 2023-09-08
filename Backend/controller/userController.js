@@ -423,7 +423,7 @@ const checkoutSession = async (req, res) => {
                 product_data: {
                   name: `${doctorData.firstName} ${doctorData.lastName} Appointment`,
                 },
-                unit_amount: consultationFee,
+                unit_amount: consultationFee*100,
               },
               quantity: 1,
             },

@@ -15,6 +15,7 @@ const moment = require("moment-timezone");
 const specializationModel = require("../model/specializationModel");
 const ObjctId = mongoose.Types.ObjectId;
 const nodeMailer = require("nodemailer");
+const chatModel = require('../model/chatModel')
 
 async function hash(value) {
   const hashData = await bcrypt.hash(value, 10);
@@ -706,7 +707,13 @@ const consultationFinish = async (req, res) => {
 
     if (consultationId) {
       const consulatatonData = await consultationModel.findById(consultationId);
-      const timeZone = "Asia/Kolkata";
+      const {doctorId,userId} = consulatatonData
+      
+      let dString = doctorId+''
+      let uString = userId+''
+     
+      
+      const timeZone = "Asia/Kolkata";  //for avoiding Finish action before the consultation time
       let time = moment().tz(timeZone);
       let consultationTime = moment(consulatatonData.startingTime, timeZone);
       if (time < consultationTime) {
@@ -714,6 +721,17 @@ const consultationFinish = async (req, res) => {
         error.status = 400;
         throw error;
       }
+
+      const checkingChat = await chatModel.findOne({ members: { $all: [dString, uString] } })
+      if(!checkingChat) {  // create new chat
+        const chatData = new chatModel(
+          {
+            members: [dString,uString]
+          }
+        )
+       await chatData.save()
+      } 
+      
       const consultaionFee = consulatatonData.doctorFee;
       const doctorPayment = (consultaionFee * 80) / 100;
       const adminPayment = (consultaionFee * 20) / 100;
@@ -730,7 +748,8 @@ const consultationFinish = async (req, res) => {
       }
     }
   } catch (error) {
-    res.json({
+    console.log(error.message);
+    res.status(error?.status ?error?.status:401).json({
       message: error.message,
     });
   }
