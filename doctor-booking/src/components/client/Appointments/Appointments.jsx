@@ -85,7 +85,7 @@ function Appointments({
   };
 
   const handleCancellation = (id) => {
-    alert(id);
+   
     api.post(`/cancel_appointment/${id}`).then((res) => {
       if (res.data.status) {
         show(res.data.message);
