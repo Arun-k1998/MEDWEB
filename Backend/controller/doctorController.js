@@ -722,8 +722,9 @@ const consultationFinish = async (req, res) => {
         throw error;
       }
 
-      const checkingChat = await chatModel.findOne({ members: { $all: [dString, uString] } })
-      if(!checkingChat) {  // create new chat
+       // create new chat
+      const checkingChat = await chatModel.findOne({ members: { $all: [dString, uString] } }) 
+      if(!checkingChat) { 
         const chatData = new chatModel(
           {
             members: [dString,uString]

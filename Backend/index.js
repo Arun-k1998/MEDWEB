@@ -6,6 +6,7 @@ const path = require("path");
 const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const morgan = require('morgan')
 
 mongoose
   .connect(process.env.MONGOCONNECT, {
@@ -34,12 +35,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(morgan('dev'))
 
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
 const docotRoute = require("./routes/doctorRoute");
 const chatRoute = require("./routes/chatRoute");
 const messageRoute = require("./routes/messageRoute");
+
+
 app.use("/", userRoute);
 app.use("/admin", adminRoute);
 app.use("/doctor", docotRoute);
