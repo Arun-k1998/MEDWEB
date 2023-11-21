@@ -46,7 +46,7 @@ function Signup() {
        
       }else{
        
-        show(res.data.message)
+        show(response.data.message)
       }
     }).catch((error)=>{
       console.log(error);

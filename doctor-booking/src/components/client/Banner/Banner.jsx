@@ -13,9 +13,9 @@ function Banner() {
         })
     },[])
   return (
-    <div className='mt-20 flex justify-center w-full '>
+    <div className='my-10 flex justify-center w-full '>
 
-        <div className=' md:h-auto w-full md:w-3/4 '>
+        <div className=' md:h-auto w-full md:w-3/4 rounded-md overflow-hidden '>
             <img src={server_url+'images/'+ banners.image} alt="" className='w-full' />
         </div>
     </div>
