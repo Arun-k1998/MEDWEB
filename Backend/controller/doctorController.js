@@ -366,6 +366,7 @@ const doctorTimeScheduling = async (req, res) => {
     const { _id, schedule, duration } = req.body;
 
     const alreadyExit = await timeModle.findOne({ date: schedule.date });
+    console.log(alreadyExit)
     if (alreadyExit) {
       const error = new Error("already Scheduled in this date");
       error.status = 401;
